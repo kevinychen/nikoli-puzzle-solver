@@ -1,0 +1,36 @@
+[[package]]
+name = "grilops"
+version = "0.9.1"
+description = "GRId LOgic Puzzle Solver"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+z3-solver = "*"
+
+[[package]]
+name = "z3-solver"
+version = "4.8.13.0"
+description = "an efficient SMT solver library"
+category = "main"
+optional = false
+python-versions = "*"
+
+[metadata]
+lock-version = "1.1"
+python-versions = "^3.7"
+content-hash = "d344e1d89f08876c426ffedb63d63e8b5f7b148b014ce5894e142f49fe59d70d"
+
+[metadata.files]
+grilops = [
+    {file = "grilops-0.9.1-py3-none-any.whl", hash = "sha256:94d37f2daec76ebff85a1e8d6bf0a44185760b86b3c268a67454e36e6dfb0ab9"},
+    {file = "grilops-0.9.1.tar.gz", hash = "sha256:b078394eadcabe6aaef1fc3c6d1c9c341214c778a812364ea79f2e5904365d5b"},
+]
+z3-solver = [
+    {file = "z3-solver-4.8.13.0.tar.gz", hash = "sha256:eff1087d82132593c8851c89486e2512810d801d594d70526e2878b574bef797"},
+    {file = "z3_solver-4.8.13.0-py2.py3-none-macosx_10_16_x86_64.whl", hash = "sha256:058d9fac03aa4f6cd2be7c5fd578ea8ed7d49adb3ed844acba845e9623525881"},
+    {file = "z3_solver-4.8.13.0-py2.py3-none-manylinux1_x86_64.whl", hash = "sha256:65c7004f3642da288f15fbba8397f763c6f56746e320a5636cb1f2308027f50c"},
+    {file = "z3_solver-4.8.13.0-py2.py3-none-win32.whl", hash = "sha256:52a84e8368cbcd92ced06bbbf350db1d280573923c69025f519b6cc26ab74bb7"},
+    {file = "z3_solver-4.8.13.0-py2.py3-none-win_amd64.whl", hash = "sha256:d0a07e5fbe2a9d4ef4cfab5ffd2d770f3f138a47a2942dceb9aa5438d53e4dd7"},
+]
