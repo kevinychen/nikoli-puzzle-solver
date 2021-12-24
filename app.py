@@ -1,9 +1,10 @@
 from flask import Flask, request, Response
 from re import match
-from solvers import sudoku
+from solvers import nurikabe, sudoku
 
 app = Flask(__name__)
 SOLVERS = {
+    'nurikabe': nurikabe.solve,
     'sudoku': sudoku.solve,
 }
 

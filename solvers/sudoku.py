@@ -6,61 +6,31 @@ from z3 import Distinct
 
 def solve(puzzle):
     matched = match('pzprv3/sudoku/9/(.*)/', puzzle)
-    rows = matched.group(1).split('/')
-    result = _solve([[0 if rows[y][2 * x] == '.' else int(rows[y][2 * x]) for x in range(9)] for y in range(9)])
-    formatted = 'pzprv3/sudoku/9/'
-    for y in range(9):
-        for x in range(9):
-            formatted += str(result[y][x]) + ' '
-        formatted += '/'
-    return formatted
+    result = _solve(list(map(lambda row: row.split(' ')[:-1], matched.group(1).split('/'))))
+    return 'pzprv3/sudoku/9/{}/'.format('/'.join(map(lambda row: ' '.join(row) + ' ', result)))
 
 
-def _solve(givens):
-    sym = grilops.make_number_range_symbol_set(1, 9)
+def _solve(grid):
     lattice = grilops.get_square_lattice(9)
-    sg = grilops.SymbolGrid(lattice, sym)
+    symbol_set = grilops.make_number_range_symbol_set(1, 9)
+    sg = grilops.SymbolGrid(lattice, symbol_set)
 
-    for y, x in lattice.points:
-        given = givens[y][x]
-        if given != 0:
-            sg.solver.add(sg.cell_is(Point(y, x), given))
+    for row, col in lattice.points:
+        num = grid[row][col]
+        if num.isnumeric():
+            sg.solver.add(sg.cell_is(Point(row, col), int(num)))
 
-    rows = [[sg.grid[Point(y, x)] for x in range(9)] for y in range(9)]
-    for row in rows:
-        sg.solver.add(Distinct(*row))
-
-    columns = [[sg.grid[Point(y, x)] for y in range(9)] for x in range(9)]
-    for column in columns:
-        sg.solver.add(Distinct(*column))
-
-    for subgrid_index in range(9):
-        top = (subgrid_index // 3) * 3
-        left = (subgrid_index % 3) * 3
-        cells = [sg.grid[Point(y, x)] for y in range(top, top + 3) for x in range(left, left + 3)]
-        sg.solver.add(Distinct(*cells))
+    for row in range(9):
+        sg.solver.add(Distinct(*[sg.grid[Point(row, col)] for col in range(9)]))
+    for col in range(9):
+        sg.solver.add(Distinct(*[sg.grid[Point(row, col)] for row in range(9)]))
+    for subgrid in range(9):
+        top = (subgrid // 3) * 3
+        left = (subgrid % 3) * 3
+        nums = [[sg.grid[Point(row, col)] for row in range(top, top + 3) for col in range(left, left + 3)]]
+        sg.solver.add(Distinct(*nums))
 
     assert sg.solve()
 
     solved_grid = sg.solved_grid()
-    return [[solved_grid[Point(y, x)] for x in range(9)] for y in range(9)]
-
-
-def _test():
-    givens = [
-        [5, 3, 0, 0, 7, 0, 0, 0, 0],
-        [6, 0, 0, 1, 9, 5, 0, 0, 0],
-        [0, 9, 8, 0, 0, 0, 0, 6, 0],
-        [8, 0, 0, 0, 6, 0, 0, 0, 3],
-        [4, 0, 0, 8, 0, 3, 0, 0, 1],
-        [7, 0, 0, 0, 2, 0, 0, 0, 6],
-        [0, 6, 0, 0, 0, 0, 2, 8, 0],
-        [0, 0, 0, 4, 1, 9, 0, 0, 5],
-        [0, 0, 0, 0, 8, 0, 0, 7, 9],
-    ]
-    for row in _solve(givens):
-        print(row)
-
-
-if __name__ == '__main__':
-    _test()
+    return [[str(solved_grid[Point(row, col)]) for col in range(9)] for row in range(9)]
