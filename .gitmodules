@@ -1,0 +1,3 @@
+[submodule "pzprjs"]
+	path = pzprjs
+	url = https://github.com/robx/pzprjs.git
