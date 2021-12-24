@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="Nikoli Puzzle Solver" content="Solver for Nikoli puzzles" />
+    <title>Nikoli Puzzle Solver</title>
+    <style>
+        select, button {
+            display: block;
+            font-size: 48px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        #type {
+            width: 300px;
+        }
+
+        #canvas {
+            height: 700px;
+        }
+
+        #load {
+            position: fixed;
+            left: 10px;
+            bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main">
+        <select id="type">
+            <option value="sudoku">Sudoku</option>
+            <option value="nurikabe">Nurikabe</option>
+        </select>
+        <div id="canvas"></div>
+        <button id="solve">Solve</button>
+        <button id="load">Load</button>
+    </div>
+    <script src='http://localhost:8000/js/pzpr.js'></script>
+    <script src='./app.js'></script>
+</body>
+
+</html>

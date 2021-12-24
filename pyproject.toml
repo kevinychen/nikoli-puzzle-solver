@@ -5,7 +5,9 @@ description = ""
 authors = ["Kevin Chen"]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
+Flask = "^2.0.2"
+grilops = "^0.9.1"
 
 [tool.poetry.dev-dependencies]
 
