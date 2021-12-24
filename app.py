@@ -1,12 +1,7 @@
 from flask import Flask, request, Response
-from re import match
-from solvers import nurikabe, sudoku
+import solvers
 
 app = Flask(__name__)
-SOLVERS = {
-    'nurikabe': nurikabe.solve,
-    'sudoku': sudoku.solve,
-}
 
 
 @app.route("/")
@@ -35,9 +30,8 @@ def pzprjs(path):
 
 @app.route("/api/solve", methods=['POST'])
 def solve():
-    puzzle = request.json['puzzle']
-    matched = match('pzprv3/([^/]+)/.*', puzzle)
-    puzzle_type = matched.group(1)
-    return {
-        'puzzle': SOLVERS[puzzle_type](puzzle)
-    }
+    pzprv3 = request.json['pzprv3']
+    result = solvers.solve(pzprv3)
+    if result is None:
+        return {'pzprv3': pzprv3}
+    return {'pzprv3': result}
