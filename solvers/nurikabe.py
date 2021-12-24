@@ -3,7 +3,8 @@ from grilops.geometry import Point
 from grilops.regions import RegionConstrainer, R
 from re import match
 from solvers.abstract_solver import AbstractSolver
-from z3 import Implies, Int, Or
+from solvers.common_rules import binary_symbol_set, continuous_region, no2x2
+from z3 import Implies
 
 
 class NurikabeSolver(AbstractSolver):
@@ -26,27 +27,23 @@ class NurikabeSolver(AbstractSolver):
         return grilops.get_rectangle_lattice(self.height, self.width)
 
     def symbol_set(self):
-        return grilops.SymbolSet([
-            ("BLACK", "#"),
-            ("WHITE", "+"),
-        ])
+        return binary_symbol_set()
 
     def configure(self, sg):
         symbol_set = self.symbol_set()
-        rc = grilops.regions.RegionConstrainer(sg.lattice, solver=sg.solver)
+        rc = RegionConstrainer(sg.lattice, solver=sg.solver)
 
-        sea_root = Int('sea')
         for row, col in sg.lattice.points:
             p = Point(row, col)
             num = self.grid[row][col]
             if num.isnumeric():
+                # All numbers correspond to a different region with the given size, rooted at the number
                 sg.solver.add(sg.cell_is(p, symbol_set.WHITE))
                 sg.solver.add(rc.region_id_grid[p] == sg.lattice.point_to_index(p))
                 sg.solver.add(rc.region_size_grid[p] == int(num))
                 sg.solver.add(rc.parent_grid[p] == R)
             else:
-                sg.solver.add(Implies(sg.cell_is(p, symbol_set.BLACK), rc.region_id_grid[p] == sea_root))
-                sg.solver.add(Implies(sg.cell_is(p, symbol_set.WHITE), rc.region_id_grid[p] != sea_root))
+                # No islands without a number
                 sg.solver.add(Implies(sg.cell_is(p, symbol_set.WHITE), rc.parent_grid[p] != R))
 
         # No two regions with the same color may be adjacent
@@ -56,12 +53,8 @@ class NurikabeSolver(AbstractSolver):
                         sg.lattice.edge_sharing_neighbors(rc.region_id_grid, p)):
                 sg.solver.add(
                     Implies(
-                        sg.grid[p] == color.symbol,
+                        sg.cell_is(p, color.symbol),
                         rc.region_id_grid[p] == region_id.symbol))
 
-        # No 2x2 square of black cells
-        for startRow in range(self.height - 1):
-            for startCol in range(self.width - 1):
-                sg.solver.add(Or(*[sg.grid[Point(row, col)] == symbol_set.WHITE
-                                   for row in range(startRow, startRow + 2)
-                                   for col in range(startCol, startCol + 2)]))
+        continuous_region(sg, rc, symbol_set.BLACK)
+        no2x2(sg, symbol_set.BLACK)
