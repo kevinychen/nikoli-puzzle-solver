@@ -26,6 +26,13 @@ class TestSolvers(unittest.TestCase):
                   + ' + 2 # 4 + /')
         self.assertEqual(expect, solve(pzprv3))
 
+    def test_skyscrapers(self):
+        pzprv3 = ('pzprv3/skyscrapers/5/5/. 4 2 1 2 3 . /3 . . . . . 3 /2 . . . . . 4 /3 . . . . . 1 /2 . . . . . 2 /1 '
+                  + '. . . . . 2 /. 1 4 3 2 2 . /')
+        expect = ('pzprv3/skyscrapers/5/5/. 4 2 1 2 3 . /3 2 3 5 4 1 3 /2 1 5 4 3 2 4 /3 3 4 2 1 5 1 /2 4 2 1 5 3 2 /1 '
+                  + '5 1 3 2 4 2 /. 1 4 3 2 2 . /')
+        self.assertEqual(expect, solve(pzprv3))
+
     def test_sudoku(self):
         pzprv3 = ('pzprv3/sudoku/9/5 3 . . 7 . . . . /6 . . 1 9 5 . . . /. 9 8 . . . . 6 . /. . . . 6 . . . 3 /4 . . 8 '
                   + '. 3 . . 1 /7 . . . 2 . . . 6 /. 6 . . . . 2 8 . /. . . 4 1 9 . . 5 /. . . . 8 . . 7 9 /. . . . . .'

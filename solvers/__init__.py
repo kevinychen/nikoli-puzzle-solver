@@ -1,11 +1,13 @@
 from re import match
 from solvers.lits import LITSSolver
 from solvers.nurikabe import NurikabeSolver
+from solvers.skyscrapers import SkyscrapersSolver
 from solvers.sudoku import SudokuSolver
 
 SOLVERS = {
     'lits': LITSSolver,
     'nurikabe': NurikabeSolver,
+    'skyscrapers': SkyscrapersSolver,
     'sudoku': SudokuSolver,
 }
 

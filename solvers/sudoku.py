@@ -2,6 +2,7 @@ import grilops
 from grilops.geometry import Point
 from re import match
 from solvers.abstract_solver import AbstractSolver
+from solvers.common_rules import distinct_rows_and_columns
 from z3 import Distinct
 
 
@@ -30,12 +31,11 @@ class SudokuSolver(AbstractSolver):
             if num.isnumeric():
                 sg.solver.add(sg.cell_is(Point(row, col), int(num)))
 
-        for row in range(9):
-            sg.solver.add(Distinct(*[sg.grid[Point(row, col)] for col in range(9)]))
-        for col in range(9):
-            sg.solver.add(Distinct(*[sg.grid[Point(row, col)] for row in range(9)]))
+        # Numbers in each 3x3 box are distinct
         for subgrid in range(9):
             top = (subgrid // 3) * 3
             left = (subgrid % 3) * 3
             nums = [[sg.grid[Point(row, col)] for row in range(top, top + 3) for col in range(left, left + 3)]]
             sg.solver.add(Distinct(*nums))
+
+        distinct_rows_and_columns(sg)

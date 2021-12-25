@@ -6,7 +6,7 @@ class AbstractSolver(ABC):
 
     @abstractmethod
     def __init__(self, _pzprv3: str):
-        pass
+        raise NotImplementedError()
 
     def solve(self):
         sg = SymbolGrid(self.lattice(), self.symbol_set())
@@ -17,16 +17,16 @@ class AbstractSolver(ABC):
 
     @abstractmethod
     def to_pzprv3(self, solved_grid):
-        pass
+        raise NotImplementedError()
 
     @abstractmethod
     def lattice(self) -> Lattice:
-        pass
+        raise NotImplementedError()
 
     @abstractmethod
     def symbol_set(self) -> SymbolSet:
-        pass
+        raise NotImplementedError()
 
     @abstractmethod
     def configure(self, sg: SymbolGrid):
-        pass
+        raise NotImplementedError()
