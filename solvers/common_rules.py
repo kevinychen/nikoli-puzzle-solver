@@ -1,7 +1,7 @@
 from collections import defaultdict
 from grilops import Symbol, SymbolGrid, SymbolSet
 from grilops.geometry import Point
-from grilops.regions import RegionConstrainer, R
+from grilops.regions import RegionConstrainer
 from uuid import uuid4
 from z3 import And, Distinct, Implies, Int, Not
 
@@ -34,3 +34,11 @@ def no2x2(sg: SymbolGrid, symbol: Symbol):
         box = [p, Point(p.y + 1, p.x), Point(p.y, p.x + 1), Point(p.y + 1, p.x + 1)]
         if all([p in sg.grid for p in box]):
             sg.solver.add(Not(And(*[sg.grid[p] == symbol for p in box])))
+
+
+def parse_table(grid_str):
+    return list(map(lambda row: row.split(' ')[:-1], grid_str.split('/')))
+
+
+def table(grid):
+    return '/'.join(map(lambda row: ' '.join(row) + ' ', grid))

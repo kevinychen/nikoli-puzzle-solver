@@ -1,10 +1,8 @@
 import grilops
-from grilops.geometry import Point
-from grilops.regions import RegionConstrainer, R
 from grilops.shapes import Shape, ShapeConstrainer, Vector
 from re import match
 from solvers.abstract_solver import AbstractSolver
-from solvers.common_rules import binary_symbol_set, continuous_region, no2x2
+from solvers.common_rules import *
 from z3 import And, Implies, Int, Or
 
 
@@ -15,18 +13,13 @@ class LITSSolver(AbstractSolver):
         self.height = int(matched.group(1))
         self.width = int(matched.group(2))
         self.num_regions = int(matched.group(3))
-        self.grid = list(map(lambda row: row.split(' ')[:-1], matched.group(4).split('/')[:self.height]))
+        self.grid = parse_table(matched.group(4))[:self.height]
 
     def to_pzprv3(self, solved_grid):
         symbol_set = self.symbol_set()
         result = [[symbol_set.symbols[solved_grid[Point(row, col)]].label
                    for col in range(self.width)] for row in range(self.height)]
-        return 'pzprv3/lits/{}/{}/{}/{}/{}/'.format(
-            self.height,
-            self.width,
-            self.num_regions,
-            '/'.join(map(lambda row: ' '.join(row) + ' ', self.grid)),
-            '/'.join(map(lambda row: ' '.join(row) + ' ', result)))
+        return f'pzprv3/lits/{self.height}/{self.width}/{self.num_regions}/{table(self.grid)}/{table(result)}/'
 
     def lattice(self):
         return grilops.get_rectangle_lattice(self.height, self.width)

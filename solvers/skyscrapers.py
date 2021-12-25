@@ -1,10 +1,8 @@
-from collections import defaultdict
 import grilops
-from grilops.geometry import Point
 from grilops.shapes import Vector
 from re import match
 from solvers.abstract_solver import AbstractSolver
-from solvers.common_rules import distinct_rows_and_columns
+from solvers.common_rules import *
 from uuid import uuid4
 from z3 import If, Int
 
@@ -14,15 +12,12 @@ class SkyscrapersSolver(AbstractSolver):
     def __init__(self, pzprv3):
         matched = match('pzprv3/skyscrapers/(\\d+)/(\\d+)/(.*)/', pzprv3)
         self.size = int(matched.group(1))
-        self.grid = list(map(lambda row: row.split(' ')[:-1], matched.group(3).split('/')))
+        self.grid = parse_table(matched.group(3))
 
     def to_pzprv3(self, solved_grid):
         result = [[str(solved_grid[Point(row - 1, col - 1)]) if 1 <= row <= self.size and 1 <= col <= self.size
                    else self.grid[row][col] for col in range(self.size + 2)] for row in range(self.size + 2)]
-        return 'pzprv3/skyscrapers/{}/{}/{}/'.format(
-            self.size,
-            self.size,
-            '/'.join(map(lambda row: ' '.join(row) + ' ', result)))
+        return f'pzprv3/skyscrapers/{self.size}/{self.size}/{table(result)}/'
 
     def lattice(self):
         return grilops.get_square_lattice(self.size)

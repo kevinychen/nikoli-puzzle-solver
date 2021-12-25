@@ -1,4 +1,5 @@
 from re import match
+from solvers.fillomino import FillominoSolver
 from solvers.lits import LITSSolver
 from solvers.masyu import MasyuSolver
 from solvers.nurikabe import NurikabeSolver
@@ -8,6 +9,7 @@ from solvers.starbattle import StarBattleSolver
 from solvers.sudoku import SudokuSolver
 
 SOLVERS = {
+    'fillomino': FillominoSolver,
     'lits': LITSSolver,
     'mashu': MasyuSolver,
     'nurikabe': NurikabeSolver,

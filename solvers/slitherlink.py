@@ -1,8 +1,7 @@
-from grilops.geometry import Point, RectangularLattice
-from grilops.regions import RegionConstrainer, R
+from grilops.geometry import RectangularLattice
 from re import match
 from solvers.abstract_solver import AbstractSolver
-from solvers.common_rules import binary_symbol_set, continuous_region
+from solvers.common_rules import *
 from z3 import PbEq
 
 
@@ -12,21 +11,17 @@ class SlitherlinkSolver(AbstractSolver):
         matched = match('pzprv3\\.1/slither/(\\d+)/(\\d+)/(.*)/', pzprv3)
         self.height = int(matched.group(1))
         self.width = int(matched.group(2))
-        self.grid = list(map(lambda row: row.split(' ')[:-1], matched.group(3).split('/')[:self.height]))
+        self.grid = parse_table(matched.group(3))[:self.height]
 
     def to_pzprv3(self, solved_grid):
         zeroes = [['0' for _col in range(self.width)] for _row in range(self.height)]
         verticals = [['0' if solved_grid[Point(row, col - 1)] == solved_grid[Point(row, col)] else '1'
                       for col in range(self.width + 1)] for row in range(self.height)]
         horizontals = [['0' if solved_grid[Point(row - 1, col)] == solved_grid[Point(row, col)] else '1'
-                      for col in range(self.width)] for row in range(self.height + 1)]
-        return 'pzprv3.1/slither/{}/{}/{}/{}/{}/{}/'.format(
-            self.height,
-            self.width,
-            '/'.join(map(lambda row: ' '.join(row) + ' ', self.grid)),
-            '/'.join(map(lambda row: ' '.join(row) + ' ', zeroes)),
-            '/'.join(map(lambda row: ' '.join(row) + ' ', verticals)),
-            '/'.join(map(lambda row: ' '.join(row) + ' ', horizontals)))
+                        for col in range(self.width)] for row in range(self.height + 1)]
+        return (
+            f'pzprv3.1/slither/'
+            f'{self.height}/{self.width}/{table(self.grid)}/{table(zeroes)}/{table(verticals)}/{table(horizontals)}/')
 
     def lattice(self):
         return RectangularLattice(

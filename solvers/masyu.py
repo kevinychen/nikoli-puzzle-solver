@@ -1,8 +1,8 @@
 import grilops
-from grilops.geometry import Point
 from grilops.loops import LoopConstrainer, LoopSymbolSet
 from re import match
 from solvers.abstract_solver import AbstractSolver
+from solvers.common_rules import *
 from z3 import And, Implies, Or
 
 WHITE = '1'
@@ -15,7 +15,7 @@ class MasyuSolver(AbstractSolver):
         matched = match('pzprv3/mashu/(\\d+)/(\\d+)/(.*)/', pzprv3)
         self.height = int(matched.group(1))
         self.width = int(matched.group(2))
-        self.grid = list(map(lambda row: row.split(' ')[:-1], matched.group(3).split('/')[:self.height]))
+        self.grid = parse_table(matched.group(3))[:self.height]
 
     def to_pzprv3(self, solved_grid):
         symbol_set = self.symbol_set()
@@ -23,12 +23,7 @@ class MasyuSolver(AbstractSolver):
                         for col in range(self.width - 1)] for row in range(self.height)]
         verticals = [['1' if 'S' in symbol_set.symbols[solved_grid[Point(row, col)]].name else '0'
                       for col in range(self.width)] for row in range(self.height - 1)]
-        return 'pzprv3/mashu/{}/{}/{}/{}/{}/'.format(
-            self.height,
-            self.width,
-            '/'.join(map(lambda row: ' '.join(row) + ' ', self.grid)),
-            '/'.join(map(lambda row: ' '.join(row) + ' ', horizontals)),
-            '/'.join(map(lambda row: ' '.join(row) + ' ', verticals)))
+        return f'pzprv3/mashu/{self.height}/{self.width}/{table(self.grid)}/{table(horizontals)}/{table(verticals)}/'
 
     def lattice(self):
         return grilops.get_rectangle_lattice(self.height, self.width)
