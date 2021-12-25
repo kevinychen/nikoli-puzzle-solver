@@ -1,5 +1,6 @@
 from re import match
 from solvers.lits import LITSSolver
+from solvers.masyu import MasyuSolver
 from solvers.nurikabe import NurikabeSolver
 from solvers.skyscrapers import SkyscrapersSolver
 from solvers.slitherlink import SlitherlinkSolver
@@ -8,6 +9,7 @@ from solvers.sudoku import SudokuSolver
 
 SOLVERS = {
     'lits': LITSSolver,
+    'mashu': MasyuSolver,
     'nurikabe': NurikabeSolver,
     'skyscrapers': SkyscrapersSolver,
     'slither': SlitherlinkSolver,

@@ -4,10 +4,6 @@ from grilops import Lattice, SymbolGrid, SymbolSet
 
 class AbstractSolver(ABC):
 
-    @abstractmethod
-    def __init__(self, _pzprv3: str):
-        raise NotImplementedError()
-
     def solve(self):
         sg = SymbolGrid(self.lattice(), self.symbol_set())
         self.configure(sg)
