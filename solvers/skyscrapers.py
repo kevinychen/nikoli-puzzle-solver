@@ -1,5 +1,4 @@
 import grilops
-from grilops.shapes import Vector
 from re import match
 from solvers.abstract_solver import AbstractSolver
 from solvers.common_rules import *
@@ -26,14 +25,7 @@ class SkyscrapersSolver(AbstractSolver):
         return grilops.make_number_range_symbol_set(1, self.size)
 
     def configure(self, sg):
-        lines = []
-        for i in range(self.size):
-            lines.append((Point(i, -1), Vector(0, 1)))
-            lines.append((Point(i, self.size), Vector(0, -1)))
-            lines.append((Point(-1, i), Vector(1, 0)))
-            lines.append((Point(self.size, i), Vector(-1, 0)))
-
-        for p, v in lines:
+        for p, v in border_sight_lines(self.size):
             num = self.grid[p.y + 1][p.x + 1]
             if num.isnumeric():
                 max_heights = defaultdict(lambda: Int(str(uuid4())))

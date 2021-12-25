@@ -4,6 +4,13 @@ import unittest
 
 class TestSolvers(unittest.TestCase):
 
+    def test_easyasabc(self):
+        pzprv3 = ('pzprv3/easyasabc/5/5/3/. . 2 . 1 3 . /1 . . . . . 3 /1 . . . . . 3 /. . . . . . . /. . . . . . 3 /3 '
+                  + '. . . . . 1 /. 2 . 1 . 1 . /')
+        expect = ('pzprv3/easyasabc/5/5/3/. . 2 . 1 3 . /1 1 2 3 - - 3 /1 - 1 2 - 3 3 /. 3 - - 1 2 . /. 2 - 1 3 - 3 /3 '
+                  + '- 3 - 2 1 1 /. 2 . 1 . 1 . /')
+        self.assertEqual(expect, solve(pzprv3))
+
     def test_fillomino(self):
         pzprv3 = ('pzprv3/fillomino/9/9/. . . 3 . . . . 5 /. . 8 3 10 . . 5 . /. 3 . . . 4 4 . . /1 3 . 3 . . 2 . . /. '
                   + '2 . . 3 . . 2 . /. . 2 . . 3 . 1 3 /. . 4 4 . . . 3 . /. 4 . . 4 3 3 . . /6 . . . . 1 . . . /. . .'

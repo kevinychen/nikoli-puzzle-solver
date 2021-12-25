@@ -1,13 +1,24 @@
 from collections import defaultdict
 from grilops import Symbol, SymbolGrid, SymbolSet
-from grilops.geometry import Point
+from grilops.geometry import Point, Vector
 from grilops.regions import RegionConstrainer
+from typing import List, Tuple
 from uuid import uuid4
 from z3 import And, Distinct, Implies, Int, Not
 
 
-def binary_symbol_set(zero, one):
+def binary_symbol_set(zero: str, one: str):
     return SymbolSet([(zero, "+"), (one, "#")])
+
+
+def border_sight_lines(size: int) -> List[Tuple[Point, Vector]]:
+    lines = []
+    for i in range(size):
+        lines.append((Point(i, -1), Vector(0, 1)))
+        lines.append((Point(i, size), Vector(0, -1)))
+        lines.append((Point(-1, i), Vector(1, 0)))
+        lines.append((Point(size, i), Vector(-1, 0)))
+    return lines
 
 
 def continuous_region(sg: SymbolGrid, rc: RegionConstrainer, symbol: Symbol):

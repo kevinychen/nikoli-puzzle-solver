@@ -1,5 +1,5 @@
 import grilops
-from grilops.shapes import Shape, ShapeConstrainer, Vector
+from grilops.shapes import Shape, ShapeConstrainer
 from re import match
 from solvers.abstract_solver import AbstractSolver
 from solvers.common_rules import *
