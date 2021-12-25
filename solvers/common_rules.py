@@ -7,7 +7,7 @@ from z3 import And, Distinct, Implies, Int, Not
 
 
 def binary_symbol_set():
-    return SymbolSet([("BLACK", "#"), ("WHITE", "+")])
+    return SymbolSet([("WHITE", "+"), ("BLACK", "#")])
 
 
 def continuous_region(sg: SymbolGrid, rc: RegionConstrainer, symbol: Symbol):
