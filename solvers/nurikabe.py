@@ -27,11 +27,11 @@ class NurikabeSolver(AbstractSolver):
         return grilops.get_rectangle_lattice(self.height, self.width)
 
     def symbol_set(self):
-        return binary_symbol_set()
+        return binary_symbol_set("WHITE", "BLACK")
 
     def configure(self, sg):
         symbol_set = self.symbol_set()
-        rc = RegionConstrainer(sg.lattice, solver=sg.solver)
+        rc = RegionConstrainer(sg.lattice, sg.solver)
 
         for row, col in sg.lattice.points:
             p = Point(row, col)

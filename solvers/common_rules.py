@@ -6,8 +6,8 @@ from uuid import uuid4
 from z3 import And, Distinct, Implies, Int, Not
 
 
-def binary_symbol_set():
-    return SymbolSet([("WHITE", "+"), ("BLACK", "#")])
+def binary_symbol_set(zero, one):
+    return SymbolSet([(zero, "+"), (one, "#")])
 
 
 def continuous_region(sg: SymbolGrid, rc: RegionConstrainer, symbol: Symbol):

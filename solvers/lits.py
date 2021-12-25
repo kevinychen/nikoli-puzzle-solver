@@ -32,7 +32,7 @@ class LITSSolver(AbstractSolver):
         return grilops.get_rectangle_lattice(self.height, self.width)
 
     def symbol_set(self):
-        return binary_symbol_set()
+        return binary_symbol_set("EMPTY", "PIECE")
 
     def configure(self, sg):
         symbol_set = self.symbol_set()
@@ -42,21 +42,21 @@ class LITSSolver(AbstractSolver):
             Shape([Vector(0, 0), Vector(0, 1), Vector(0, 2), Vector(1, 1)]),
             Shape([Vector(0, 0), Vector(1, 0), Vector(1, 1), Vector(2, 1)]),
         ]
-        rc = RegionConstrainer(sg.lattice, solver=sg.solver)
+        rc = RegionConstrainer(sg.lattice, sg.solver)
         sc = ShapeConstrainer(
-            sg.lattice, shapes, solver=sg.solver, allow_rotations=True, allow_reflections=True, allow_copies=True)
+            sg.lattice, shapes, sg.solver, allow_rotations=True, allow_reflections=True, allow_copies=True)
 
-        # Each region has one tetromino
+        # Each region has one piece
         for i in range(self.num_regions):
             region = [Point(row, col) for row, col in sg.lattice.points if self.grid[row][col] == str(i)]
             region_root = Int(f'region{i}')
             for p in region:
-                sg.solver.add(Implies(sg.cell_is(p, symbol_set.BLACK), sc.shape_instance_grid[p] == region_root))
-                sg.solver.add(Implies(sg.cell_is(p, symbol_set.WHITE), sc.shape_type_grid[p] == -1))
+                sg.solver.add(Implies(sg.cell_is(p, symbol_set.PIECE), sc.shape_instance_grid[p] == region_root))
+                sg.solver.add(Implies(sg.cell_is(p, symbol_set.EMPTY), sc.shape_type_grid[p] == -1))
             sg.solver.add(Or([region_root == sg.lattice.point_to_index(p) for p in region]))
-            sg.solver.add(Or([sg.cell_is(p, symbol_set.BLACK) for p in region]))
+            sg.solver.add(Or([sg.cell_is(p, symbol_set.PIECE) for p in region]))
 
-        # No two black regions with the same shape may be adjacent
+        # No two pieces with the same shape may be adjacent
         for p in sg.lattice.points:
             for color, shape_instance, shape_type in \
                     zip(sg.lattice.edge_sharing_neighbors(sg.grid, p),
@@ -64,8 +64,8 @@ class LITSSolver(AbstractSolver):
                         sg.lattice.edge_sharing_neighbors(sc.shape_type_grid, p)):
                 sg.solver.add(
                     Implies(
-                        And(sg.cell_is(p, symbol_set.BLACK), sc.shape_type_grid[p] == shape_type.symbol),
+                        And(sg.cell_is(p, symbol_set.PIECE), sc.shape_type_grid[p] == shape_type.symbol),
                         sc.shape_instance_grid[p] == shape_instance.symbol))
 
-        continuous_region(sg, rc, symbol_set.BLACK)
-        no2x2(sg, symbol_set.BLACK)
+        continuous_region(sg, rc, symbol_set.PIECE)
+        no2x2(sg, symbol_set.PIECE)
