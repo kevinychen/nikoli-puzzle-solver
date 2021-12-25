@@ -3,6 +3,18 @@ window.onload = function () {
     const iframe = document.getElementById('iframe');
     const solveButton = document.getElementById('solve');
 
+    fetch('/api/list').then(response => {
+        response.json().then(body => {
+            for (const solver of body.puzzles) {
+                const option = document.createElement('option');
+                option.value = solver.type;
+                option.text = solver.name;
+                select.add(option);
+            }
+            iframe.src = '/p.html?' + select.value;
+        })
+    })
+
     select.addEventListener('change', function(e) {
         iframe.src = '/p.html?' + e.target.value;
     });
@@ -16,7 +28,7 @@ window.onload = function () {
             headers: { 'Content-type': 'application/json' },
         }).then(response => {
             response.json().then(body => {
-                iframe.contentWindow.ui.puzzle.open(body['pzprv3']);
+                iframe.contentWindow.ui.puzzle.open(body.pzprv3);
                 solveButton.textContent = 'Solve';
                 solveButton.disabled = false;
             })

@@ -28,6 +28,11 @@ def pzprjs(path):
         return Response(file.read(), mimetype=mimetype)
 
 
+@app.route("/api/list", methods=['GET'])
+def puzzle_list():
+    return {'puzzles': solvers.puzzle_list()}
+
+
 @app.route("/api/solve", methods=['POST'])
 def solve():
     pzprv3 = request.json['pzprv3']

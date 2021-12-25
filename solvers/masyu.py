@@ -70,4 +70,4 @@ class MasyuSolver(AbstractSolver):
                         sg.cell_is(Point(p.y + 1, p.x), symbol_set.NS)))
 
         # Optimization: loop starts at one of the circles
-        sg.solver.add(lc.loop_order_grid[min(p for p in sg.lattice.points if self.grid[p.y][p.x] != '.')] == 0)
+        sg.solver.add(lc.loop_order_grid[next(p for p in sg.lattice.points if self.grid[p.y][p.x] != '.')] == 0)
