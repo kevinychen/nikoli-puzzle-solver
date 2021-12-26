@@ -28,7 +28,11 @@ window.onload = function () {
             headers: { 'Content-type': 'application/json' },
         }).then(response => {
             response.json().then(body => {
-                iframe.contentWindow.ui.puzzle.open(body.pzprv3);
+                if (body.pzprv3 === null) {
+                    alert('No solution found (or timeout exceeded).');
+                } else {
+                    iframe.contentWindow.ui.puzzle.open(body.pzprv3);
+                }
                 solveButton.textContent = 'Solve';
                 solveButton.disabled = false;
             })

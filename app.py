@@ -37,6 +37,4 @@ def puzzle_list():
 def solve():
     pzprv3 = request.json['pzprv3']
     result = solvers.solve(pzprv3)
-    if result is None:
-        return {'pzprv3': pzprv3}
     return {'pzprv3': result}
