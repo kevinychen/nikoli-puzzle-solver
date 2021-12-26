@@ -11,6 +11,7 @@ from solvers.skyscrapers import SkyscrapersSolver
 from solvers.slitherlink import SlitherlinkSolver
 from solvers.starbattle import StarBattleSolver
 from solvers.sudoku import SudokuSolver
+from solvers.yinyang import YinYangSolver
 
 PUZZLES = [
     ('easyasabc', "Easy as ABC", EasyAsAbcSolver),
@@ -24,6 +25,7 @@ PUZZLES = [
     ('slither', "Slitherlink", SlitherlinkSolver),
     ('starbattle', "Star Battle", StarBattleSolver),
     ('sudoku', "Sudoku", SudokuSolver),
+    ('yinyang', "Yin Yang", YinYangSolver),
 ]
 
 DEMOS = [
@@ -136,6 +138,14 @@ DEMOS = [
         '/7 . . . 2 . . . 6 /. 6 . . . . 2 8 . /. . . 4 1 9 . . 5 /. . . . 8 . . 7 9 /. . 4 6 . 8 9 1 2 /. 7 2 . . . 3 '
         '4 8 /1 . . 3 4 2 5 . 7 /8 5 9 7 . 1 4 2 . /. 2 6 . 5 . 7 9 . /. 1 3 9 . 4 8 5 . /9 . 1 5 3 7 . . 4 /2 8 7 . . '
         '. 6 3 . /3 4 5 2 . 6 1 . . /',
+    ),
+    (
+        'pzprv3/yinyang/7/7/. . . . . . . /. . 1 . 2 . . /. . . 2 . 1 1 /. 1 . . 1 2 . /. 2 1 . 1 . . /. . . 2 . . 2 /1'
+        ' 2 . . . . . /. . . . . . . /. . . . . . . /. . . . . . . /. . . . . . . /. . . . . . . /. . . . . . . /. . . '
+        '. . . . /',
+        'pzprv3/yinyang/7/7/. . . . . . . /. . 1 . 2 . . /. . . 2 . 1 1 /. 1 . . 1 2 . /. 2 1 . 1 . . /. . . 2 . . 2 /1'
+        ' 2 . . . . . /1 1 1 1 1 1 1 /1 2 . 2 . 2 1 /1 2 2 . 1 . . /1 . 1 2 . . 1 /1 . . 2 . 2 2 /1 2 1 . 1 1 . /. . 2 '
+        '2 2 2 2 /',
     ),
 ]
 

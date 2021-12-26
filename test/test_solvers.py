@@ -49,6 +49,10 @@ class TestSolvers(unittest.TestCase):
         pzprv3, expect = get_demo('sudoku')
         self.assertEqual(expect, solve(pzprv3))
 
+    def test_yinyang(self):
+        pzprv3, expect = get_demo('yinyang')
+        self.assertEqual(expect, solve(pzprv3))
+
 
 if __name__ == '__main__':
     unittest.main()
