@@ -7,6 +7,7 @@ from solvers.kakuro import KakuroSolver
 from solvers.lightup import LightUpSolver
 from solvers.lits import LITSSolver
 from solvers.masyu import MasyuSolver
+from solvers.nonogram import NonogramSolver
 from solvers.nurikabe import NurikabeSolver
 from solvers.skyscrapers import SkyscrapersSolver
 from solvers.slitherlink import SlitherlinkSolver
@@ -22,6 +23,7 @@ PUZZLES = [
     ('lightup', "Light Up", LightUpSolver),
     ('lits', "LITS", LITSSolver),
     ('mashu', "Masyu", MasyuSolver),
+    ('nonogram', "Nonogram", NonogramSolver),
     ('nurikabe', "Nurikabe", NurikabeSolver),
     ('skyscrapers', "Skyscrapers", SkyscrapersSolver),
     ('slither', "Slitherlink", SlitherlinkSolver),
@@ -104,6 +106,18 @@ DEMOS = [
         '1 0 0 0 0 1 /0 0 1 1 0 1 1 0 1 /0 0 0 0 1 1 1 1 0 /1 0 0 0 0 1 1 1 0 /0 0 1 1 0 1 1 1 1 /0 1 0 0 0 1 1 0 0 1 /'
         '1 0 0 1 0 0 0 0 1 1 /0 0 1 1 1 0 0 1 1 1 /0 0 1 1 1 1 0 0 1 1 /1 0 0 0 0 1 0 1 0 1 /1 1 0 0 1 1 0 1 1 0 /1 1 1'
         ' 0 0 0 0 0 0 1 /1 1 1 0 1 0 0 0 1 1 /0 0 1 0 1 1 0 0 0 1 /',
+    ),
+    (
+        'pzprv3/nonogram/11/8/. . . . . . . . . . . . /. . . . . . . . . . . . /. . . . . . . . . . . . /. . . . . . . '
+        '. . . . . /. . . . . . . 2 2 . . . /. . . . . 9 9 2 2 4 4 . /. . . . . . . . . . . . /. . . 4 . . . . . . . . '
+        '/. . . 6 . . . . . . . . /. . 2 2 . . . . . . . . /. . 2 2 . . . . . . . . /. . . 6 . . . . . . . . /. . . 4 .'
+        ' . . . . . . . /. . . 2 . . . . . . . . /. . . 2 . . . . . . . . /. . . 2 . . . . . . . . /. . . . . . . . . .'
+        ' . . /',
+        'pzprv3/nonogram/11/8/. . . . . . . . . . . . /. . . . . . . . . . . . /. . . . . . . . . . . . /. . . . . . . '
+        '. . . . . /. . . . . . . 2 2 . . . /. . . . . 9 9 2 2 4 4 . /. . . . + + + + + + + + /. . . 4 + # # # # + + + '
+        '/. . . 6 + # # # # # # + /. . 2 2 + # # + + # # + /. . 2 2 + # # + + # # + /. . . 6 + # # # # # # + /. . . 4 +'
+        ' # # # # + + + /. . . 2 + # # + + + + + /. . . 2 + # # + + + + + /. . . 2 + # # + + + + + /. . . . + + + + + +'
+        ' + + /',
     ),
     (
         'pzprv3/nurikabe/9/10/2 . . . . . . . . 2 /. . . . . . 2 . . . /. 2 . . 7 . . . . . /. . . . . . . . . . /. . .'

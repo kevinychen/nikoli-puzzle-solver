@@ -10,7 +10,7 @@ class FillominoSolver(AbstractSolver):
         self.grid = parse_table(matched.group(3))[:self.height]
 
     def to_pzprv3(self, solved_grid):
-        dots = [['.' for _col in range(self.width)] for _row in range(self.height)]
+        dots = [['.' for _ in range(self.width)] for _ in range(self.height)]
         verticals = [['0' if solved_grid[Point(row, col)] == solved_grid[Point(row, col + 1)] else '1'
                       for col in range(self.width - 1)] for row in range(self.height)]
         horizontals = [['0' if solved_grid[Point(row, col)] == solved_grid[Point(row + 1, col)] else '1'

@@ -10,7 +10,7 @@ class SlitherlinkSolver(AbstractSolver):
         self.grid = parse_table(matched.group(3))[:self.height]
 
     def to_pzprv3(self, solved_grid):
-        zeroes = [['0' for _col in range(self.width)] for _row in range(self.height)]
+        zeroes = [['0' for _ in range(self.width)] for _ in range(self.height)]
         verticals = [['0' if solved_grid[Point(row, col - 1)] == solved_grid[Point(row, col)] else '1'
                       for col in range(self.width + 1)] for row in range(self.height)]
         horizontals = [['0' if solved_grid[Point(row - 1, col)] == solved_grid[Point(row, col)] else '1'
@@ -32,6 +32,7 @@ class SlitherlinkSolver(AbstractSolver):
 
         for p in sg.lattice.points:
             if p.x == -1 or p.x == self.width or p.y == -1 or p.y == self.height:
+                # Add dummy OUTSIDE squares around the grid, so we can assert all OUTSIDE squares are connected
                 sg.solver.add(sg.cell_is(p, symbol_set.OUTSIDE))
             else:
                 num = self.grid[p.y][p.x]
