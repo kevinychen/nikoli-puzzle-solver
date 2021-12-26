@@ -24,7 +24,7 @@ class EasyAsAbcSolver(AbstractSolver):
         return grilops.get_square_lattice(self.size)
 
     def symbol_set(self):
-        return SymbolSet(['-'] + [str(i) for i in range(1, self.size + 1)])
+        return SymbolSet(['-'] + [str(i) for i in range(1, self.num_letters + 1)])
 
     def configure(self, sg):
         border_lines = []

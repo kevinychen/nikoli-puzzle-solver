@@ -2,17 +2,23 @@ window.onload = function () {
     const select = document.getElementById('type');
     const iframe = document.getElementById('iframe');
     const solveButton = document.getElementById('solve');
+    const demoButton = document.getElementById('demo');
 
     fetch('/api/list').then(response => {
         response.json().then(body => {
-            for (const solver of body.puzzles) {
+            const puzzles = body.puzzles;
+            for (const solver of puzzles) {
                 const option = document.createElement('option');
                 option.value = solver.type;
                 option.text = solver.name;
                 select.add(option);
             }
             iframe.src = '/p.html?' + select.value;
-        })
+
+            demoButton.addEventListener('click', function () {
+                iframe.contentWindow.ui.puzzle.open(puzzles.find(puzzle => puzzle.type === select.value).demo);
+            });
+        });
     })
 
     select.addEventListener('change', function(e) {

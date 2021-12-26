@@ -6,9 +6,11 @@ This repository uses the brilliant constraint solver library [Grilops](https://g
 
 ## One-time setup
 
+Install [Poetry](https://python-poetry.org/docs/), Python's dependency manager.
+
 In the root directory, run:
 
-    poetry install  # note: building the z3 library may take a long time (up to 20 min)
+    poetry install  # note: building the z3 library may take a long time, up to 20 min, on some machines
     git submodule update --init
 
 In the `pzprjs` directory, run:
@@ -20,6 +22,7 @@ In the `pzprjs` directory, run:
 
 In the root directory, run:
 
+    poetry shell
     flask run
 
 Then go to http://localhost:5000.
