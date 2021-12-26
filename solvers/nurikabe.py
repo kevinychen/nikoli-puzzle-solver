@@ -1,9 +1,4 @@
-import grilops
-from grilops.regions import R
-from re import match
-from solvers.abstract_solver import AbstractSolver
-from solvers.common_rules import *
-from z3 import Implies
+from solvers.utils import *
 
 
 class NurikabeSolver(AbstractSolver):
@@ -25,7 +20,7 @@ class NurikabeSolver(AbstractSolver):
         return grilops.get_rectangle_lattice(self.height, self.width)
 
     def symbol_set(self):
-        return binary_symbol_set("WHITE", "BLACK")
+        return SymbolSet([("WHITE", "+"), ("BLACK", "#")])
 
     def configure(self, sg):
         symbol_set = self.symbol_set()

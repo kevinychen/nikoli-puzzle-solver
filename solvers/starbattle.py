@@ -1,8 +1,4 @@
-import grilops
-from re import match
-from solvers.abstract_solver import AbstractSolver
-from solvers.common_rules import *
-from z3 import Or, Sum
+from solvers.utils import *
 
 
 class StarBattleSolver(AbstractSolver):
@@ -20,14 +16,14 @@ class StarBattleSolver(AbstractSolver):
         result = [[symbol_set.symbols[solved_grid[Point(row, col)]].label
                    for col in range(self.width)] for row in range(self.height)]
         return (
-            f'pzprv3/starbattle/'
+            'pzprv3/starbattle/'
             f'{self.height}/{self.width}/{self.num_stars}/{self.num_regions}/{table(self.grid)}/{table(result)}/')
 
     def lattice(self):
         return grilops.get_rectangle_lattice(self.height, self.width)
 
     def symbol_set(self):
-        return binary_symbol_set("EMPTY", "STAR")
+        return SymbolSet([("EMPTY", "+"), ("STAR", "#")])
 
     def configure(self, sg):
         symbol_set = self.symbol_set()

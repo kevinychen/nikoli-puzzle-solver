@@ -1,8 +1,4 @@
-import grilops
-from re import match
-from solvers.abstract_solver import AbstractSolver
-from solvers.common_rules import *
-from z3 import Distinct
+from solvers.utils import *
 
 
 class SudokuSolver(AbstractSolver):

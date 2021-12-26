@@ -1,9 +1,4 @@
-import grilops
-from grilops.loops import LoopConstrainer, LoopSymbolSet
-from re import match
-from solvers.abstract_solver import AbstractSolver
-from solvers.common_rules import *
-from z3 import And, Implies, Or
+from solvers.utils import *
 
 WHITE = '1'
 BLACK = '2'

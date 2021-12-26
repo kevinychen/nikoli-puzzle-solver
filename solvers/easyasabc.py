@@ -1,8 +1,4 @@
-import grilops
-from re import match
-from solvers.abstract_solver import AbstractSolver
-from solvers.common_rules import *
-from z3 import Or, PbEq
+from solvers.utils import *
 
 
 class EasyAsAbcSolver(AbstractSolver):

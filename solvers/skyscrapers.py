@@ -1,9 +1,4 @@
-import grilops
-from re import match
-from solvers.abstract_solver import AbstractSolver
-from solvers.common_rules import *
-from uuid import uuid4
-from z3 import If, Int, PbEq
+from solvers.utils import *
 
 
 class SkyscrapersSolver(AbstractSolver):

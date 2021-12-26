@@ -1,8 +1,4 @@
-import grilops
-from re import match
-from solvers.abstract_solver import AbstractSolver
-from solvers.common_rules import *
-from z3 import Implies
+from solvers.utils import *
 
 
 class FillominoSolver(AbstractSolver):
@@ -20,7 +16,7 @@ class FillominoSolver(AbstractSolver):
         horizontals = [['0' if solved_grid[Point(row, col)] == solved_grid[Point(row + 1, col)] else '1'
                         for col in range(self.width)] for row in range(self.height - 1)]
         return (
-            f'pzprv3/fillomino/'
+            'pzprv3/fillomino/'
             f'{self.height}/{self.width}/{table(self.grid)}/{table(dots)}/{table(verticals)}/{table(horizontals)}/')
 
     def lattice(self):

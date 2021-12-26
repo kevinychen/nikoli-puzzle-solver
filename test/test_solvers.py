@@ -1,5 +1,6 @@
-from solvers import get_demo, solve
 import unittest
+
+from solvers import get_demo, solve
 
 
 class TestSolvers(unittest.TestCase):
@@ -10,6 +11,10 @@ class TestSolvers(unittest.TestCase):
 
     def test_fillomino(self):
         pzprv3, expect = get_demo('fillomino')
+        self.assertEqual(expect, solve(pzprv3))
+
+    def test_heyawake(self):
+        pzprv3, expect = get_demo('heyawake')
         self.assertEqual(expect, solve(pzprv3))
 
     def test_kakuro(self):

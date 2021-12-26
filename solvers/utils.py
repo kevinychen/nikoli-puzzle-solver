@@ -1,14 +1,17 @@
 from collections import defaultdict
-from grilops import Symbol, SymbolGrid, SymbolSet
-from grilops.geometry import Point, Vector
-from grilops.regions import RegionConstrainer
+from re import match
 from typing import Callable, List
 from uuid import uuid4
-from z3 import And, Distinct, Implies, Int, Not
 
+import grilops
+from grilops import Symbol, SymbolGrid, SymbolSet
+from grilops.geometry import Point, Vector
+from grilops.loops import LoopConstrainer, LoopSymbolSet
+from grilops.regions import R, RegionConstrainer
+from grilops.shapes import Shape, ShapeConstrainer
+from z3 import And, Distinct, Implies, Int, Not, Or, PbEq, Sum
 
-def binary_symbol_set(zero: str, one: str):
-    return SymbolSet([(zero, "+"), (one, "#")])
+from solvers.abstract_solver import AbstractSolver
 
 
 def continuous_region(sg: SymbolGrid, rc: RegionConstrainer, symbol: Symbol):

@@ -1,9 +1,4 @@
-import grilops
-from grilops.shapes import Shape, ShapeConstrainer
-from re import match
-from solvers.abstract_solver import AbstractSolver
-from solvers.common_rules import *
-from z3 import And, Implies, Int, Or
+from solvers.utils import *
 
 
 class LITSSolver(AbstractSolver):
@@ -25,7 +20,7 @@ class LITSSolver(AbstractSolver):
         return grilops.get_rectangle_lattice(self.height, self.width)
 
     def symbol_set(self):
-        return binary_symbol_set("EMPTY", "PIECE")
+        return SymbolSet([("EMPTY", "+"), ("PIECE", "#")])
 
     def configure(self, sg):
         symbol_set = self.symbol_set()

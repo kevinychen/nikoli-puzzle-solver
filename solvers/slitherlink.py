@@ -1,8 +1,4 @@
-from grilops.geometry import RectangularLattice
-from re import match
-from solvers.abstract_solver import AbstractSolver
-from solvers.common_rules import *
-from z3 import PbEq
+from solvers.utils import *
 
 
 class SlitherlinkSolver(AbstractSolver):
@@ -20,15 +16,15 @@ class SlitherlinkSolver(AbstractSolver):
         horizontals = [['0' if solved_grid[Point(row - 1, col)] == solved_grid[Point(row, col)] else '1'
                         for col in range(self.width)] for row in range(self.height + 1)]
         return (
-            f'pzprv3.1/slither/'
+            'pzprv3.1/slither/'
             f'{self.height}/{self.width}/{table(self.grid)}/{table(zeroes)}/{table(verticals)}/{table(horizontals)}/')
 
     def lattice(self):
-        return RectangularLattice(
+        return grilops.RectangularLattice(
             [Point(row, col) for row in range(-1, self.height + 1) for col in range(-1, self.width + 1)])
 
     def symbol_set(self):
-        return binary_symbol_set("INSIDE", "OUTSIDE")
+        return SymbolSet(["INSIDE", "OUTSIDE"])
 
     def configure(self, sg):
         symbol_set = self.symbol_set()
