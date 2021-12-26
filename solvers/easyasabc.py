@@ -2,8 +2,7 @@ import grilops
 from re import match
 from solvers.abstract_solver import AbstractSolver
 from solvers.common_rules import *
-from uuid import uuid4
-from z3 import If, Int, PbEq
+from z3 import Or, PbEq
 
 
 class EasyAsAbcSolver(AbstractSolver):
@@ -28,16 +27,21 @@ class EasyAsAbcSolver(AbstractSolver):
         return SymbolSet(['-'] + [str(i) for i in range(1, self.size + 1)])
 
     def configure(self, sg):
-        for p, v in border_sight_lines(self.size):
+        border_lines = []
+        for i in range(self.size):
+            border_lines.append((Point(i, -1), Vector(0, 1)))
+            border_lines.append((Point(i, self.size), Vector(0, -1)))
+            border_lines.append((Point(-1, i), Vector(1, 0)))
+            border_lines.append((Point(self.size, i), Vector(-1, 0)))
+
+        # Each border letter is the first one visible on that line
+        for p, v in border_lines:
             num = self.grid[p.y + 1][p.x + 1]
             if num.isnumeric():
-                first_visible = defaultdict(lambda: Int(str(uuid4())))
-                prev_first_visible = int(num)
-                p = p.translate(v)
-                while p in sg.grid:
-                    sg.solver.add(prev_first_visible == If(sg.grid[p] == 0, first_visible[p], sg.grid[p]))
-                    prev_first_visible = first_visible[p]
-                    p = p.translate(v)
+                line = sight_line(p.translate(v), v, lambda q: q in sg.grid)
+                sg.solver.add(Or([And(
+                    sg.grid[line[i]] == int(num),
+                    *[sg.grid[line[j]] == 0 for j in range(i)]) for i in range(self.size)]))
 
         # Each letter appears in each row and in each column exactly once
         for i in range(1, self.num_letters + 1):

@@ -1,6 +1,7 @@
 from re import match
 from solvers.easyasabc import EasyAsAbcSolver
 from solvers.fillomino import FillominoSolver
+from solvers.kakuro import KakuroSolver
 from solvers.lits import LITSSolver
 from solvers.masyu import MasyuSolver
 from solvers.nurikabe import NurikabeSolver
@@ -12,6 +13,7 @@ from solvers.sudoku import SudokuSolver
 SOLVERS = [
     ('easyasabc', "Easy as ABC", EasyAsAbcSolver),
     ('fillomino', "Fillomino", FillominoSolver),
+    ('kakuro', "Kakuro", KakuroSolver),
     ('lits', "LITS", LITSSolver),
     ('mashu', "Masyu", MasyuSolver),
     ('nurikabe', "Nurikabe", NurikabeSolver),

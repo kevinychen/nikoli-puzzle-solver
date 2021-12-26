@@ -2,23 +2,13 @@ from collections import defaultdict
 from grilops import Symbol, SymbolGrid, SymbolSet
 from grilops.geometry import Point, Vector
 from grilops.regions import RegionConstrainer
-from typing import List, Tuple
+from typing import Callable, List
 from uuid import uuid4
 from z3 import And, Distinct, Implies, Int, Not
 
 
 def binary_symbol_set(zero: str, one: str):
     return SymbolSet([(zero, "+"), (one, "#")])
-
-
-def border_sight_lines(size: int) -> List[Tuple[Point, Vector]]:
-    lines = []
-    for i in range(size):
-        lines.append((Point(i, -1), Vector(0, 1)))
-        lines.append((Point(i, size), Vector(0, -1)))
-        lines.append((Point(-1, i), Vector(1, 0)))
-        lines.append((Point(size, i), Vector(-1, 0)))
-    return lines
 
 
 def continuous_region(sg: SymbolGrid, rc: RegionConstrainer, symbol: Symbol):
@@ -44,11 +34,19 @@ def no2x2(sg: SymbolGrid, symbol: Symbol):
     for p in sg.grid:
         box = [p, Point(p.y + 1, p.x), Point(p.y, p.x + 1), Point(p.y + 1, p.x + 1)]
         if all([p in sg.grid for p in box]):
-            sg.solver.add(Not(And(*[sg.grid[p] == symbol for p in box])))
+            sg.solver.add(Not(And([sg.grid[p] == symbol for p in box])))
 
 
 def parse_table(grid_str):
     return list(map(lambda row: row.split(' ')[:-1], grid_str.split('/')))
+
+
+def sight_line(p: Point, direction: Vector, good: Callable[[Point], bool]) -> List[Point]:
+    line = []
+    while good(p):
+        line.append(p)
+        p = p.translate(direction)
+    return line
 
 
 def table(grid):

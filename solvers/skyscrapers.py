@@ -3,7 +3,7 @@ from re import match
 from solvers.abstract_solver import AbstractSolver
 from solvers.common_rules import *
 from uuid import uuid4
-from z3 import If, Int
+from z3 import If, Int, PbEq
 
 
 class SkyscrapersSolver(AbstractSolver):
@@ -25,19 +25,19 @@ class SkyscrapersSolver(AbstractSolver):
         return grilops.make_number_range_symbol_set(1, self.size)
 
     def configure(self, sg):
-        for p, v in border_sight_lines(self.size):
+        border_lines = []
+        for i in range(self.size):
+            border_lines.append((Point(i, -1), Vector(0, 1)))
+            border_lines.append((Point(i, self.size), Vector(0, -1)))
+            border_lines.append((Point(-1, i), Vector(1, 0)))
+            border_lines.append((Point(self.size, i), Vector(-1, 0)))
+
+        for p, v in border_lines:
             num = self.grid[p.y + 1][p.x + 1]
             if num.isnumeric():
-                max_heights = defaultdict(lambda: Int(str(uuid4())))
-                num_visible = defaultdict(lambda: Int(str(uuid4())))
-                prev_max_height, prev_num_visible = 0, 0
-                p = p.translate(v)
-                while p in sg.grid:
-                    sg.solver.add(max_heights[p] == If(sg.grid[p] > prev_max_height, sg.grid[p], prev_max_height))
-                    sg.solver.add(num_visible[p] == If(
-                        max_heights[p] > prev_max_height, prev_num_visible + 1, prev_num_visible))
-                    prev_max_height, prev_num_visible = max_heights[p], num_visible[p]
-                    p = p.translate(v)
-                sg.solver.add(prev_num_visible == int(num))
+                line = sight_line(p.translate(v), v, lambda q: q in sg.grid)
+                sg.solver.add(PbEq(
+                    [(And([sg.grid[line[i]] > sg.grid[line[j]] for j in range(i)]), 1) for i in range(self.size)],
+                    int(num)))
 
         distinct_rows_and_columns(sg)
