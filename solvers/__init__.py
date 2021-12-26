@@ -4,6 +4,7 @@ from solvers.easyasabc import EasyAsAbcSolver
 from solvers.fillomino import FillominoSolver
 from solvers.heyawake import HeyawakeSolver
 from solvers.kakuro import KakuroSolver
+from solvers.lightup import LightUpSolver
 from solvers.lits import LITSSolver
 from solvers.masyu import MasyuSolver
 from solvers.nurikabe import NurikabeSolver
@@ -18,6 +19,7 @@ PUZZLES = [
     ('fillomino', "Fillomino", FillominoSolver),
     ('heyawake', "Heyawake", HeyawakeSolver),
     ('kakuro', "Kakuro", KakuroSolver),
+    ('lightup', "Light Up", LightUpSolver),
     ('lits', "LITS", LITSSolver),
     ('mashu', "Masyu", MasyuSolver),
     ('nurikabe', "Nurikabe", NurikabeSolver),
@@ -68,6 +70,14 @@ DEMOS = [
         'pzprv3/kakuro/7/7/0 23 30 -1 -1 27 12 16 /16 . . -1,-1 24,17 . . . /17 . . 29,15 . . . . /35 . . . . . -1,12 -'
         '1,-1 /-1 7,-1 . . 8,7 . . -1,7 /-1 -1,11 16,10 . . . . . /21 . . . . 5,-1 . . /6 . . . -1,-1 3,-1 . . /9 7 1 1'
         ' 8 7 9 /8 9 1 8 9 5 7 /6 8 5 9 7 1 1 /1 6 1 1 2 6 1 /1 1 4 6 1 3 2 /8 9 3 1 1 1 4 /3 1 2 1 1 2 1 /',
+    ),
+    (
+        'pzprv3/lightup/10/10/- . . - . . . . . - /. . . . . . . - . . /. 3 . . . . 0 . . . /. . 2 . . - . . . 1 /. . .'
+        ' 1 0 - . . . . /. . . . 1 - - . . . /- . . . 2 . . 2 . . /. . . - . . . . - . /. . 1 . . . . . . . /0 . . . . '
+        '. 1 . . 0 /',
+        'pzprv3/lightup/10/10/- + # - + + + # + - /+ # + + + + + - + + /# 3 + + # + 0 + + # /+ # 2 # + - + + + 1 /+ + +'
+        ' 1 0 - # + + + /+ + # + 1 - - # + + /- + + # 2 # + 2 # + /# + + - + + # + - # /+ + 1 + + + + + # + /0 + # + + '
+        '+ 1 # + 0 /',
     ),
     (
         'pzprv3/lits/10/10/13/0 0 0 0 0 1 2 2 2 2 /0 3 0 0 0 1 1 4 4 4 /0 3 0 0 0 0 1 4 5 5 /0 3 0 1 1 1 1 4 4 5 /0 3 3'
