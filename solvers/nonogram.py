@@ -29,9 +29,9 @@ class NonogramSolver(AbstractSolver):
     def configure(self, sg):
         symbol_set = self.symbol_set()
 
-        # Add sentinel WHITE squares around the grid, to avoid special-case logic for edges
         for p in sg.lattice.points:
             if p.x == -1 or p.x == self.width or p.y == -1 or p.y == self.height:
+                # Add sentinel WHITE squares around the grid, to avoid special-case logic for edges
                 sg.solver.add(sg.cell_is(p, symbol_set.WHITE))
 
         lines = []
