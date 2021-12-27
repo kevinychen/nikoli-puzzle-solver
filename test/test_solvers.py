@@ -65,6 +65,10 @@ class TestSolvers(unittest.TestCase):
         pzprv3, expect = get_demo('tapa')
         self.assertEqual(expect, solve(pzprv3))
 
+    def test_tentaisho(self):
+        pzprv3, expect = get_demo('tentaisho')
+        self.assertEqual(expect, solve(pzprv3))
+
     def test_yinyang(self):
         pzprv3, expect = get_demo('yinyang')
         self.assertEqual(expect, solve(pzprv3))

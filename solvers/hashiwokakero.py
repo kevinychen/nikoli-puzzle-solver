@@ -35,7 +35,6 @@ class HashiwokakeroSolver(AbstractSolver):
         return grilops.make_number_range_symbol_set(0, 2)
 
     def configure(self, sg):
-
         # Neighbor graph is symmetric and has no self-edges
         for edge in sg.lattice.points:
             if edge.x == edge.y:
