@@ -8,7 +8,7 @@ class HashiwokakeroSolver(AbstractSolver):
         self.height = int(matched.group(1))
         self.width = int(matched.group(2))
         self.grid = parse_table(matched.group(3))[:self.height]
-        self.number_positions = [Point(row, col)for row in range(self.height) for col in range(self.width)
+        self.number_positions = [Point(row, col) for row in range(self.height) for col in range(self.width)
                                  if self.grid[row][col].isnumeric()]
         self.num_numbers = len(self.number_positions)
 
