@@ -1,4 +1,4 @@
-from flask import Flask, request, send_from_directory
+from flask import Flask, request, send_from_directory, send_file
 
 import solvers
 
@@ -7,14 +7,17 @@ app = Flask(__name__)
 
 @app.route("/")
 def root():
-    with open('index.html', 'r') as file:
-        return file.read()
+    return send_file('index.html')
 
 
 @app.route("/app.js")
 def js():
-    with open('app.js', 'r') as file:
-        return file.read()
+    return send_file('app.js')
+
+
+@app.route("/favicon.ico")
+def favicon():
+    return send_file('favicon.ico')
 
 
 @app.route("/<path:path>")
