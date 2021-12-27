@@ -20,7 +20,7 @@ class NonogramSolver(AbstractSolver):
         return f'pzprv3/nonogram/{self.height}/{self.width}/{table(result)}/'
 
     def lattice(self):
-        return grilops.RectangularLattice(
+        return RectangularLattice(
             [Point(row, col) for row in range(-1, self.height + 1) for col in range(-1, self.width + 1)])
 
     def symbol_set(self):

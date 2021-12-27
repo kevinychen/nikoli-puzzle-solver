@@ -20,7 +20,7 @@ class SlitherlinkSolver(AbstractSolver):
             f'{self.height}/{self.width}/{table(self.grid)}/{table(zeroes)}/{table(verticals)}/{table(horizontals)}/')
 
     def lattice(self):
-        return grilops.RectangularLattice(
+        return RectangularLattice(
             [Point(row, col) for row in range(-1, self.height + 1) for col in range(-1, self.width + 1)])
 
     def symbol_set(self):

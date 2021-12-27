@@ -5,7 +5,7 @@ from uuid import uuid4
 
 import grilops
 from grilops import Symbol, SymbolGrid, SymbolSet
-from grilops.geometry import Point, Vector
+from grilops.geometry import Point, RectangularLattice, Vector
 from grilops.loops import LoopConstrainer, LoopSymbolSet
 from grilops.regions import R, RegionConstrainer
 from grilops.shapes import Shape, ShapeConstrainer

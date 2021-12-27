@@ -31,10 +31,10 @@ class LightUpSolver(AbstractSolver):
 
         for p in sg.lattice.points:
             val = self.grid[p.y][p.x]
-            if val.isnumeric():
-                sg.solver.add(Sum([is_light.symbol for is_light in sg.edge_sharing_neighbors(p)]) == int(val))
-            elif _is_wall(val):
+            if _is_wall(val):
                 sg.solver.add(sg.cell_is(p, symbol_set.EMPTY))
+                if val.isnumeric():
+                    sg.solver.add(Sum([is_light.symbol for is_light in sg.edge_sharing_neighbors(p)]) == int(val))
             else:
                 lines = []
                 for v in Vector(0, 1), Vector(0, -1), Vector(1, 0), Vector(-1, 0):
