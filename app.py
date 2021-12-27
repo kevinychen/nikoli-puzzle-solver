@@ -1,4 +1,4 @@
-from flask import Flask, request, Response
+from flask import Flask, request, send_from_directory
 
 import solvers
 
@@ -19,14 +19,7 @@ def js():
 
 @app.route("/<path:path>")
 def pzprjs(path):
-    if path.endswith('.js'):
-        mimetype = 'application/javascript'
-    elif path.endswith('.css'):
-        mimetype = 'text/css'
-    else:
-        mimetype = 'text/html'
-    with open('pzprjs/dist/' + path) as file:
-        return Response(file.read(), mimetype=mimetype)
+    return send_from_directory('pzprjs/dist', path)
 
 
 @app.route("/api/list", methods=['GET'])
