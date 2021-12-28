@@ -48,9 +48,5 @@ class HeyawakeSolver(AbstractSolver):
                 sg.solver.add(Sum([sg.grid[q] for q in sg.lattice.points
                                    if self.regions[q.y][q.x] == self.regions[p.y][p.x]]) == int(num))
 
-        # No two black squares may be adjacent
-        for p in sg.lattice.points:
-            for color in sg.edge_sharing_neighbors(p):
-                sg.solver.add(Or(sg.cell_is(p, symbol_set.WHITE), color.symbol == symbol_set.WHITE))
-
-        continuous_region(sg, rc, symbol_set.WHITE)
+        continuous_region(sg, rc, lambda q: sg.cell_is(q, symbol_set.WHITE))
+        no_adjacent_symbols(sg, symbol_set.BLACK)

@@ -32,8 +32,8 @@ class YinYangSolver(AbstractSolver):
             elif num == '2':
                 sg.solver.add(sg.cell_is(p, symbol_set.BLACK))
 
-        continuous_region(sg, rc, symbol_set.WHITE)
-        continuous_region(sg, rc, symbol_set.BLACK)
+        continuous_region(sg, rc, lambda q: sg.cell_is(q, symbol_set.WHITE))
+        continuous_region(sg, rc, lambda q: sg.cell_is(q, symbol_set.BLACK))
 
         no2x2(sg, symbol_set.WHITE)
         no2x2(sg, symbol_set.BLACK)

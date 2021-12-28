@@ -55,5 +55,5 @@ class LITSSolver(AbstractSolver):
                         And(sg.cell_is(p, symbol_set.PIECE), sc.shape_type_grid[p] == shape_type.symbol),
                         sc.shape_instance_grid[p] == shape_instance.symbol))
 
-        continuous_region(sg, rc, symbol_set.PIECE)
+        continuous_region(sg, rc, lambda q: sg.cell_is(q, symbol_set.PIECE))
         no2x2(sg, symbol_set.PIECE)

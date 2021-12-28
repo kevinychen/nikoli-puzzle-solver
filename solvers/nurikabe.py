@@ -45,5 +45,5 @@ class NurikabeSolver(AbstractSolver):
                     sg.lattice.edge_sharing_neighbors(rc.region_id_grid, p)):
                 sg.solver.add(Implies(sg.grid[p] == color.symbol, rc.region_id_grid[p] == region_id.symbol))
 
-        continuous_region(sg, rc, symbol_set.BLACK)
+        continuous_region(sg, rc, lambda q: sg.cell_is(q, symbol_set.BLACK))
         no2x2(sg, symbol_set.BLACK)

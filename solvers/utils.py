@@ -9,16 +9,15 @@ from grilops.geometry import Point, RectangularLattice, Vector
 from grilops.loops import LoopConstrainer, LoopSymbolSet
 from grilops.regions import R, RegionConstrainer
 from grilops.shapes import Shape, ShapeConstrainer
-from z3 import And, Distinct, Implies, Int, Not, Or, PbEq, Sum
+from z3 import And, BoolRef, Distinct, Implies, Int, Not, Or, PbEq, PbLe, Sum
 
 from solvers.abstract_solver import AbstractSolver
 
 
-def continuous_region(sg: SymbolGrid, rc: RegionConstrainer, symbol: Symbol):
+def continuous_region(sg: SymbolGrid, rc: RegionConstrainer, good: Callable[[Point], BoolRef]):
     region_root = Int(str(uuid4()))
     for p in sg.lattice.points:
-        sg.solver.add(Implies(sg.grid[p] == symbol, rc.region_id_grid[p] == region_root))
-        sg.solver.add(Implies(sg.grid[p] != symbol, rc.region_id_grid[p] != region_root))
+        sg.solver.add(good(p) == (rc.region_id_grid[p] == region_root))
 
 
 def distinct_rows_and_columns(sg: SymbolGrid):
@@ -33,12 +32,13 @@ def distinct_rows_and_columns(sg: SymbolGrid):
         sg.solver.add(Distinct(*col))
 
 
-def no_adjacent_symbols(sg: SymbolGrid, symbol: Symbol):
+def no_adjacent_symbols(sg: SymbolGrid, symbol: Symbol, no_diagonal: bool = False):
     for p in sg.lattice.points:
         for is_star in sg.edge_sharing_neighbors(p):
             sg.solver.add(Not(And(sg.cell_is(p, symbol), is_star.symbol == symbol)))
-        for is_star in sg.vertex_sharing_neighbors(p):
-            sg.solver.add(Not(And(sg.cell_is(p, symbol), is_star.symbol == symbol)))
+        if no_diagonal:
+            for is_star in sg.vertex_sharing_neighbors(p):
+                sg.solver.add(Not(And(sg.cell_is(p, symbol), is_star.symbol == symbol)))
 
 
 def no2x2(sg: SymbolGrid, symbol: Symbol):

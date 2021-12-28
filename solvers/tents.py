@@ -27,6 +27,14 @@ class TentsSolver(AbstractSolver):
         symbol_set = self.symbol_set()
         rc = RegionConstrainer(sg.lattice, sg.solver, complete=False, min_region_size=2, max_region_size=2)
 
+        # Each tree and its tent is a region of size 2; everything else must be EMPTY
+        for p in sg.lattice.points:
+            is_tree = self.grid[p.y + 1][p.x + 1].isnumeric()
+            if is_tree:
+                sg.solver.add(rc.region_id_grid[p] == sg.lattice.point_to_index(p))
+            sg.solver.add(sg.cell_is(p, symbol_set.TREE) == is_tree)
+            sg.solver.add(sg.cell_is(p, symbol_set.EMPTY) == (rc.region_id_grid[p] == -1))
+
         for row in range(self.height):
             sg.solver.add(PbEq(
                 [(sg.cell_is(Point(row, col), symbol_set.TENT), 1) for col in range(self.width)],
@@ -36,11 +44,4 @@ class TentsSolver(AbstractSolver):
                 [(sg.cell_is(Point(row, col), symbol_set.TENT), 1) for row in range(self.height)],
                 int(self.grid[0][col + 1])))
 
-        for p in sg.lattice.points:
-            is_tree = self.grid[p.y + 1][p.x + 1].isnumeric()
-            if is_tree:
-                sg.solver.add(rc.region_id_grid[p] == sg.lattice.point_to_index(p))
-            sg.solver.add(sg.cell_is(p, symbol_set.TREE) == is_tree)
-            sg.solver.add(sg.cell_is(p, symbol_set.EMPTY) == (rc.region_id_grid[p] == -1))
-
-        no_adjacent_symbols(sg, symbol_set.TENT)
+        no_adjacent_symbols(sg, symbol_set.TENT, no_diagonal=True)

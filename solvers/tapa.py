@@ -61,5 +61,5 @@ class TapaSolver(AbstractSolver):
                             [sg.cell_is(p.translate(v), neighbor_colors[i]) for i, v in enumerate(NEIGHBOR_DIRS)]))
                     sg.solver.add(Or(choices))
 
-        continuous_region(sg, rc, symbol_set.BLACK)
+        continuous_region(sg, rc, lambda q: sg.cell_is(q, symbol_set.BLACK))
         no2x2(sg, symbol_set.BLACK)

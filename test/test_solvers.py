@@ -21,6 +21,10 @@ class TestSolvers(unittest.TestCase):
         pzprv3, expect = get_demo('heyawake')
         self.assertEqual(expect, solve(pzprv3))
 
+    def test_hitori(self):
+        pzprv3, expect = get_demo('hitori')
+        self.assertEqual(expect, solve(pzprv3))
+
     def test_kakuro(self):
         pzprv3, expect = get_demo('kakuro')
         self.assertEqual(expect, solve(pzprv3))

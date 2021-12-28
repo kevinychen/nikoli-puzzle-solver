@@ -36,4 +36,4 @@ class StarBattleSolver(AbstractSolver):
             sg.solver.add(
                 Sum([sg.grid[p] for p in sg.lattice.points if self.grid[p.y][p.x] == str(i)]) == self.num_stars)
 
-        no_adjacent_symbols(sg, symbol_set.STAR)
+        no_adjacent_symbols(sg, symbol_set.STAR, no_diagonal=True)
