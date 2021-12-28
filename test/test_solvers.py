@@ -5,6 +5,10 @@ from solvers import get_demo, solve
 
 class TestSolvers(unittest.TestCase):
 
+    def test_aquarium(self):
+        pzprv3, expect = get_demo('aquarium')
+        self.assertEqual(expect, solve(pzprv3))
+
     def test_easyasabc(self):
         pzprv3, expect = get_demo('easyasabc')
         self.assertEqual(expect, solve(pzprv3))

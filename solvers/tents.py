@@ -35,6 +35,7 @@ class TentsSolver(AbstractSolver):
             sg.solver.add(sg.cell_is(p, symbol_set.TREE) == is_tree)
             sg.solver.add(sg.cell_is(p, symbol_set.EMPTY) == (rc.region_id_grid[p] == -1))
 
+        # Satisfy TENT counts
         for row in range(self.height):
             sg.solver.add(PbEq(
                 [(sg.cell_is(Point(row, col), symbol_set.TENT), 1) for col in range(self.width)],

@@ -35,7 +35,3 @@ class HitoriSolver(AbstractSolver):
 
         continuous_region(sg, rc, lambda q: sg.grid[q] != 0)
         no_adjacent_symbols(sg, 0)
-
-
-s = 'pzprv3/hitori/8/8/4 8 1 6 3 2 5 7 /3 6 7 2 1 6 5 4 /2 3 4 8 2 8 6 1 /4 1 6 5 7 7 3 5 /7 2 3 1 8 5 1 2 /3 5 6 7 3 1 8 4 /6 4 2 3 5 4 7 8 /8 7 1 4 2 3 5 6 /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /'
-print(HitoriSolver(s).solve())
