@@ -49,6 +49,10 @@ class TestSolvers(unittest.TestCase):
         pzprv3, expect = get_demo('mashu')
         self.assertEqual(expect, solve(pzprv3))
 
+    def test_minesweeper(self):
+        pzprv3, expect = get_demo('mines')
+        self.assertEqual(expect, solve(pzprv3))
+
     def test_nonogram(self):
         pzprv3, expect = get_demo('nonogram')
         self.assertEqual(expect, solve(pzprv3))

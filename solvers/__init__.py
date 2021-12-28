@@ -11,6 +11,7 @@ from solvers.kropki import KropkiSolver
 from solvers.lightup import LightUpSolver
 from solvers.lits import LITSSolver
 from solvers.masyu import MasyuSolver
+from solvers.minesweeper import MinesweeperSolver
 from solvers.nonogram import NonogramSolver
 from solvers.nurikabe import NurikabeSolver
 from solvers.skyscrapers import SkyscrapersSolver
@@ -31,9 +32,10 @@ PUZZLES = [
     ('hitori', "Hitori", HitoriSolver),
     ('kakuro', "Kakuro", KakuroSolver),
     ('kropki', "Kropki", KropkiSolver),
-    ('lightup', "Light Up", LightUpSolver),
+    ('lightup', "Light Up (Akari)", LightUpSolver),
     ('lits', "LITS", LITSSolver),
     ('mashu', "Masyu", MasyuSolver),
+    ('mines', "Minesweeper", MinesweeperSolver),
     ('nonogram', "Nonogram", NonogramSolver),
     ('nurikabe', "Nurikabe", NurikabeSolver),
     ('skyscrapers', "Skyscrapers", SkyscrapersSolver),
@@ -162,6 +164,16 @@ DEMOS = [
         '1 0 0 0 0 1 /0 0 1 1 0 1 1 0 1 /0 0 0 0 1 1 1 1 0 /1 0 0 0 0 1 1 1 0 /0 0 1 1 0 1 1 1 1 /0 1 0 0 0 1 1 0 0 1 /'
         '1 0 0 1 0 0 0 0 1 1 /0 0 1 1 1 0 0 1 1 1 /0 0 1 1 1 1 0 0 1 1 /1 0 0 0 0 1 0 1 0 1 /1 1 0 0 1 1 0 1 1 0 /1 1 1'
         ' 0 0 0 0 0 0 1 /1 1 1 0 1 0 0 0 1 1 /0 0 1 0 1 1 0 0 0 1 /',
+    ),
+    (
+        'pzprv3/mines/10/10/. . . . . . . . . . /. 3 4 5 . . 5 3 1 . /. 2 . . . . . . 2 . /. 1 . 2 2 2 2 . 4 . /. . . 2'
+        ' . . 2 . . . /. . . 2 . . 2 . . . /. 4 . 2 2 2 2 . 1 . /. 2 . . . . . . 2 . /. 1 2 4 . . 1 2 4 . /. . . . . . '
+        '. . . . /. . . . . . . . . . /. . . . . . . . . . /. . . . . . . . . . /. . . . . . . . . . /. . . . . . . . .'
+        ' . /. . . . . . . . . . /. . . . . . . . . . /. . . . . . . . . . /. . . . . . . . . . /. . . . . . . . . . /',
+        'pzprv3/mines/10/10/. . . . . . . . . . /. 3 4 5 . . 5 3 1 . /. 2 . . . . . . 2 . /. 1 . 2 2 2 2 . 4 . /. . . 2'
+        ' . . 2 . . . /. . . 2 . . 2 . . . /. 4 . 2 2 2 2 . 1 . /. 2 . . . . . . 2 . /. 1 2 4 . . 1 2 4 . /. . . . . . '
+        '. . . . /+ # # # # # # # + + /# + + + # # + + + + /+ + + # + + # + + + /# + + + + + + # + # /+ + + + # + + + #'
+        ' # /# # + + # # + + + + /# + + + + + + # + + /+ + # + + + + + + + /+ + + + # + + + + # /+ + + # # + + # # # /',
     ),
     (
         'pzprv3/nonogram/11/8/. . . . . . . . . . . . /. . . . . . . . . . . . /. . . . . . . . . . . . /. . . . . . . '
