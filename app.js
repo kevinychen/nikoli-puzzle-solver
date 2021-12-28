@@ -44,4 +44,6 @@ window.onload = function () {
             })
         });
     });
+
+    setInterval(() => select.value = iframe.contentWindow.ui.puzzle.pid, 1000);
 };
