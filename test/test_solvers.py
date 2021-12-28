@@ -65,6 +65,10 @@ class TestSolvers(unittest.TestCase):
         pzprv3, expect = get_demo('nonogram')
         self.assertEqual(expect, solve(pzprv3))
 
+    def test_numberlink(self):
+        pzprv3, expect = get_demo('numlin')
+        self.assertEqual(expect, solve(pzprv3))
+
     def test_nurikabe(self):
         pzprv3, expect = get_demo('nurikabe')
         self.assertEqual(expect, solve(pzprv3))

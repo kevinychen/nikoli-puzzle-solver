@@ -38,7 +38,7 @@ class SlitherlinkSolver(AbstractSolver):
                 num = self.grid[p.y][p.x]
                 if num.isnumeric():
                     sg.solver.add(
-                        PbEq([(sg.grid[p] != val.symbol, 1) for val in sg.edge_sharing_neighbors(p)], int(num)))
+                        PbEq([(sg.grid[p] != n.symbol, 1) for n in sg.edge_sharing_neighbors(p)], int(num)))
 
         continuous_region(sg, rc, lambda q: sg.cell_is(q, symbol_set.INSIDE))
         continuous_region(sg, rc, lambda q: sg.cell_is(q, symbol_set.OUTSIDE))

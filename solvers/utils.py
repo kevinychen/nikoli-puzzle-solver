@@ -35,8 +35,8 @@ def distinct_rows_and_columns(sg: SymbolGrid):
 
 def no_adjacent_symbols(sg: SymbolGrid, symbol: Symbol, no_diagonal: bool = False):
     for p in sg.lattice.points:
-        for is_star in sg.vertex_sharing_neighbors(p) if no_diagonal else sg.edge_sharing_neighbors(p):
-            sg.solver.add(Not(And(sg.cell_is(p, symbol), is_star.symbol == symbol)))
+        for n in sg.vertex_sharing_neighbors(p) if no_diagonal else sg.edge_sharing_neighbors(p):
+            sg.solver.add(Not(And(sg.cell_is(p, symbol), n.symbol == symbol)))
 
 
 def no2x2(sg: SymbolGrid, symbol: Symbol):

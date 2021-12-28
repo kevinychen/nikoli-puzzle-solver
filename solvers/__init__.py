@@ -15,6 +15,7 @@ from solvers.lits import LITSSolver
 from solvers.masyu import MasyuSolver
 from solvers.minesweeper import MinesweeperSolver
 from solvers.nonogram import NonogramSolver
+from solvers.numberlink import NumberlinkSolver
 from solvers.nurikabe import NurikabeSolver
 from solvers.shikaku import ShikakuSolver
 from solvers.skyscrapers import SkyscrapersSolver
@@ -43,6 +44,7 @@ PUZZLES = [
     ('mashu', "Masyu", MasyuSolver),
     ('mines', "Minesweeper", MinesweeperSolver),
     ('nonogram', "Nonogram", NonogramSolver),
+    ('numlin', "Numberlink", NumberlinkSolver),
     ('nurikabe', "Nurikabe", NurikabeSolver),
     ('shikaku', "Shikaku", ShikakuSolver),
     ('skyscrapers', "Skyscrapers", SkyscrapersSolver),
@@ -220,6 +222,14 @@ DEMOS = [
         '/. . . 6 + # # # # # # + /. . 2 2 + # # + + # # + /. . 2 2 + # # + + # # + /. . . 6 + # # # # # # + /. . . 4 +'
         ' # # # # + + + /. . . 2 + # # + + + + + /. . . 2 + # # + + + + + /. . . 2 + # # + + + + + /. . . . + + + + + +'
         ' + + /',
+    ),
+    (
+        'pzprv3/numlin/7/7/. . . 4 . . . /. 3 . . 2 5 . /. . . 3 1 . . /. . . 5 . . . /. . . . . . . /. . 1 . . . . /2 '
+        '. . . 4 . . /0 0 0 0 0 0 /0 0 0 0 0 0 /0 0 0 0 0 0 /0 0 0 0 0 0 /0 0 0 0 0 0 /0 0 0 0 0 0 /0 0 0 0 0 0 /0 0 0 '
+        '0 0 0 0 /0 0 0 0 0 0 0 /0 0 0 0 0 0 0 /0 0 0 0 0 0 0 /0 0 0 0 0 0 0 /0 0 0 0 0 0 0 /',
+        'pzprv3/numlin/7/7/. . . 4 . . . /. 3 . . 2 5 . /. . . 3 1 . . /. . . 5 . . . /. . . . . . . /. . 1 . . . . /2 '
+        '. . . 4 . . /1 1 0 1 1 1 /0 0 1 1 0 0 /0 1 1 0 0 0 /0 1 1 0 0 0 /0 0 1 1 0 0 /0 0 0 1 1 0 /0 1 1 0 1 1 /1 0 1 '
+        '0 0 0 1 /1 1 0 0 0 1 1 /1 0 0 0 1 1 1 /1 1 0 0 1 1 1 /1 1 1 0 0 1 1 /1 1 0 1 0 0 1 /',
     ),
     (
         'pzprv3/nurikabe/9/10/2 . . . . . . . . 2 /. . . . . . 2 . . . /. 2 . . 7 . . . . . /. . . . . . . . . . /. . .'
