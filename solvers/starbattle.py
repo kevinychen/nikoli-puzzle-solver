@@ -36,9 +36,4 @@ class StarBattleSolver(AbstractSolver):
             sg.solver.add(
                 Sum([sg.grid[p] for p in sg.lattice.points if self.grid[p.y][p.x] == str(i)]) == self.num_stars)
 
-        # No two stars may be adjacent
-        for p in sg.lattice.points:
-            for is_star in sg.edge_sharing_neighbors(p):
-                sg.solver.add(Or(sg.cell_is(p, symbol_set.EMPTY), is_star.symbol == symbol_set.EMPTY))
-            for is_star in sg.vertex_sharing_neighbors(p):
-                sg.solver.add(Or(sg.cell_is(p, symbol_set.EMPTY), is_star.symbol == symbol_set.EMPTY))
+        no_adjacent_symbols(sg, symbol_set.STAR)

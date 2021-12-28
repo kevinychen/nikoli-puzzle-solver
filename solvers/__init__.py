@@ -17,6 +17,7 @@ from solvers.starbattle import StarBattleSolver
 from solvers.sudoku import SudokuSolver
 from solvers.tapa import TapaSolver
 from solvers.tentaisho import TentaishoSolver
+from solvers.tents import TentsSolver
 from solvers.yinyang import YinYangSolver
 
 PUZZLES = [
@@ -37,6 +38,7 @@ PUZZLES = [
     ('sudoku', "Sudoku", SudokuSolver),
     ('tapa', "Tapa", TapaSolver),
     ('tentaisho', "Tentaisho (Spiral Galaxies)", TentaishoSolver),
+    ('tents', "Tents", TentsSolver),
     ('yinyang', "Yin Yang", YinYangSolver),
 ]
 
@@ -216,6 +218,16 @@ DEMOS = [
         '0 1 0 0 /0 1 1 0 0 1 /1 0 0 1 1 1 /0 0 1 0 0 1 /1 1 1 0 0 1 /1 0 1 1 0 1 /0 1 1 1 1 0 1 /1 1 0 1 0 0 1 /0 1 0 '
         '1 0 1 0 /0 1 1 1 1 0 0 /1 1 0 0 0 0 0 /0 1 0 0 1 1 0 /0 0 0 0 0 0 0 /0 0 0 0 0 0 0 /0 0 0 0 0 0 0 /0 0 0 0 0 0'
         ' 0 /0 0 0 0 0 0 0 /0 0 0 0 0 0 0 /0 0 0 0 0 0 0 /',
+    ),
+    (
+        'pzprv3/tents/8/8/. 2 1 3 1 1 2 0 2 /2 . . . . . . . . /0 . . 1 . . 1 . 1 /3 . . . . 1 . . . /1 . 1 1 . . . . .'
+        ' /0 1 . . . . . . . /2 . . . 1 . . . . /1 . . . . . 1 . . /3 . 1 . 1 . . 1 . /0 0 0 0 0 0 0 /0 0 0 0 0 0 0 /0 '
+        '0 0 0 0 0 0 /0 0 0 0 0 0 0 /0 0 0 0 0 0 0 /0 0 0 0 0 0 0 /0 0 0 0 0 0 0 /0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 /0 0 0'
+        ' 0 0 0 0 0 /0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 /',
+        'pzprv3/tents/8/8/. 2 1 3 1 1 2 0 2 /2 . . A . . A . . /0 . . 1 . . 1 . 1 /3 . A . . 1 A . A /1 . 1 1 A . . . .'
+        ' /0 1 . . . . . . . /2 A . A 1 . . . . /1 . . . . A 1 . . /3 A 1 A 1 . . 1 A /0 0 0 0 0 0 0 /0 0 0 0 0 0 0 /0 '
+        '0 0 0 0 0 0 /0 0 0 0 0 0 0 /0 0 0 0 0 0 0 /0 0 0 0 0 0 0 /0 0 0 0 0 0 0 /0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 /0 0 0'
+        ' 0 0 0 0 0 /0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 /',
     ),
     (
         'pzprv3/yinyang/7/7/. . . . . . . /. . 1 . 2 . . /. . . 2 . 1 1 /. 1 . . 1 2 . /. 2 1 . 1 . . /. . . 2 . . 2 /1'

@@ -33,6 +33,14 @@ def distinct_rows_and_columns(sg: SymbolGrid):
         sg.solver.add(Distinct(*col))
 
 
+def no_adjacent_symbols(sg: SymbolGrid, symbol: Symbol):
+    for p in sg.lattice.points:
+        for is_star in sg.edge_sharing_neighbors(p):
+            sg.solver.add(Not(And(sg.cell_is(p, symbol), is_star.symbol == symbol)))
+        for is_star in sg.vertex_sharing_neighbors(p):
+            sg.solver.add(Not(And(sg.cell_is(p, symbol), is_star.symbol == symbol)))
+
+
 def no2x2(sg: SymbolGrid, symbol: Symbol):
     for p in sg.grid:
         box = [p, Point(p.y + 1, p.x), Point(p.y, p.x + 1), Point(p.y + 1, p.x + 1)]
