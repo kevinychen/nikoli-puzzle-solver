@@ -16,6 +16,7 @@ from solvers.masyu import MasyuSolver
 from solvers.minesweeper import MinesweeperSolver
 from solvers.nonogram import NonogramSolver
 from solvers.nurikabe import NurikabeSolver
+from solvers.shikaku import ShikakuSolver
 from solvers.skyscrapers import SkyscrapersSolver
 from solvers.slitherlink import SlitherlinkSolver
 from solvers.starbattle import StarBattleSolver
@@ -43,6 +44,7 @@ PUZZLES = [
     ('mines', "Minesweeper", MinesweeperSolver),
     ('nonogram', "Nonogram", NonogramSolver),
     ('nurikabe', "Nurikabe", NurikabeSolver),
+    ('shikaku', "Shikaku", ShikakuSolver),
     ('skyscrapers', "Skyscrapers", SkyscrapersSolver),
     ('slither', "Slitherlink", SlitherlinkSolver),
     ('starbattle', "Star Battle", StarBattleSolver),
@@ -224,6 +226,22 @@ DEMOS = [
         ' . . . 3 . 3 . /. . 2 . . . . 3 . . /2 . . 4 . . . . . . /. . . . . . . . . . /. 1 . . . . 2 . 4 . /',
         'pzprv3/nurikabe/9/10/2 + # + + + # # + 2 /# # # + + # 2 # # # /# 2 # + 7 # + # + # /# + # # # # # # + # /# # +'
         ' # + + 3 # 3 # /+ # 2 # # # # 3 # # /2 # # 4 + # + + # + /# # + + # # # # # + /# 1 # # # + 2 # 4 + /',
+    ),
+    (
+        'pzprv3/shikaku/11/11/. 4 . . . . . . . . . /2 4 . . 3 . . . . . . /. . . . . . . 16 . . . /6 5 2 4 . . 4 . . .'
+        ' . /. . . . 2 5 . . 2 . 7 /. . 2 . . 2 4 . 2 . . /. . . . 16 . . . . . . /. . . . . . . . . . . /. . . . 12 . '
+        '6 . . . . /2 . . . . . . . . 9 . /. . . . . . . . . . . /0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0'
+        ' 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 '
+        '0 0 /0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0'
+        ' 0 /0 0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 '
+        '0 0 0 0 /0 0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 0 /',
+        'pzprv3/shikaku/11/11/. 4 . . . . . . . . . /2 4 . . 3 . . . . . . /. . . . . . . 16 . . . /6 5 2 4 . . 4 . . .'
+        ' . /. . . . 2 5 . . 2 . 7 /. . 2 . . 2 4 . 2 . . /. . . . 16 . . . . . . /. . . . . . . . . . . /. . . . 12 . '
+        '6 . . . . /2 . . . . . . . . 9 . /. . . . . . . . . . . /0 0 0 1 1 1 1 0 0 0 /1 0 1 1 1 1 1 0 0 0 /1 0 1 1 1 1'
+        ' 1 0 0 0 /1 1 1 1 1 1 1 0 0 0 /1 1 1 1 1 1 0 1 0 1 /1 1 0 1 0 1 0 1 0 1 /1 1 0 0 0 0 0 0 0 1 /1 1 0 0 0 0 0 0 '
+        '0 1 /1 0 0 0 1 0 1 0 0 1 /1 0 0 0 1 0 1 0 0 1 /1 0 0 0 1 0 1 0 0 1 /1 1 1 1 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0'
+        ' 0 /1 1 1 0 1 0 0 0 0 0 0 /0 0 0 0 0 0 1 1 1 1 1 /0 0 1 1 1 1 0 0 1 1 0 /0 0 1 1 1 1 1 1 1 1 0 /0 0 0 0 0 0 0 '
+        '0 0 0 0 /0 1 1 1 1 1 1 1 1 1 0 /1 0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 0 /',
     ),
     (
         'pzprv3/skyscrapers/5/5/. 4 2 1 2 3 . /3 . . . . . 3 /2 . . . . . 4 /3 . . . . . 1 /2 . . . . . 2 /1 . . . . . '
