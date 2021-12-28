@@ -1,14 +1,15 @@
 from collections import defaultdict
 from re import match
-from typing import Callable, List
+from typing import Callable, List, Union
 from uuid import uuid4
 
 import grilops
 from grilops import Symbol, SymbolGrid, SymbolSet
-from grilops.geometry import Point, RectangularLattice, Vector
+from grilops.geometry import Direction, Point, RectangularLattice, Vector
 from grilops.loops import LoopConstrainer, LoopSymbolSet
 from grilops.regions import R, RegionConstrainer
 from grilops.shapes import Shape, ShapeConstrainer
+from grilops.sightlines import count_cells
 from z3 import And, BoolRef, Distinct, Implies, Int, Not, Or, PbEq, PbLe, Sum
 
 from solvers.abstract_solver import AbstractSolver
@@ -49,9 +50,13 @@ def parse_table(grid_str):
     return list(map(lambda row: row.split(' ')[:-1], grid_str.split('/')))
 
 
-def sight_line(p: Point, direction: Vector, good: Callable[[Point], bool]) -> List[Point]:
+def sight_line(
+        sg: SymbolGrid,
+        p: Point,
+        direction: Union[Direction, Vector],
+        good: Callable[[Point], bool] = lambda _: True) -> List[Point]:
     line = []
-    while good(p):
+    while p in sg.grid and good(p):
         line.append(p)
         p = p.translate(direction)
     return line

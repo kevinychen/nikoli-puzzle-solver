@@ -38,11 +38,11 @@ class NonogramSolver(AbstractSolver):
         for row in range(self.height):
             lines.append((
                 [self.grid[self.num_vertical_nums + row][col] for col in range(self.num_horizontal_nums)],
-                sight_line(Point(row, -1), Vector(0, 1), lambda q: q in sg.grid)))
+                sight_line(sg, Point(row, -1), Vector(0, 1))))
         for col in range(self.width):
             lines.append((
                 [self.grid[row][self.num_horizontal_nums + col] for row in range(self.num_vertical_nums)],
-                sight_line(Point(-1, col), Vector(1, 0), lambda q: q in sg.grid)))
+                sight_line(sg, Point(-1, col), Vector(1, 0))))
 
         # For each horizontal/vertical line, use dynamic programming where num_blocks[i] is the current number of black
         # blocks seen so far. Then anytime BLACK changes to WHITE, we check if there are the correct number of adjacent

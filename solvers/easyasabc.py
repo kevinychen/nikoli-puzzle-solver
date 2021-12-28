@@ -34,7 +34,7 @@ class EasyAsAbcSolver(AbstractSolver):
         for p, v in border_lines:
             num = self.grid[p.y + 1][p.x + 1]
             if num.isnumeric():
-                line = sight_line(p.translate(v), v, lambda q: q in sg.grid)
+                line = sight_line(sg, p.translate(v), v)
                 sg.solver.add(Or([And(
                     sg.grid[line[i]] == int(num),
                     *[sg.grid[line[j]] == 0 for j in range(i)]) for i in range(self.size)]))

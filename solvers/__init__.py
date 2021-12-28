@@ -1,6 +1,7 @@
 from re import match
 
 from solvers.aquarium import AquariumSolver
+from solvers.cave import CaveSolver
 from solvers.easyasabc import EasyAsAbcSolver
 from solvers.fillomino import FillominoSolver
 from solvers.hashiwokakero import HashiwokakeroSolver
@@ -27,6 +28,7 @@ from solvers.yinyang import YinYangSolver
 
 PUZZLES = [
     ('aquarium', "Aquarium", AquariumSolver),
+    ('cave', "Cave", CaveSolver),
     ('easyasabc', "Easy as ABC", EasyAsAbcSolver),
     ('fillomino', "Fillomino", FillominoSolver),
     ('hashikake', "Hashiwokakero", HashiwokakeroSolver),
@@ -60,6 +62,16 @@ DEMOS = [
         'pzprv3/aquarium/6/6/1 0 1 1 0 /0 0 1 1 1 /0 1 1 1 1 /1 1 0 1 0 /1 1 0 1 1 /0 0 1 0 1 /1 1 1 1 1 1 /1 1 0 0 0 0'
         ' /1 1 1 1 1 1 /0 0 1 1 1 1 /1 1 1 1 0 1 /. 2 3 4 2 2 4 /3 + + + # # # /3 # # # + + + /3 + + # + # # /2 + + # #'
         ' + + /2 + # + + + # /4 # # # + + # /',
+    ),
+    (
+        'pzprv3/cave/10/10/6 . . . 6 . . . . 4 /. . . . . 6 . . . . /. . 3 . . . . 5 . . /. . . 7 . . 9 . . . /. 5 . . '
+        '3 . . . . 5 /5 . . . . 5 . . 2 . /. . . 2 . . 4 . . . /. . 7 . . . . 4 . . /. . . . 2 . . . . . /5 . . . . 6 .'
+        ' . . 6 /. . . . . . . . . . /. . . . . . . . . . /. . . . . . . . . . /. . . . . . . . . . /. . . . . . . . . '
+        '. /. . . . . . . . . . /. . . . . . . . . . /. . . . . . . . . . /. . . . . . . . . . /. . . . . . . . . . /',
+        'pzprv3/cave/10/10/6 . . . 6 . . . . 4 /. . . . . 6 . . . . /. . 3 . . . . 5 . . /. . . 7 . . 9 . . . /. 5 . . '
+        '3 . . . . 5 /5 . . . . 5 . . 2 . /. . . 2 . . 4 . . . /. . 7 . . . . 4 . . /. . . . 2 . . . . . /5 . . . . 6 .'
+        ' . . 6 /+ + + + + + # + + + /# # # # # + + + + + /# + + # # # + + + # /+ + + + + + + # + + /+ + # # + + # # # '
+        '+ /+ + + # # + + # + + /# # + + # + + # # + /+ + + # # # + + # + /+ + + # + # # + # # /+ + + # + + + + + + /',
     ),
     (
         'pzprv3/easyasabc/5/5/3/. . 2 . 1 3 . /1 . . . . . 3 /1 . . . . . 3 /. . . . . . . /. . . . . . 3 /3 . . . . . '

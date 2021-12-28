@@ -30,7 +30,7 @@ class SkyscrapersSolver(AbstractSolver):
         for p, v in border_lines:
             num = self.grid[p.y + 1][p.x + 1]
             if num.isnumeric():
-                line = sight_line(p.translate(v), v, lambda q: q in sg.grid)
+                line = sight_line(sg, p.translate(v), v)
                 sg.solver.add(PbEq(
                     [(And([sg.grid[line[i]] > sg.grid[line[j]] for j in range(i)]), 1) for i in range(self.size)],
                     int(num)))

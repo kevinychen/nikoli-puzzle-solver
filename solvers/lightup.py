@@ -37,9 +37,8 @@ class LightUpSolver(AbstractSolver):
                     sg.solver.add(Sum([is_light.symbol for is_light in sg.edge_sharing_neighbors(p)]) == int(val))
             else:
                 lines = []
-                for v in Vector(0, 1), Vector(0, -1), Vector(1, 0), Vector(-1, 0):
-                    lines.extend(sight_line(
-                        p.translate(v), v, lambda q: q in sg.grid and not _is_wall(self.grid[q.y][q.x])))
+                for n in sg.edge_sharing_neighbors(p):
+                    lines.extend(sight_line(sg, n.location, n.direction, lambda q: not _is_wall(self.grid[q.y][q.x])))
                 sg.solver.add(Implies(
                     sg.cell_is(p, symbol_set.LIGHT), And([sg.cell_is(q, symbol_set.EMPTY) for q in lines])))
                 sg.solver.add(Implies(

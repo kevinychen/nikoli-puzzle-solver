@@ -2,7 +2,7 @@
 
 Solver for many types of Nikoli puzzles. Try it at https://util.in:8102.
 
-This repository uses the brilliant library [Grilops](https://github.com/obijywk/grilops) and the [Z3 Theorem Prover](https://github.com/Z3Prover/z3). It hooks up to the [pzprjs UI](https://github.com/robx/pzprjs) to easily input and view puzzles.
+This repository uses the brilliant library [Grilops](https://github.com/obijywk/grilops) and the [Z3 Theorem Prover](https://github.com/Z3Prover/z3). It hooks up to the [pzprjs UI](https://github.com/robx/pzprjs) (used by [puzz.link](https://puzz.link)) to easily input and view puzzles.
 
 ![Solving](solving.gif)
 

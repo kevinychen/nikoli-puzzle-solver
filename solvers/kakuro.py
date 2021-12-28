@@ -28,14 +28,10 @@ class KakuroSolver(AbstractSolver):
                     parts = num.split(',')
                     if row > 0 and parts[0] != '-1':
                         line_totals.append((int(parts[0]), sight_line(
-                            Point(row - 1, col),
-                            Vector(0, 1),
-                            lambda p: p in sg.grid and self.grid[p.y + 1][p.x + 1] == '.')))
+                            sg, Point(row - 1, col), Vector(0, 1), lambda p: self.grid[p.y + 1][p.x + 1] == '.')))
                     if col > 0 and parts[-1] != '-1':
                         line_totals.append((int(parts[-1]), sight_line(
-                            Point(row, col - 1),
-                            Vector(1, 0),
-                            lambda p: p in sg.grid and self.grid[p.y + 1][p.x + 1] == '.')))
+                            sg, Point(row, col - 1), Vector(1, 0), lambda p: self.grid[p.y + 1][p.x + 1] == '.')))
         for total, line in line_totals:
             sg.solver.add(Sum([sg.grid[p] for p in line]) == total)
             sg.solver.add(Distinct([sg.grid[p] for p in line]))
