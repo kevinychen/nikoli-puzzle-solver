@@ -4,6 +4,7 @@ from solvers.aquarium import AquariumSolver
 from solvers.easyasabc import EasyAsAbcSolver
 from solvers.fillomino import FillominoSolver
 from solvers.hashiwokakero import HashiwokakeroSolver
+from solvers.heteromino import HeterominoSolver
 from solvers.heyawake import HeyawakeSolver
 from solvers.hitori import HitoriSolver
 from solvers.kakuro import KakuroSolver
@@ -28,6 +29,7 @@ PUZZLES = [
     ('easyasabc', "Easy as ABC", EasyAsAbcSolver),
     ('fillomino', "Fillomino", FillominoSolver),
     ('hashikake', "Hashiwokakero", HashiwokakeroSolver),
+    ('heteromino', "Heteromino", HeterominoSolver),
     ('heyawake', "Heyawake", HeyawakeSolver),
     ('hitori', "Hitori", HitoriSolver),
     ('kakuro', "Kakuro", KakuroSolver),
@@ -100,6 +102,22 @@ DEMOS = [
         ' 2 0 0 0 /1 0 1 0 0 0 0 0 0 0 0 1 0 /1 0 1 0 0 0 2 0 0 0 2 1 0 /0 0 2 0 0 0 2 1 0 0 2 1 0 /0 0 2 0 0 0 0 1 1 0'
         ' 1 1 2 /0 0 1 0 1 0 0 0 1 0 1 2 2 /0 0 1 0 1 0 0 0 1 0 1 2 2 /1 0 0 0 1 0 0 0 0 0 0 2 1 /1 0 0 0 1 1 0 1 0 1 0'
         ' 0 1 /1 0 0 0 0 1 0 1 0 1 0 0 1 /',
+    ),
+    (
+        'pzprv3/heteromino/10/10/. . . . . . . . . . /. . * * * * * . . . /. . . . . . . . * . /. . . * * * * . . . /* '
+        '* . . . . . . . * /. . . * . . * * . . /. * * . . * . . * . /. * * . . . . . . . /. . . . . * * * . . /. . . .'
+        ' . * * * . . /0 0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 0 /0 0 '
+        '0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 0 '
+        '/0 0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 /0 '
+        '0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 /0 0 0 0'
+        ' 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 0 0 /',
+        'pzprv3/heteromino/10/10/. . . . . . . . . . /. . * * * * * . . . /. . . . . . . . * . /. . . * * * * . . . /* '
+        '* . . . . . . . * /. . . * . . * * . . /. * * . . * . . * . /. * * . . . . . . . /. . . . . * * * . . /. . . .'
+        ' . * * * . . /1 1 0 1 0 0 1 0 1 0 1 /1 1 1 0 0 0 0 1 1 1 1 /1 1 1 0 1 0 0 1 1 1 1 /1 0 1 1 0 0 0 1 0 1 1 /0 0 '
+        '1 1 0 1 0 1 0 1 0 /1 1 0 1 1 1 1 0 1 1 1 /1 1 0 1 1 1 1 0 1 1 1 /1 1 0 1 1 0 1 1 0 1 1 /1 1 0 1 1 1 0 0 1 1 1 '
+        '/1 0 1 1 0 1 0 0 1 0 1 /1 1 1 1 1 1 1 1 1 1 /0 0 1 1 1 1 1 0 0 1 /0 1 1 1 1 1 1 1 1 0 /1 0 0 1 1 1 1 0 1 0 /1 '
+        '1 1 1 1 1 1 1 1 1 /1 1 0 1 0 0 1 1 0 1 /0 1 1 1 1 1 1 1 1 0 /0 0 0 0 0 1 0 1 1 0 /1 1 1 0 1 1 1 1 0 1 /0 1 0 1'
+        ' 0 0 0 0 1 0 /1 1 1 1 1 0 0 0 1 1 /',
     ),
     (
         'pzprv3/heyawake/7/7/14/0 1 2 2 3 4 4 /0 1 2 2 3 4 4 /0 1 5 5 6 6 6 /7 7 5 5 6 6 6 /7 7 8 9 9 10 10 /7 7 8 9 9 '
