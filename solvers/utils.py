@@ -62,3 +62,17 @@ def sight_line(p: Point, direction: Vector, good: Callable[[Point], bool]) -> Li
 
 def table(grid):
     return '/'.join(map(lambda row: ' '.join(row) + ' ', grid))
+
+
+class UnionFind:
+
+    def __init__(self):
+        self.parents = {}
+
+    def union(self, x, y):
+        self.parents[x] = self.parents[y] if y in self.parents else y
+
+    def find(self, x):
+        parent = self.find(self.parents[x]) if x in self.parents and self.parents[x] != x else x
+        self.parents[x] = parent
+        return parent

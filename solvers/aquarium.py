@@ -28,17 +28,23 @@ class AquariumSolver(AbstractSolver):
     def configure(self, sg):
         symbol_set = self.symbol_set()
 
-        # If a square has WATER, there must also be WATER below it and to its left and right, if not bordered by a wall
-        for p in sg.lattice.points:
-            if p.y < self.height - 1 and self.horizontals[p.y][p.x] == '0':
-                sg.solver.add(Implies(
-                    sg.cell_is(p, symbol_set.WATER), sg.cell_is(Point(p.y + 1, p.x), symbol_set.WATER)))
-            if p.x > 0 and self.verticals[p.y][p.x - 1] == '0':
-                sg.solver.add(Implies(
-                    sg.cell_is(p, symbol_set.WATER), sg.cell_is(Point(p.y, p.x - 1), symbol_set.WATER)))
-            if p.x < self.width - 1 and self.verticals[p.y][p.x] == '0':
-                sg.solver.add(Implies(
-                    sg.cell_is(p, symbol_set.WATER), sg.cell_is(Point(p.y, p.x + 1), symbol_set.WATER)))
+        # Convert pzprv3 format using borders into regions
+        uf = UnionFind()
+        for row in range(self.height):
+            for col in range(self.width - 1):
+                if self.verticals[row][col] == '0':
+                    uf.union(Point(row, col), Point(row, col + 1))
+        for row in range(self.height - 1):
+            for col in range(self.width):
+                if self.horizontals[row][col] == '0':
+                    uf.union(Point(row, col), Point(row + 1, col))
+        regions = [[q for q in sg.lattice.points if uf.find(q) == p] for p in sg.lattice.points if uf.find(p) == p]
+
+        # Each region must have all water at the same level
+        for region in regions:
+            sg.solver.add(Or(
+                [And([sg.cell_is(p, symbol_set.WATER if p.y >= height else symbol_set.EMPTY) for p in region])
+                 for height in range(self.height + 1)]))
 
         # Satisfy WATER counts
         for row in range(self.height):
