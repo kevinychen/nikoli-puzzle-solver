@@ -1,8 +1,17 @@
 # Nikoli Puzzle Solver
 
-Solver for several different Nikoli puzzles.
+Solver for many types of Nikoli puzzles. Try it at https://util.in:8102.
 
-This repository uses the brilliant constraint solver library [Grilops](https://github.com/obijywk/grilops) (based on the Z3 Theorem Prover). It hooks up to the [pzprjs UI](https://github.com/robx/pzprjs) to easily input puzzles.
+This repository uses the brilliant library [Grilops](https://github.com/obijywk/grilops) and the [Z3 Theorem Prover](https://github.com/Z3Prover/z3). It hooks up to the [pzprjs UI](https://github.com/robx/pzprjs) to easily input and view puzzles.
+
+![Solving](solving.gif)
+
+## Instructions
+
+- Go to https://util.in:8102.
+- In the dropdown menu at the top, select the desired puzzle type. (You can also click File -> Load from URL to immediately load any puzz.link URL.)
+- Input a puzzle, or click "Demo" on the bottom left to load a sample puzzle.
+- Click "Solve". The grid will be automatically filled if a solution is found. Requests will time out if no solution is found after 30 seconds.
 
 ## One-time setup
 
@@ -32,5 +41,5 @@ Then go to http://localhost:5000.
 - Implement a new subclass of `AbstractSolver` in a file named "[puzzle type].py" in the `solvers` directory.
 - Update `init.py` with the new solver and puzzle metadata.
 - Update [test\_solvers.py](test/test_solvers.py) with a test puzzle.
-- Test the puzzle in the UI to verify the serialization to and from pzprjs files is correct.
+- Test the puzzle in the UI to verify the serialization to and from the pzprjs format is correct.
 
