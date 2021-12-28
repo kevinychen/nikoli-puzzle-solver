@@ -9,19 +9,6 @@
     <meta name="Nikoli Puzzle Solver" content="Solver for Nikoli puzzles" />
     <title>Nikoli Puzzle Solver</title>
     <style>
-        .top {
-            position: fixed;
-            width: 100%;
-            height: 60px;
-        }
-
-        .bottom {
-            position: fixed;
-            width: 100%;
-            height: 60px;
-            bottom: 0px;
-        }
-
         body {
             margin: 0px;
         }
@@ -41,7 +28,17 @@
         }
 
         #type {
-            width: 300px;
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 10px;
+        }
+
+        #solve {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 10px;
         }
 
         #demo {
@@ -53,10 +50,7 @@
 </head>
 
 <body>
-    <div class="top">
-        <select id="type">
-        </select>
-    </div>
+    <select id="type"></select>
     <iframe id="iframe"></iframe>
     <div class="bottom">
         <button id="solve">Solve</button>
