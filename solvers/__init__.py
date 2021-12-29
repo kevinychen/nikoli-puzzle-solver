@@ -17,6 +17,7 @@ from solvers.minesweeper import MinesweeperSolver
 from solvers.nonogram import NonogramSolver
 from solvers.numberlink import NumberlinkSolver
 from solvers.nurikabe import NurikabeSolver
+from solvers.shakashaka import ShakashakaSolver
 from solvers.shikaku import ShikakuSolver
 from solvers.skyscrapers import SkyscrapersSolver
 from solvers.slitherlink import SlitherlinkSolver
@@ -46,6 +47,7 @@ PUZZLES = [
     ('nonogram', "Nonogram", NonogramSolver),
     ('numlin', "Numberlink", NumberlinkSolver),
     ('nurikabe', "Nurikabe", NurikabeSolver),
+    ('shakashaka', "Shakashaka", ShakashakaSolver),
     ('shikaku', "Shikaku", ShikakuSolver),
     ('skyscrapers', "Skyscrapers", SkyscrapersSolver),
     ('slither', "Slitherlink", SlitherlinkSolver),
@@ -236,6 +238,18 @@ DEMOS = [
         ' . . . 3 . 3 . /. . 2 . . . . 3 . . /2 . . 4 . . . . . . /. . . . . . . . . . /. 1 . . . . 2 . 4 . /',
         'pzprv3/nurikabe/9/10/2 + # + + + # # + 2 /# # # + + # 2 # # # /# 2 # + 7 # + # + # /# + # # # # # # + # /# # +'
         ' # + + 3 # 3 # /+ # 2 # # # # 3 # # /2 # # 4 + # + + # + /# # + + # # # # # + /# 1 # # # + 2 # 4 + /',
+    ),
+    (
+        'pzprv3/shakashaka/10/10/. . . . 5 . . . . . /. . . . . 2 . . . . /2 . . . . . . . 5 . /. . . . . . . . . . /. '
+        '. . . . 5 . . . 2 /. . 3 5 . . . . . . /5 . . . 5 . . . . . /. . . . . . . 4 . . /. . . . 2 . . . . . /2 . . .'
+        ' . . . . . 2 /. . . . . . . . . . /. . . . . . . . . . /. . . . . . . . . . /. . . . . . . . . . /. . . . . . '
+        '. . . . /. . . . . . . . . . /. . . . . . . . . . /. . . . . . . . . . /. . . . . . . . . . /. . . . . . . . .'
+        ' . /',
+        'pzprv3/shakashaka/10/10/. . . . 5 . . . . . /. . . . . 2 . . . . /2 . . . . . . . 5 . /. . . . . . . . . . /. '
+        '. . . . 5 . . . 2 /. . 3 5 . . . . . . /5 . . . 5 . . . . . /. . . . . . . 4 . . /. . . . 2 . . . . . /2 . . .'
+        ' . . . . . 2 /5 4 + + . + 5 4 5 4 /2 + 4 5 4 . 2 3 2 3 /. 2 3 2 3 + 5 4 . + /+ 5 4 5 4 + 2 + 4 + /5 + 3 2 3 . '
+        '+ 2 3 . /2 3 . . + + 5 4 5 4 /. 5 4 + . 5 + 3 2 3 /5 + + 4 + 2 3 . 5 4 /2 + + 3 . 5 4 5 + 3 /. 2 3 + + 2 3 2 3'
+        ' . /',
     ),
     (
         'pzprv3/shikaku/11/11/. 4 . . . . . . . . . /2 4 . . 3 . . . . . . /. . . . . . . 16 . . . /6 5 2 4 . . 4 . . .'
