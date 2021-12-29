@@ -13,6 +13,10 @@ class TestSolvers(unittest.TestCase):
         pzprv3, expect = get_demo('cave')
         self.assertEqual(expect, solve(pzprv3))
 
+    def test_castlewall(self):
+        pzprv3, expect = get_demo('castle')
+        self.assertEqual(expect, solve(pzprv3))
+
     def test_easyasabc(self):
         pzprv3, expect = get_demo('easyasabc')
         self.assertEqual(expect, solve(pzprv3))

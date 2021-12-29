@@ -37,6 +37,7 @@ class ShakashakaSolver(AbstractSolver):
                         And([sg.cell_is(q, symbol_set.EMPTY) for q in box if q != p]),
                         sg.cell_is(p, symbol_set.EMPTY)))
 
+        # SW means a black triangle with a SW corner, i.e. a line going from NW to SE with the bottom left shaded.
         diagonal_symbols = [symbol_set.SW, symbol_set.SE, symbol_set.NE, symbol_set.NW]
         for p in sg.lattice.points:
             if p.x == -1 or p.x == self.width or p.y == -1 or p.y == self.height:
