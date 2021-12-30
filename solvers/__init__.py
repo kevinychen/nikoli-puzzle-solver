@@ -37,7 +37,7 @@ from solvers.yinyang import YinYangSolver
 
 PUZZLES = [
     ('aquarium', "Aquarium", AquariumSolver),
-    ('balance', "Balance Loop", BalanceLoopSolver),
+    ('balance', "Balance Loop (Shingoki)", BalanceLoopSolver),
     ('castle', "Castle Wall", CastleWallSolver),
     ('cave', "Cave", CaveSolver),
     ('easyasabc', "Easy as ABC", EasyAsAbcSolver),

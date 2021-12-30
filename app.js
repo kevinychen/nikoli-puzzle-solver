@@ -65,7 +65,7 @@ window.onload = function () {
     setInterval(() => {
         puzzle = iframe.contentWindow.ui.puzzle;
         select.value = puzzle.pid;
-        if (getCurrentPzprv3() !== foundSolution) {
+        if (solveButton.textContent === 'Find another solution' && getCurrentPzprv3() !== foundSolution) {
             foundSolution = null;
             solveButton.textContent = 'Solve';
         }
