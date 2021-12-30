@@ -1,3 +1,4 @@
+from itertools import combinations
 from solvers.utils import *
 
 WHITE = '0'

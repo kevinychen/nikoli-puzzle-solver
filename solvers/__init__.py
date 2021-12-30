@@ -28,6 +28,7 @@ from solvers.slitherlink import SlitherlinkSolver
 from solvers.starbattle import StarBattleSolver
 from solvers.sudoku import SudokuSolver
 from solvers.tapa import TapaSolver
+from solvers.tapalikeloop import TapaLikeLoopSolver
 from solvers.tentaisho import TentaishoSolver
 from solvers.tents import TentsSolver
 from solvers.yajilin import YajilinSolver
@@ -61,6 +62,7 @@ PUZZLES = [
     ('starbattle', "Star Battle", StarBattleSolver),
     ('sudoku', "Sudoku", SudokuSolver),
     ('tapa', "Tapa", TapaSolver),
+    ('tapaloop', "Tapa-Like Loop", TapaLikeLoopSolver),
     ('tentaisho', "Tentaisho (Spiral Galaxies)", TentaishoSolver),
     ('tents', "Tents", TentsSolver),
     ('yajilin', "Yajilin", YajilinSolver),
@@ -361,6 +363,14 @@ DEMOS = [
         'pzprv3/tapa/10/10/+ + + 1,1 + + + + + + /1 + # + # # 2,2 # + 2 /+ # # + + # + # # # /# # + 1 + # # # + # /# + '
         '1,1 + + 2 + 2,2 # # /# + 4 # 4 + + 3 # + /# # # # # # 3 + # + /+ # + + + # # + # # /4 # + 4 # + # # # 3 /# # #'
         ' # # + 3 # + + /',
+    ),
+    (
+        'pzprv3/tapaloop/6/6/3 . . . 2,2 . /. . . . . . /. . 1,3,3 . . . /. . . . . . /. . . . . . /2 . . . . 2 /0 0 0 '
+        '0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 0 /0 0 0 0 0 0 /0 0 0 0 0 0 /0 0 0 0 0 0'
+        ' /0 0 0 0 0 0 /',
+        'pzprv3/tapaloop/6/6/3 . . . 2,2 . /. . . . . . /. . 1,3,3 . . . /. . . . . . /. . . . . . /2 . . . . 2 /0 1 1 '
+        '0 0 /1 0 0 0 1 /1 0 0 0 0 /0 1 0 1 0 /0 1 0 1 1 /0 1 1 0 0 /0 1 0 1 0 0 /1 0 0 1 1 1 /0 1 0 1 1 1 /0 0 1 0 0 1'
+        ' /0 1 0 1 0 0 /',
     ),
     (
         'pzprv3/tentaisho/7/7/.....1......1/1............/............./.........1.../....1......../............./.....'

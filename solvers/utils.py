@@ -1,5 +1,4 @@
 from collections import defaultdict
-from itertools import combinations
 from re import match
 from typing import Callable, List, Union
 from uuid import uuid4

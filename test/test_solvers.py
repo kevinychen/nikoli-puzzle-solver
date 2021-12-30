@@ -86,6 +86,9 @@ class TestSolvers(unittest.TestCase):
     def test_tapa(self):
         self._test_helper('tapa')
 
+    def test_tapalikeloop(self):
+        self._test_helper('tapaloop')
+
     def test_tentaisho(self):
         self._test_helper('tentaisho')
 
