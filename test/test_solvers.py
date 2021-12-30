@@ -6,124 +6,101 @@ from solvers import get_demo, solve
 class TestSolvers(unittest.TestCase):
 
     def test_aquarium(self):
-        pzprv3, expect = get_demo('aquarium')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('aquarium')
 
     def test_cave(self):
-        pzprv3, expect = get_demo('cave')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('cave')
 
     def test_castlewall(self):
-        pzprv3, expect = get_demo('castle')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('castle')
 
     def test_easyasabc(self):
-        pzprv3, expect = get_demo('easyasabc')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('easyasabc')
 
     def test_fillomino(self):
-        pzprv3, expect = get_demo('fillomino')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('fillomino')
 
     def test_hashiwokakero(self):
-        pzprv3, expect = get_demo('hashikake')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('hashikake')
 
     def test_heteromino(self):
-        pzprv3, expect = get_demo('heteromino')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('heteromino')
 
     def test_heyawake(self):
-        pzprv3, expect = get_demo('heyawake')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('heyawake')
 
     def test_hitori(self):
-        pzprv3, expect = get_demo('hitori')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('hitori')
 
     def test_kakuro(self):
-        pzprv3, expect = get_demo('kakuro')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('kakuro')
 
     def test_kropki(self):
-        pzprv3, expect = get_demo('kropki')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('kropki')
 
     def test_lightup(self):
-        pzprv3, expect = get_demo('lightup')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('lightup')
 
     def test_lits(self):
-        pzprv3, expect = get_demo('lits')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('lits')
 
     def test_masyu(self):
-        pzprv3, expect = get_demo('mashu')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('mashu')
 
     def test_minesweeper(self):
-        pzprv3, expect = get_demo('mines')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('mines')
 
     def test_nonogram(self):
-        pzprv3, expect = get_demo('nonogram')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('nonogram')
 
     def test_numberlink(self):
-        pzprv3, expect = get_demo('numlin')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('numlin')
 
     def test_nurikabe(self):
-        pzprv3, expect = get_demo('nurikabe')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('nurikabe')
 
     def test_shakashaka(self):
-        pzprv3, expect = get_demo('shakashaka')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('shakashaka')
 
     def test_shikaku(self):
-        pzprv3, expect = get_demo('shikaku')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('shikaku')
 
     def test_simpleloop(self):
-        pzprv3, expect = get_demo('simpleloop')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('simpleloop')
 
     def test_skyscrapers(self):
-        pzprv3, expect = get_demo('skyscrapers')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('skyscrapers')
 
     def test_slitherlink(self):
-        pzprv3, expect = get_demo('slither')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('slither')
 
     def test_starbattle(self):
-        pzprv3, expect = get_demo('starbattle')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('starbattle')
 
     def test_sudoku(self):
-        pzprv3, expect = get_demo('sudoku')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('sudoku')
 
     def test_tapa(self):
-        pzprv3, expect = get_demo('tapa')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('tapa')
 
     def test_tentaisho(self):
-        pzprv3, expect = get_demo('tentaisho')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('tentaisho')
 
     def test_tents(self):
-        pzprv3, expect = get_demo('tents')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('tents')
 
     def test_yajilin(self):
-        pzprv3, expect = get_demo('yajilin')
-        self.assertEqual(expect, solve(pzprv3))
+        self._test_helper('yajilin')
 
     def test_yinyang(self):
-        pzprv3, expect = get_demo('yinyang')
+        self._test_helper('yinyang')
+
+    def _test_helper(self, puzzle_type):
+        pzprv3, expect = get_demo(puzzle_type)
         self.assertEqual(expect, solve(pzprv3))
+
+        # verify uniqueness
+        self.assertIsNone(solve(pzprv3, expect))
 
 
 if __name__ == '__main__':

@@ -1,4 +1,5 @@
 from re import match
+from typing import Optional
 
 from solvers.aquarium import AquariumSolver
 from solvers.castlewall import CastleWallSolver
@@ -400,8 +401,8 @@ def puzzle_list():
     return [{'type': puzzle[0], 'name': puzzle[1], 'demo': get_demo(puzzle[0])[0]} for puzzle in PUZZLES]
 
 
-def solve(pzprv3: str):
-    return next(puzzle[2] for puzzle in PUZZLES if puzzle[0] == _get_puzzle_type(pzprv3))(pzprv3).solve()
+def solve(pzprv3: str, different_from: Optional[str] = None):
+    return next(puzzle[2] for puzzle in PUZZLES if puzzle[0] == _get_puzzle_type(pzprv3))(pzprv3).solve(different_from)
 
 
 def _get_puzzle_type(pzprv3):

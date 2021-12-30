@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Dict
+from typing import Dict, Optional
 
 from grilops import Lattice, Point, SymbolGrid, SymbolSet
 from threading import Condition, Lock
@@ -13,7 +13,7 @@ class AbstractSolver(ABC):
     The constructor should parse the pzprv3 string into more convenient data structures.
     """
 
-    def solve(self) -> str:
+    def solve(self, different_from: Optional[str]) -> Optional[str]:
         """Return the pzprv3 string for the solved puzzle."""
         with GlobalTimeoutLock(timeout=30):
             sg = SymbolGrid(self.lattice(), self.symbol_set())
@@ -22,6 +22,11 @@ class AbstractSolver(ABC):
             if not sg.solve():
                 if sg.solver.reason_unknown() == "timeout":
                     raise TimeoutError(408)
+                return None
+            pzprv3 = self.to_pzprv3(sg.solved_grid())
+            if pzprv3 != different_from:
+                return pzprv3
+            if sg.is_unique():
                 return None
             return self.to_pzprv3(sg.solved_grid())
 

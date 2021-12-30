@@ -33,6 +33,6 @@ def puzzle_list():
 @app.route("/api/solve", methods=['POST'])
 def solve():
     try:
-        return {'pzprv3': solvers.solve(request.json['pzprv3'])}
+        return {'pzprv3': solvers.solve(request.json['pzprv3'], request.json['different_from'])}
     except TimeoutError as e:
         abort(e.args[0])

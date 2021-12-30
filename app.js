@@ -1,8 +1,14 @@
+function getCurrentPzprv3() {
+    return iframe.contentWindow.ui.puzzle.getFileData().replaceAll('\n', '/');
+}
+
 window.onload = function () {
     const select = document.getElementById('type');
     const iframe = document.getElementById('iframe');
     const solveButton = document.getElementById('solve');
     const demoButton = document.getElementById('demo');
+
+    let foundSolution = null;
 
     fetch('/api/list').then(response => {
         response.json().then(body => {
@@ -30,9 +36,12 @@ window.onload = function () {
         solveButton.disabled = true;
         fetch('/api/solve', {
             method: 'POST',
-            body: JSON.stringify({'pzprv3': iframe.contentWindow.ui.puzzle.getFileData().replaceAll('\n', '/')}),
+            body: JSON.stringify({
+                'pzprv3': getCurrentPzprv3(),
+                'different_from': foundSolution,
+            }),
             headers: { 'Content-type': 'application/json' },
-        }).then(response => {
+        }).then(async response => {
             if (response.status == 408) {
                 alert('Timeout exceeded.');
             } else if (response.status == 500) {
@@ -40,18 +49,25 @@ window.onload = function () {
             } else if (response.status == 503) {
                 alert('The server is too busy. Please try again later.');
             } else {
-                response.json().then(body => {
-                    if (body.pzprv3 === null) {
-                        alert('No solution found.');
-                    } else {
-                        iframe.contentWindow.ui.puzzle.open(body.pzprv3);
-                    }
-                });
+                body = await response.json();
+                if (body.pzprv3 === null) {
+                    alert('No solution found.');
+                } else {
+                    foundSolution = body.pzprv3;
+                    iframe.contentWindow.ui.puzzle.open(foundSolution);
+                }
             }
-            solveButton.textContent = 'Solve';
+            solveButton.textContent = getCurrentPzprv3() === foundSolution ? 'Find another solution' : 'Solve';
             solveButton.disabled = false;
         });
     });
 
-    setInterval(() => select.value = iframe.contentWindow.ui.puzzle.pid, 1000);
+    setInterval(() => {
+        puzzle = iframe.contentWindow.ui.puzzle;
+        select.value = puzzle.pid;
+        if (getCurrentPzprv3() !== foundSolution) {
+            foundSolution = null;
+            solveButton.textContent = 'Solve';
+        }
+    }, 1000);
 };

@@ -25,6 +25,8 @@ class KakuroSolver(AbstractSolver):
             for col in range(self.width + 1):
                 num = self.grid[row][col]
                 if num != '.':
+                    if row > 0 and col > 0:
+                        sg.solver.add(sg.cell_is(Point(row - 1, col - 1), 1))
                     parts = num.split(',')
                     if row > 0 and parts[0] != '-1':
                         line_totals.append((int(parts[0]), sight_line(

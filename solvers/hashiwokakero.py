@@ -45,7 +45,7 @@ class HashiwokakeroSolver(AbstractSolver):
         for edge in sg.lattice.points:
             p, q = self.number_positions[edge.x], self.number_positions[edge.y]
             if edge.x == edge.y:
-                pass
+                sg.solver.add(sg.cell_is(edge, 0))
             elif p.y == q.y and all(not self.grid[p.y][x].isnumeric() for x in range(min(p.x, q.x) + 1, max(p.x, q.x))):
                 edges.append(edge)
             elif p.x == q.x and all(not self.grid[y][p.x].isnumeric() for y in range(min(p.y, q.y) + 1, max(p.y, q.y))):
