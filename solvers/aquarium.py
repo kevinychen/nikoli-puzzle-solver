@@ -28,20 +28,8 @@ class AquariumSolver(AbstractSolver):
     def configure(self, sg):
         symbol_set = self.symbol_set()
 
-        # Convert pzprv3 format using borders into regions
-        uf = UnionFind()
-        for row in range(self.height):
-            for col in range(self.width - 1):
-                if self.verticals[row][col] == '0':
-                    uf.union(Point(row, col), Point(row, col + 1))
-        for row in range(self.height - 1):
-            for col in range(self.width):
-                if self.horizontals[row][col] == '0':
-                    uf.union(Point(row, col), Point(row + 1, col))
-        regions = [[q for q in sg.lattice.points if uf.find(q) == p] for p in sg.lattice.points if uf.find(p) == p]
-
         # Each region must have all water at the same level
-        for region in regions:
+        for region in convert_pzprv3_borders_to_regions(sg, self.verticals, self.horizontals):
             sg.solver.add(Or(
                 [And([sg.cell_is(p, symbol_set.WATER if p.y >= height else symbol_set.EMPTY) for p in region])
                  for height in range(self.height + 1)]))

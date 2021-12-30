@@ -50,6 +50,9 @@ class TestSolvers(unittest.TestCase):
     def test_masyu(self):
         self._test_helper('mashu')
 
+    def test_meanderingnumbers(self):
+        self._test_helper('meander')
+
     def test_minesweeper(self):
         self._test_helper('mines')
 

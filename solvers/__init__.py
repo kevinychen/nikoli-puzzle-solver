@@ -16,6 +16,7 @@ from solvers.kropki import KropkiSolver
 from solvers.lightup import LightUpSolver
 from solvers.lits import LITSSolver
 from solvers.masyu import MasyuSolver
+from solvers.meanderingnumbers import MeanderingNumbersSolver
 from solvers.minesweeper import MinesweeperSolver
 from solvers.nonogram import NonogramSolver
 from solvers.numberlink import NumberlinkSolver
@@ -50,6 +51,7 @@ PUZZLES = [
     ('lightup', "Light Up (Akari)", LightUpSolver),
     ('lits', "LITS", LITSSolver),
     ('mashu', "Masyu", MasyuSolver),
+    ('meander', "Meandering Numbers", MeanderingNumbersSolver),
     ('mines', "Minesweeper", MinesweeperSolver),
     ('nonogram', "Nonogram", NonogramSolver),
     ('numlin', "Numberlink", NumberlinkSolver),
@@ -239,6 +241,24 @@ DEMOS = [
         '1 0 0 0 0 1 /0 0 1 1 0 1 1 0 1 /0 0 0 0 1 1 1 1 0 /1 0 0 0 0 1 1 1 0 /0 0 1 1 0 1 1 1 1 /0 1 0 0 0 1 1 0 0 1 /'
         '1 0 0 1 0 0 0 0 1 1 /0 0 1 1 1 0 0 1 1 1 /0 0 1 1 1 1 0 0 1 1 /1 0 0 0 0 1 0 1 0 1 /1 1 0 0 1 1 0 1 1 0 /1 1 1'
         ' 0 0 0 0 0 0 1 /1 1 1 0 1 0 0 0 1 1 /0 0 1 0 1 1 0 0 0 1 /',
+    ),
+    (
+        'pzprv3/meander/10/10/1 0 1 0 0 1 0 1 0 /0 0 1 0 1 1 0 0 0 /1 0 1 0 1 0 0 1 0 /0 1 0 0 1 0 1 0 1 /1 1 1 0 1 0 0'
+        ' 1 0 /1 1 1 0 1 0 0 1 0 /1 1 1 0 1 0 1 0 0 /0 1 0 0 1 0 1 0 0 /1 1 0 0 1 0 1 0 0 /0 0 0 1 0 0 1 0 0 /0 1 1 0 0'
+        ' 1 0 0 1 1 /1 0 0 1 1 0 1 1 1 1 /0 1 1 0 0 0 0 1 0 1 /1 0 0 1 1 1 1 1 1 0 /0 0 1 0 0 0 0 0 0 0 /0 0 0 0 0 1 1 '
+        '1 1 1 /0 1 0 1 1 0 0 0 0 0 /1 0 1 1 1 0 0 1 1 1 /0 1 1 1 0 1 1 0 0 0 /. . 1 . . . . . . . /. . . . . . . 4 . .'
+        ' /. . . . . . . . . . /. . . . . . . . . . /. . . . . . . . . . /. . . . . . . . . . /. . . . . . . . . . /. .'
+        ' . . . . . . . . /. . 6 . . . . . . . /. . . . . . . 2 . . /. . . . . . . . . . /. . . . . . . . . . /. . . . '
+        '. . . . . . /. . . . . . . . . . /. . . . . . . . . . /. . . . . . . . . . /. . . . . . . . . . /. . . . . . .'
+        ' . . . /. . . . . . . . . . /. . . . . . . . . . /',
+        'pzprv3/meander/10/10/1 0 1 0 0 1 0 1 0 /0 0 1 0 1 1 0 0 0 /1 0 1 0 1 0 0 1 0 /0 1 0 0 1 0 1 0 1 /1 1 1 0 1 0 0'
+        ' 1 0 /1 1 1 0 1 0 0 1 0 /1 1 1 0 1 0 1 0 0 /0 1 0 0 1 0 1 0 0 /1 1 0 0 1 0 1 0 0 /0 0 0 1 0 0 1 0 0 /0 1 1 0 0'
+        ' 1 0 0 1 1 /1 0 0 1 1 0 1 1 1 1 /0 1 1 0 0 0 0 1 0 1 /1 0 0 1 1 1 1 1 1 0 /0 0 1 0 0 0 0 0 0 0 /0 0 0 0 0 1 1 '
+        '1 1 1 /0 1 0 1 1 0 0 0 0 0 /1 0 1 1 1 0 0 1 1 1 /0 1 1 1 0 1 1 0 0 0 /. . 1 . . . . . . . /. . . . . . . 4 . .'
+        ' /. . . . . . . . . . /. . . . . . . . . . /. . . . . . . . . . /. . . . . . . . . . /. . . . . . . . . . /. .'
+        ' . . . . . . . . /. . 6 . . . . . . . /. . . . . . . 2 . . /6 2 1 5 2 1 2 1 2 1 /5 4 3 4 3 6 3 4 5 6 /6 1 2 1 '
+        '2 5 2 1 2 1 /5 4 5 4 3 4 3 4 3 5 /6 3 6 2 1 2 1 6 1 4 /5 2 5 3 4 3 4 5 2 3 /4 1 4 6 5 2 1 3 4 5 /3 2 3 2 1 3 4'
+        ' 2 1 6 /5 1 6 5 4 6 5 3 4 5 /4 3 2 1 3 2 1 2 1 6 /',
     ),
     (
         'pzprv3/mines/10/10/. . . . . . . . . . /. 3 4 5 . . 5 3 1 . /. 2 . . . . . . 2 . /. 1 . 2 2 2 2 . 4 . /. . . 2'
