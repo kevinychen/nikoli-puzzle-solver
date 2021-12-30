@@ -1,4 +1,4 @@
-from flask import Flask, request, send_from_directory, send_file
+from flask import abort, Flask, request, send_from_directory, send_file
 
 import solvers
 
@@ -32,6 +32,7 @@ def puzzle_list():
 
 @app.route("/api/solve", methods=['POST'])
 def solve():
-    pzprv3 = request.json['pzprv3']
-    result = solvers.solve(pzprv3)
-    return {'pzprv3': result}
+    try:
+        return {'pzprv3': solvers.solve(request.json['pzprv3'])}
+    except TimeoutError as e:
+        abort(e.args[0])

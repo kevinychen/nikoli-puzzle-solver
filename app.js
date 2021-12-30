@@ -33,15 +33,23 @@ window.onload = function () {
             body: JSON.stringify({'pzprv3': iframe.contentWindow.ui.puzzle.getFileData().replaceAll('\n', '/')}),
             headers: { 'Content-type': 'application/json' },
         }).then(response => {
-            response.json().then(body => {
-                if (body.pzprv3 === null) {
-                    alert('No solution found (or timeout exceeded).');
-                } else {
-                    iframe.contentWindow.ui.puzzle.open(body.pzprv3);
-                }
-                solveButton.textContent = 'Solve';
-                solveButton.disabled = false;
-            })
+            if (response.status == 408) {
+                alert('Timeout exceeded.');
+            } else if (response.status == 500) {
+                alert('An unknown error occurred.');
+            } else if (response.status == 503) {
+                alert('The server is too busy. Please try again later.');
+            } else {
+                response.json().then(body => {
+                    if (body.pzprv3 === null) {
+                        alert('No solution found.');
+                    } else {
+                        iframe.contentWindow.ui.puzzle.open(body.pzprv3);
+                    }
+                });
+            }
+            solveButton.textContent = 'Solve';
+            solveButton.disabled = false;
         });
     });
 

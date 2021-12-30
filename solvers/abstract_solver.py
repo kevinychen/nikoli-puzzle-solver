@@ -20,6 +20,8 @@ class AbstractSolver(ABC):
             self.configure(sg)
             sg.solver.set("timeout", 30000)
             if not sg.solve():
+                if sg.solver.reason_unknown() == "timeout":
+                    raise TimeoutError(408)
                 return None
             return self.to_pzprv3(sg.solved_grid())
 
@@ -65,7 +67,7 @@ class GlobalTimeoutLock:
                 else:
                     GlobalTimeoutLock._cond.wait(stop_time - current_time)
                     current_time = time()
-            raise TimeoutError()
+            raise TimeoutError(503)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         with GlobalTimeoutLock._cond:
