@@ -47,11 +47,13 @@ class AquariumSolver(AbstractSolver):
                  for height in range(self.height + 1)]))
 
         # Satisfy WATER counts
+        border_lines = []
         for row in range(self.height):
-            sg.solver.add(PbEq(
-                [(sg.cell_is(Point(row, col), symbol_set.WATER), 1) for col in range(self.width)],
-                int(self.grid[row + 1][0])))
+            border_lines.append((Point(row, -1), Vector(0, 1)))
         for col in range(self.width):
-            sg.solver.add(PbEq(
-                [(sg.cell_is(Point(row, col), symbol_set.WATER), 1) for row in range(self.height)],
-                int(self.grid[0][col + 1])))
+            border_lines.append((Point(-1, col), Vector(1, 0)))
+        for p, v in border_lines:
+            num = self.grid[p.y + 1][p.x + 1]
+            if num.isnumeric():
+                sg.solver.add(PbEq(
+                    [(sg.cell_is(q, symbol_set.WATER), 1) for q in sight_line(sg, p.translate(v), v)], int(num)))

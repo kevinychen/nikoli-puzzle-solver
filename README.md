@@ -1,6 +1,6 @@
 # Nikoli Puzzle Solver
 
-Solver for many types of Nikoli-style logic puzzles. Try it at https://util.in:8102.
+Solver for many types of Nikoli-style logic puzzles, including Sudoku, Slitherlink, Masyu, Nonograms, Skyscrapers, Light Up, Kakuro, and over 20 more. Try it at https://util.in:8102.
 
 This repository builds on top of the brilliant puzzle solver library [Grilops](https://github.com/obijywk/grilops). Some puzzle implementations are taken or inspired/improved from the [Grilops examples](https://github.com/obijywk/grilops/tree/master/examples), and others are new. It hooks up to the [pzprjs UI](https://github.com/robx/pzprjs) (which powers [puzz.link](https://puzz.link)) to make it easy to input and view puzzles.
 

@@ -26,7 +26,6 @@ class SkyscrapersSolver(AbstractSolver):
             border_lines.append((Point(i, self.size), Vector(0, -1)))
             border_lines.append((Point(-1, i), Vector(1, 0)))
             border_lines.append((Point(self.size, i), Vector(-1, 0)))
-
         for p, v in border_lines:
             num = self.grid[p.y + 1][p.x + 1]
             if num.isnumeric():

@@ -36,13 +36,15 @@ class TentsSolver(AbstractSolver):
             sg.solver.add(sg.cell_is(p, symbol_set.EMPTY) == (rc.region_id_grid[p] == -1))
 
         # Satisfy TENT counts
+        border_lines = []
         for row in range(self.height):
-            sg.solver.add(PbEq(
-                [(sg.cell_is(Point(row, col), symbol_set.TENT), 1) for col in range(self.width)],
-                int(self.grid[row + 1][0])))
+            border_lines.append((Point(row, -1), Vector(0, 1)))
         for col in range(self.width):
-            sg.solver.add(PbEq(
-                [(sg.cell_is(Point(row, col), symbol_set.TENT), 1) for row in range(self.height)],
-                int(self.grid[0][col + 1])))
+            border_lines.append((Point(-1, col), Vector(1, 0)))
+        for p, v in border_lines:
+            num = self.grid[p.y + 1][p.x + 1]
+            if num.isnumeric():
+                sg.solver.add(PbEq(
+                    [(sg.cell_is(q, symbol_set.TENT), 1) for q in sight_line(sg, p.translate(v), v)], int(num)))
 
         no_adjacent_symbols(sg, symbol_set.TENT, no_diagonal=True)
