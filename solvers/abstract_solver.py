@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 from typing import Dict
 
 from grilops import Lattice, Point, SymbolGrid, SymbolSet
+from threading import Condition, Lock
+from time import time
 
 
 class AbstractSolver(ABC):
@@ -13,12 +15,13 @@ class AbstractSolver(ABC):
 
     def solve(self) -> str:
         """Return the pzprv3 string for the solved puzzle."""
-        sg = SymbolGrid(self.lattice(), self.symbol_set())
-        self.configure(sg)
-        sg.solver.set("timeout", 30000)
-        if not sg.solve():
-            return None
-        return self.to_pzprv3(sg.solved_grid())
+        with GlobalTimeoutLock(timeout=30):
+            sg = SymbolGrid(self.lattice(), self.symbol_set())
+            self.configure(sg)
+            sg.solver.set("timeout", 30000)
+            if not sg.solve():
+                return None
+            return self.to_pzprv3(sg.solved_grid())
 
     @abstractmethod
     def to_pzprv3(self, solved_grid: Dict[Point, int]) -> str:
@@ -42,3 +45,29 @@ class AbstractSolver(ABC):
     def configure(self, sg: SymbolGrid):
         """Add constraints to the solver (sg.solver) based on the rules of the puzzle."""
         raise NotImplementedError()
+
+
+class GlobalTimeoutLock:
+
+    _lock = Lock()
+    _cond = Condition(Lock())
+
+    def __init__(self, timeout):
+        self.timeout = timeout
+
+    def __enter__(self):
+        with GlobalTimeoutLock._cond:
+            current_time = time()
+            stop_time = current_time + self.timeout
+            while current_time < stop_time:
+                if GlobalTimeoutLock._lock.acquire(False):
+                    return self
+                else:
+                    GlobalTimeoutLock._cond.wait(stop_time - current_time)
+                    current_time = time()
+            raise TimeoutError()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        with GlobalTimeoutLock._cond:
+            GlobalTimeoutLock._lock.release()
+            GlobalTimeoutLock._cond.notify()
