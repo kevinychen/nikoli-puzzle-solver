@@ -39,7 +39,7 @@ class YajilinSolver(AbstractSolver):
         for p in sg.lattice.points:
             clue = self.grid[p.y][p.x]
             if clue == '.':
-                sg.solver.add(sg.grid[p] != symbol_set.WALL)
+                sg.solver.add(Not(sg.cell_is(p, symbol_set.WALL)))
             else:
                 direction, num = clue.split(',')
                 sg.solver.add(sg.cell_is(p, symbol_set.WALL))

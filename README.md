@@ -41,7 +41,7 @@ Then go to http://localhost:5000.
 ### Adding a solver
 
 - Implement a new subclass of `AbstractSolver` in a file named "[puzzle type].py" in the `solvers` directory.
-- Update `init.py` with the new solver and puzzle metadata.
-- Update [test\_solvers.py](test/test_solvers.py) with a test puzzle.
-- Test the puzzle in the UI to verify the serialization to and from the pzprjs format is correct.
+- Update `init.py` with the puzzle type, name, reference to the solver class, and a test puzzle.
+- Update [test\_solvers.py](test/test_solvers.py) with the test puzzle.
+- Test solving the puzzle in the UI to verify the serialization to and from the pzprjs format is correct.
 

@@ -36,7 +36,7 @@ class CaveSolver(AbstractSolver):
                     for direction in sg.lattice.edge_sharing_directions():
                         line = sight_line(sg, p, direction)
                         for i in range(1, len(line)):
-                            all_is_visible.append(And([sg.cell_is(line[j], symbol_set.WHITE) for j in range(i + 1)]))
+                            all_is_visible.append(And([sg.cell_is(q, symbol_set.WHITE) for q in line[:i+1]]))
                     sg.solver.add(PbEq([(is_visible, 1) for is_visible in all_is_visible], int(num)))
 
         continuous_region(sg, rc, lambda q: sg.cell_is(q, symbol_set.WHITE))

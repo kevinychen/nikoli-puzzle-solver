@@ -31,7 +31,6 @@ class SkyscrapersSolver(AbstractSolver):
             if num.isnumeric():
                 line = sight_line(sg, p.translate(v), v)
                 sg.solver.add(PbEq(
-                    [(And([sg.grid[line[i]] > sg.grid[line[j]] for j in range(i)]), 1) for i in range(self.size)],
-                    int(num)))
+                    [(And([sg.grid[q] > sg.grid[r] for r in line[:i]]), 1) for i, q in enumerate(line)], int(num)))
 
         distinct_rows_and_columns(sg)

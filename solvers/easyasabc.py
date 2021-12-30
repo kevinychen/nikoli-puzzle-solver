@@ -36,8 +36,7 @@ class EasyAsAbcSolver(AbstractSolver):
             if num.isnumeric():
                 line = sight_line(sg, p.translate(v), v)
                 sg.solver.add(Or([And(
-                    sg.grid[line[i]] == int(num),
-                    *[sg.grid[line[j]] == 0 for j in range(i)]) for i in range(self.size)]))
+                    sg.grid[q] == int(num), *[sg.grid[r] == 0 for r in line[:i]]) for i, q in enumerate(line)]))
 
         # Each letter appears in each row and in each column exactly once
         for i in range(1, self.num_letters + 1):

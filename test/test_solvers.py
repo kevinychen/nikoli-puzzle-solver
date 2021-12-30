@@ -8,11 +8,14 @@ class TestSolvers(unittest.TestCase):
     def test_aquarium(self):
         self._test_helper('aquarium')
 
-    def test_cave(self):
-        self._test_helper('cave')
+    def test_balance_loop(self):
+        self._test_helper('balance')
 
     def test_castlewall(self):
         self._test_helper('castle')
+
+    def test_cave(self):
+        self._test_helper('cave')
 
     def test_easyasabc(self):
         self._test_helper('easyasabc')

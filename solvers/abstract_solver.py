@@ -13,7 +13,7 @@ class AbstractSolver(ABC):
     The constructor should parse the pzprv3 string into more convenient data structures.
     """
 
-    def solve(self, different_from: Optional[str]) -> Optional[str]:
+    def solve(self, different_from: Optional[str] = None) -> Optional[str]:
         """Return the pzprv3 string for the solved puzzle."""
         with GlobalTimeoutLock(timeout=30):
             sg = SymbolGrid(self.lattice(), self.symbol_set())

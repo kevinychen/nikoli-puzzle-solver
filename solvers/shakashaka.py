@@ -50,7 +50,7 @@ class ShakashakaSolver(AbstractSolver):
                         sg.solver.add(PbEq([(sg.cell_is_one_of(q, diagonal_symbols), 1)
                                             for q in sg.lattice.edge_sharing_points(p)], int(num)))
                 else:
-                    sg.solver.add(sg.grid[p] != symbol_set.WALL)
+                    sg.solver.add(Not(sg.cell_is(p, symbol_set.WALL)))
 
                     # A SW must have either a SE to its east, or a blank to its east and a SW to its southeast.
                     # Also, it must either have an empty or NE to its northeast.
