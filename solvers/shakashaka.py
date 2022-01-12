@@ -28,14 +28,16 @@ class ShakashakaSolver(AbstractSolver):
     def configure(self, sg):
         symbol_set = self.symbol_set()
 
-        # In every 2x2 box, there cannot be only 3 empty squares.
+        # In every 2x2 box, if there are 3 empty squares, the 4th is either empty
+        # or contains a triangle in the corresponding direction as its position in the box
         for row in range(self.height - 1):
             for col in range(self.width - 1):
                 box = [Point(y, x) for y in range(row, row + 2) for x in range(col, col + 2)]
-                for p in box:
+                for (i, p) in enumerate(box):
+                    corresponding_direction = [symbol_set.NW, symbol_set.NE, symbol_set.SW, symbol_set.SE][i]
                     sg.solver.add(Implies(
                         And([sg.cell_is(q, symbol_set.EMPTY) for q in box if q != p]),
-                        sg.cell_is(p, symbol_set.EMPTY)))
+                        Or(sg.cell_is(p, symbol_set.EMPTY), sg.cell_is(p, corresponding_direction))))
 
         # SW means a black triangle with a SW corner, i.e. a line going from NW to SE with the bottom left shaded.
         diagonal_symbols = [symbol_set.SW, symbol_set.SE, symbol_set.NE, symbol_set.NW]
