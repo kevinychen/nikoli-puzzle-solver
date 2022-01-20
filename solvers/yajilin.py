@@ -43,8 +43,9 @@ class YajilinSolver(AbstractSolver):
             else:
                 direction, num = clue.split(',')
                 sg.solver.add(sg.cell_is(p, symbol_set.WALL))
-                sg.solver.add(PbEq(
-                    [(sg.cell_is(q, symbol_set.BLACK), 1) for q in sight_line(sg, p, DIRECTIONS[direction])],
-                    int(num)))
+                if num != '-':
+                    sg.solver.add(PbEq(
+                        [(sg.cell_is(q, symbol_set.BLACK), 1) for q in sight_line(sg, p, DIRECTIONS[direction])],
+                        int(num)))
 
             no_adjacent_symbols(sg, symbol_set.BLACK)
