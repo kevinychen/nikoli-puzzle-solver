@@ -8,13 +8,13 @@ from time import time
 
 class AbstractSolver(ABC):
     """
-    Every subclass must have a constructor that takes a single string parameter, the pzprv3 string for the puzzle.
-    Examples of this format can be found by inputting a puzzle and clicking "File" -> "Save file as ...".
-    The constructor should parse the pzprv3 string into more convenient data structures.
+    Every subclass must have a constructor that takes a single parameter, the Penpa string for the puzzle.
+    Examples of this format can be found by inputting a puzzle and clicking "Share" -> "Editing URL".
+    The constructor should parse the string into more convenient data structures.
     """
 
     def solve(self, different_from: Optional[str] = None) -> Optional[str]:
-        """Return the pzprv3 string for the solved puzzle."""
+        """Return the Penpa string for the solved puzzle."""
         with GlobalTimeoutLock(timeout=30):
             sg = SymbolGrid(self.lattice(), self.symbol_set())
             self.configure(sg)
@@ -23,16 +23,16 @@ class AbstractSolver(ABC):
                 if sg.solver.reason_unknown() == "timeout":
                     raise TimeoutError(408)
                 return None
-            pzprv3 = self.to_pzprv3(sg.solved_grid())
-            if pzprv3 != different_from:
-                return pzprv3
+            penpa = self.to_penpa(sg.solved_grid())
+            if penpa != different_from:
+                return penpa
             if sg.is_unique():
                 return None
-            return self.to_pzprv3(sg.solved_grid())
+            return self.to_penpa(sg.solved_grid())
 
     @abstractmethod
-    def to_pzprv3(self, solved_grid: Dict[Point, int]) -> str:
-        """Converts a solved grid into a pzprv3 string."""
+    def to_penpa(self, solved_grid: Dict[Point, int]) -> object:
+        """Converts a solved grid into a Penpa string."""
         raise NotImplementedError()
 
     @abstractmethod

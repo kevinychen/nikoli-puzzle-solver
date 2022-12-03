@@ -21,8 +21,8 @@ def favicon():
 
 
 @app.route("/<path:path>")
-def pzprjs(path):
-    return send_from_directory('pzprjs/dist', path)
+def penpa(path):
+    return send_from_directory('penpa-edit/docs', path)
 
 
 @app.route("/api/list", methods=['GET'])
@@ -33,6 +33,9 @@ def puzzle_list():
 @app.route("/api/solve", methods=['POST'])
 def solve():
     try:
-        return {'pzprv3': solvers.solve(request.json['pzprv3'], request.json['different_from'])}
+        return {'penpa': solvers.solve(
+            request.json['type'],
+            request.json['penpa'],
+            request.json['different_from'])}
     except TimeoutError as e:
         abort(e.args[0])

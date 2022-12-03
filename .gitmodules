@@ -1,3 +1,6 @@
+[submodule "penpa-edit"]
+	path = penpa-edit
+	url = https://github.com/swaroopg92/penpa-edit.git
 [submodule "pzprjs"]
 	path = pzprjs
 	url = https://github.com/robx/pzprjs.git

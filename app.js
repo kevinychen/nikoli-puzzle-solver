@@ -1,5 +1,5 @@
-function getCurrentPzprv3() {
-    return iframe.contentWindow.ui.puzzle.getFileData().replaceAll('\n', '/');
+function getCurrentPenpa() {
+    return iframe.contentWindow.pu.maketext().split('#')[1];
 }
 
 window.onload = function () {
@@ -19,17 +19,12 @@ window.onload = function () {
                 option.text = solver.name;
                 select.add(option);
             }
-            iframe.src = '/p.html?' + select.value;
 
             demoButton.addEventListener('click', function () {
-                iframe.contentWindow.ui.puzzle.open(puzzles.find(puzzle => puzzle.type === select.value).demo);
+                iframe.contentWindow.load(puzzles.find(puzzle => puzzle.type === select.value).demo);
             });
         });
     })
-
-    select.addEventListener('change', function(e) {
-        iframe.src = '/p.html?' + e.target.value;
-    });
 
     solveButton.addEventListener('click', function() {
         solveButton.textContent = 'Solving...';
@@ -37,7 +32,8 @@ window.onload = function () {
         fetch('/api/solve', {
             method: 'POST',
             body: JSON.stringify({
-                'pzprv3': getCurrentPzprv3(),
+                'type': select.value,
+                'penpa': getCurrentPenpa(),
                 'different_from': foundSolution,
             }),
             headers: { 'Content-type': 'application/json' },
@@ -50,22 +46,20 @@ window.onload = function () {
                 alert('The server is too busy. Please try again later.');
             } else {
                 body = await response.json();
-                if (body.pzprv3 === null) {
+                if (body.penpa === null) {
                     alert('No solution found.');
                 } else {
-                    foundSolution = body.pzprv3;
-                    iframe.contentWindow.ui.puzzle.open(foundSolution);
+                    foundSolution = body.penpa;
+                    iframe.contentWindow.load(foundSolution);
                 }
             }
-            solveButton.textContent = getCurrentPzprv3() === foundSolution ? 'Find another solution' : 'Solve';
+            solveButton.textContent = getCurrentPenpa() === foundSolution ? 'Find another solution' : 'Solve';
             solveButton.disabled = false;
         });
     });
 
     setInterval(() => {
-        puzzle = iframe.contentWindow.ui.puzzle;
-        select.value = puzzle.pid;
-        if (solveButton.textContent === 'Find another solution' && getCurrentPzprv3() !== foundSolution) {
+        if (solveButton.textContent === 'Find another solution' && getCurrentPenpa() !== foundSolution) {
             foundSolution = null;
             solveButton.textContent = 'Solve';
         }
