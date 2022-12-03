@@ -16,7 +16,7 @@ window.onload = function () {
             for (const solver of puzzles) {
                 const option = document.createElement('option');
                 option.value = solver.type;
-                option.text = solver.name;
+                option.text = solver.type;
                 select.add(option);
             }
 

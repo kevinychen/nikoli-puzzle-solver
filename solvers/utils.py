@@ -12,7 +12,7 @@ from grilops.shapes import Shape, ShapeConstrainer
 from grilops.sightlines import count_cells
 from z3 import And, BoolRef, Distinct, Implies, Int, Not, Or, PbEq, PbLe, Sum
 
-from solvers.abstract_solver import AbstractSolver
+from solvers.abstract_solver import AbstractSolver, Content
 
 
 def continuous_region(sg: SymbolGrid, rc: RegionConstrainer, good: Callable[[Point], BoolRef]):

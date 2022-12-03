@@ -1,33 +1,14 @@
 from solvers.utils import *
 
 
-class SudokuSolver(AbstractSolver):
+class Sudoku(AbstractSolver):
 
-    def __init__(self, puzzle):
-        self.grid = [[None] * 9 for i in range(9)]
-        for k, v in puzzle['q']['number'].items():
-            k = int(k)
-            self.grid[k // 13 - 2][k % 13 - 2] = int(v[0])
+    def configure(self):
+        sg = SymbolGrid(grilops.get_square_lattice(9), grilops.make_number_range_symbol_set(1, 9))
 
-    def to_penpa(self, solved_grid):
-        return {
-            'number': dict([(str((row + 2) * 13 + col + 2), [str(solved_grid[Point(row, col)]), 2, '1'])
-                             for row in range(9) for col in range(9) if self.grid[row][col] is None]),
-            'surface': {},
-            'squareframe': {},
-        }
-
-    def lattice(self):
-        return grilops.get_square_lattice(9)
-
-    def symbol_set(self):
-        return grilops.make_number_range_symbol_set(1, 9)
-
-    def configure(self, sg):
         for p in sg.lattice.points:
-            num = self.grid[p.y][p.x]
-            if num is not None:
-                sg.solver.add(sg.cell_is(p, num))
+            if p in self.cells:
+                sg.solver.add(sg.cell_is(p, int(self.cells[p].value)))
 
         # Numbers in each 3x3 box are distinct
         for subgrid in range(9):
@@ -37,3 +18,10 @@ class SudokuSolver(AbstractSolver):
             sg.solver.add(Distinct(*nums))
 
         distinct_rows_and_columns(sg)
+
+        return sg
+
+    def to_standard_format(self, sg, solved_grid):
+        for p in sg.lattice.points:
+            if p not in self.cells:
+                self.solved_cells[p] = Content(value=str(solved_grid[p]))

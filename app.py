@@ -20,9 +20,10 @@ def favicon():
     return send_file('favicon.ico')
 
 
-@app.route("/<path:path>")
+@app.route("/penpa-edit/", defaults={'path': ''})
+@app.route("/penpa-edit/<path:path>")
 def penpa(path):
-    return send_from_directory('penpa-edit/docs', path)
+    return send_from_directory('penpa-edit/docs', path or 'index.html')
 
 
 @app.route("/api/list", methods=['GET'])

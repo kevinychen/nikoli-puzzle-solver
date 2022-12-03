@@ -1,6 +1,6 @@
 import unittest
 
-from solvers import get_demo, solve
+from solvers import PUZZLES, solve
 
 
 class TestSolvers(unittest.TestCase):
@@ -84,7 +84,7 @@ class TestSolvers(unittest.TestCase):
         self._test_helper('starbattle')
 
     def test_sudoku(self):
-        self._test_helper('sudoku')
+        self._test_helper('Sudoku')
 
     def test_tapa(self):
         self._test_helper('tapa')
@@ -105,11 +105,11 @@ class TestSolvers(unittest.TestCase):
         self._test_helper('yinyang')
 
     def _test_helper(self, puzzle_type):
-        pzprv3, expect = get_demo(puzzle_type)
-        self.assertEqual(expect, solve(pzprv3))
+        _, penpa, expect = next(puzzle for puzzle in PUZZLES if puzzle[0] == puzzle_type)
+        self.assertEqual(expect, solve(puzzle_type, penpa))
 
         # verify uniqueness
-        self.assertIsNone(solve(pzprv3, expect))
+        self.assertIsNone(solve(puzzle_type, penpa, expect))
 
 
 if __name__ == '__main__':
