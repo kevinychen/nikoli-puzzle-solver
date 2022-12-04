@@ -31,14 +31,14 @@ window.onload = function () {
         });
     })
 
-    solveButton.addEventListener('click', function() {
+    solveButton.addEventListener('click', () => {
         solveButton.textContent = 'Solving...';
         solveButton.disabled = true;
         fetch('/api/solve', {
             method: 'POST',
             body: JSON.stringify({
                 'type': select.value,
-                'penpa': exp(),
+                'url': exp(),
                 'different_from': foundSolution,
             }),
             headers: { 'Content-type': 'application/json' },
@@ -51,10 +51,10 @@ window.onload = function () {
                 alert('The server is too busy. Please try again later.');
             } else {
                 body = await response.json();
-                if (body.penpa === null) {
+                if (body.url === null) {
                     alert('No solution found.');
                 } else {
-                    foundSolution = body.penpa;
+                    foundSolution = body.url;
                     iframe.contentWindow.load(foundSolution);
                     localFoundSolution = exp();
                 }
@@ -63,6 +63,8 @@ window.onload = function () {
             solveButton.disabled = false;
         });
     });
+
+    iframe.contentWindow.document.addEventListener('click', () => iframe.contentWindow.focus());
 
     setInterval(() => {
         if (solveButton.textContent === 'Find another solution' && exp() !== localFoundSolution) {

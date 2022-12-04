@@ -34,9 +34,9 @@ def puzzle_list():
 @app.route("/api/solve", methods=['POST'])
 def solve():
     try:
-        return {'penpa': solvers.solve(
+        return {'url': solvers.solve(
             request.json['type'],
-            request.json['penpa'],
+            request.json['url'],
             request.json['different_from'])}
     except TimeoutError as e:
         abort(e.args[0])

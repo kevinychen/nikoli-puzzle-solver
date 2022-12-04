@@ -1,44 +1,28 @@
 from abc import ABC, abstractmethod
+from typing import Callable, Dict
+
 from grilops import Lattice, Point, SymbolGrid, SymbolSet
-from typing import Dict, NamedTuple, Set
 
-
-class Symbol(NamedTuple):
-
-    style: int
-    shape: str
+from lib import Puzzle
 
 
 class AbstractSolver(ABC):
 
-    width: int
-    height: int
-    symbols: Dict[Point, Symbol]
-    texts: Dict[Point, str]
-
-    sg: SymbolGrid
-
-    solved_symbols: Dict[Point, Symbol]
-    solved_texts: Dict[Point, str]
-    # Contains (y, x) if there is a line from (y, x) to (y+1, x)
-    solved_vertical_lines: Set[Point]
-    # Contains (y, x) if there is a line from (y, x) to (y, x+1)
-    solved_horizontal_lines: Set[Point]
-    # Contains (y,x) if square (y,x) has a right border
-    solved_vertical_borders: Set[Point]
-    # Contains (y,x) if square (y,x) has a bottom border
-    solved_horizontal_borders: Set[Point]
-
-    def get_symbol_grid(self, lattice: Lattice, symbol_set: SymbolSet):
-        self.sg = SymbolGrid(lattice, symbol_set)
-        return self.sg
-
     @abstractmethod
-    def configure(self) -> SymbolGrid:
-        """Using the fields that don't start with 'solved_', configure the constraint problem."""
+    def configure(
+            self,
+            puzzle: Puzzle,
+            init_symbol_grid: Callable[[Lattice, SymbolSet], SymbolGrid],
+    ):
+        """Converts the common Puzzle format into a constraint problem."""
         raise NotImplementedError()
 
     @abstractmethod
-    def to_standard_format(self, sg: SymbolGrid, solved_grid: Dict[Point, int]):
-        """Given the solution to the constraint problem, fill in the fields that start with 'solved_' accordingly."""
+    def set_solved(
+            self,
+            puzzle: Puzzle,
+            sg: SymbolGrid,
+            solved_grid: Dict[Point, int],
+            solved: Puzzle):
+        """Converts the solution to the constraint problem into the common Puzzle format."""
         raise NotImplementedError()
