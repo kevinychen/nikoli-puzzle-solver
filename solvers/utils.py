@@ -11,7 +11,7 @@ from grilops.regions import R, RegionConstrainer
 from grilops.shapes import Shape, ShapeConstrainer
 from z3 import And, BoolRef, Distinct, Implies, Int, Not, Or, PbEq, PbLe, Sum
 
-from solvers.abstract_solver import AbstractSolver, Content
+from solvers.abstract_solver import AbstractSolver
 
 
 def continuous_region(sg: SymbolGrid, rc: RegionConstrainer, good: Callable[[Point], BoolRef]):

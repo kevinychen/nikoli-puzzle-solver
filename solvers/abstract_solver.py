@@ -1,25 +1,30 @@
 from abc import ABC, abstractmethod
 from grilops import Point, SymbolGrid
-from typing import Dict, NamedTuple
+from typing import Dict, NamedTuple, Set
 
 
-class Content(NamedTuple):
+class Symbol(NamedTuple):
 
-    value: str = None
-    black: bool = False
+    style: int
+    shape: str
 
 
 class AbstractSolver(ABC):
 
     width: int
     height: int
-    cells: Dict[Point, Content]
+    symbols: Dict[Point, Symbol]
+    texts: Dict[Point, str]
 
-    solved_cells: Dict[Point, Content] = {}
-    # Key (y,x) corresponds to the right border of the square at (y,x)
-    solved_vertical_borders: Dict[Point, Content] = {}
-    # Key (y,x) corresponds to the bottom border of the square at (y,x)
-    solved_horizontal_borders: Dict[Point, Content] = {}
+    solved_texts: Dict[Point, str]
+    # Contains (y, x) if there is a line from (y, x) to (y+1, x)
+    solved_vertical_lines: Set[Point]
+    # Contains (y, x) if there is a line from (y, x) to (y, x+1)
+    solved_horizontal_lines: Set[Point]
+    # Contains (y,x) if square (y,x) has a right border
+    solved_vertical_borders: Set[Point]
+    # Contains (y,x) if square (y,x) has a bottom border
+    solved_horizontal_borders: Set[Point]
 
     @abstractmethod
     def configure(self) -> SymbolGrid:

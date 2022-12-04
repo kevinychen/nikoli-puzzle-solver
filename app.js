@@ -1,5 +1,9 @@
-function getCurrentPenpa() {
+function exp() {
     return iframe.contentWindow.pu.maketext().split('#')[1];
+}
+
+function imp(penpa) {
+    iframe.contentWindow.load(penpa);
 }
 
 window.onload = function () {
@@ -9,6 +13,7 @@ window.onload = function () {
     const demoButton = document.getElementById('demo');
 
     let foundSolution = null;
+    let localFoundSolution = null;
 
     fetch('/api/list').then(response => {
         response.json().then(body => {
@@ -21,7 +26,7 @@ window.onload = function () {
             }
 
             demoButton.addEventListener('click', function () {
-                iframe.contentWindow.load(puzzles.find(puzzle => puzzle.type === select.value).demo);
+                imp(puzzles.find(puzzle => puzzle.type === select.value).demo);
             });
         });
     })
@@ -33,7 +38,7 @@ window.onload = function () {
             method: 'POST',
             body: JSON.stringify({
                 'type': select.value,
-                'penpa': getCurrentPenpa(),
+                'penpa': exp(),
                 'different_from': foundSolution,
             }),
             headers: { 'Content-type': 'application/json' },
@@ -51,16 +56,18 @@ window.onload = function () {
                 } else {
                     foundSolution = body.penpa;
                     iframe.contentWindow.load(foundSolution);
+                    localFoundSolution = exp();
                 }
             }
-            solveButton.textContent = getCurrentPenpa() === foundSolution ? 'Find another solution' : 'Solve';
+            solveButton.textContent = exp() === localFoundSolution ? 'Find another solution' : 'Solve';
             solveButton.disabled = false;
         });
     });
 
     setInterval(() => {
-        if (solveButton.textContent === 'Find another solution' && getCurrentPenpa() !== foundSolution) {
+        if (solveButton.textContent === 'Find another solution' && exp() !== localFoundSolution) {
             foundSolution = null;
+            localFoundSolution = null;
             solveButton.textContent = 'Solve';
         }
     }, 1000);
