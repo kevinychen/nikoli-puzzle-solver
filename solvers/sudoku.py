@@ -4,11 +4,10 @@ from solvers.utils import *
 class Sudoku(AbstractSolver):
 
     def configure(self):
-        sg = SymbolGrid(grilops.get_square_lattice(9), grilops.make_number_range_symbol_set(1, 9))
+        sg = self.get_symbol_grid(grilops.get_square_lattice(9), grilops.make_number_range_symbol_set(1, 9))
 
-        for p in sg.lattice.points:
-            if p in self.texts:
-                sg.solver.add(sg.cell_is(p, int(self.texts[p])))
+        for p in self.texts:
+            sg.solver.add(sg.cell_is(p, int(self.texts[p])))
 
         # Numbers in each 3x3 box are distinct
         for subgrid in range(9):
@@ -18,8 +17,6 @@ class Sudoku(AbstractSolver):
             sg.solver.add(Distinct(*nums))
 
         distinct_rows_and_columns(sg)
-
-        return sg
 
     def to_standard_format(self, sg, solved_grid):
         for p in sg.lattice.points:

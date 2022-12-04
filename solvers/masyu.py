@@ -8,7 +8,7 @@ class Masyu(AbstractSolver):
         symbol_set = LoopSymbolSet(lattice)
         symbol_set.append('empty', ' ')
 
-        sg = SymbolGrid(lattice, symbol_set)
+        sg = self.get_symbol_grid(lattice, symbol_set)
         lc = LoopConstrainer(sg, single_loop=True)
 
         circles = [p for p in sg.lattice.points if p in self.symbols and self.symbols[p].shape.startswith('circle_')]
@@ -46,8 +46,6 @@ class Masyu(AbstractSolver):
         # Optimization: loop starts at one of the circles
         if circles:
             sg.solver.add(lc.loop_order_grid[circles[0]] == 0)
-
-        return sg
 
     def to_standard_format(self, sg, solved_grid):
         for p in sg.lattice.points:

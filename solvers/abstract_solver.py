@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from grilops import Point, SymbolGrid
+from grilops import Lattice, Point, SymbolGrid, SymbolSet
 from typing import Dict, NamedTuple, Set
 
 
@@ -16,6 +16,9 @@ class AbstractSolver(ABC):
     symbols: Dict[Point, Symbol]
     texts: Dict[Point, str]
 
+    sg: SymbolGrid
+
+    solved_symbols: Dict[Point, Symbol]
     solved_texts: Dict[Point, str]
     # Contains (y, x) if there is a line from (y, x) to (y+1, x)
     solved_vertical_lines: Set[Point]
@@ -25,6 +28,10 @@ class AbstractSolver(ABC):
     solved_vertical_borders: Set[Point]
     # Contains (y,x) if square (y,x) has a bottom border
     solved_horizontal_borders: Set[Point]
+
+    def get_symbol_grid(self, lattice: Lattice, symbol_set: SymbolSet):
+        self.sg = SymbolGrid(lattice, symbol_set)
+        return self.sg
 
     @abstractmethod
     def configure(self) -> SymbolGrid:

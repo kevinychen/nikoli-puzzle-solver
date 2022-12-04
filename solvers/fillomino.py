@@ -4,7 +4,7 @@ from solvers.utils import *
 class Fillomino(AbstractSolver):
 
     def configure(self):
-        sg = SymbolGrid(
+        sg = self.get_symbol_grid(
             grilops.get_rectangle_lattice(self.height, self.width),
             grilops.make_number_range_symbol_set(1, self.height * self.width))
         rc = RegionConstrainer(sg.lattice, sg.solver)
@@ -18,8 +18,6 @@ class Fillomino(AbstractSolver):
                     sg.lattice.edge_sharing_neighbors(rc.region_id_grid, p)):
                 sg.solver.add(Implies(
                     rc.region_size_grid[p] == region_size.symbol, rc.region_id_grid[p] == region_id.symbol))
-
-        return sg
 
     def to_standard_format(self, sg, solved_grid):
         for row in range(self.height):

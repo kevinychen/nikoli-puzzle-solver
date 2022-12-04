@@ -5,11 +5,14 @@ from json import dumps, loads
 from os import listdir, path
 from threading import Condition, Lock
 from time import time
-from typing import Optional
+from typing import Dict, NamedTuple, Optional, Tuple
 from zlib import compress, decompress
 
 from solvers.abstract_solver import AbstractSolver, Symbol
 
+# 1st value is the user-facing puzzle type
+# 2nd value is a sample puzzle without the solution
+# 3rd value is the sample puzzle with the solution filled in (for testing)
 PUZZLES = [
     (
         'Fillomino',
@@ -22,18 +25,24 @@ PUZZLES = [
         'm=edit&p=7VVdb9s2FH33ryAIFNgAJpYoK3H01iX19pA0a5OhCAwjoCTaIiyJHknVjQz/911SUm3Z3tYWKLqHQdbl9dH9OJR5rvWfFVOchHCNQuIRHy566bl75D7d9ShMziN0x/RLhX7C92mK7kuu0X1l8M/kdWUyqSI0UTxNBUe/sTIlmTErHQ2H6/X6fFGsqrrOuT5PZDGMc7kYUo/Soe8NC1vyLH45mzfJZxkkD8mDgYWptG35voLkCN0otkYMaVEucv6KXqNSlmeiNFxpnhhAUS7lCpmMGbRiWgNDkylZLTLE8hwlQiU5T1HC81yfo8eMN/FFpQ1aSKSNYmKRmc9JBiJcMFoLk6F1Jgxvq2jb3qEMmUqVSJQIuuacQS1ZciTne+miKHgqmOH5C4r5XCo+ZHOgjThL+nUPaRVsyfdbwDZs2ThnyXKfSlyZ431AQiyB4peQ2K94/orewGciFWKVkQUzIkFa5pURskRJxpMlvGzb1vTIxhyl8BM5pgvFedkWIveTCZmzXPPBtD1Ss8Gmvorqd6T+NZpiiom7fTwj9btoU99F9ROpH+ARJj5gt+D5mATgvmlcCu4H99yC102kB+7b5rnNegK32dHzXYP8Hk3rR4Jtm19cinVxIT9y3KS573BKY2GBmBk4+DoTq/aJrlK5rHDXYkvq145tm/LPlIN/oUz7lG8b5Csp56Lkn06xvZptt/DS3wPf52hqqf+xc8c79yHabC0la31nn6INpj6UoaT/OvGInkQvAR0fouH4GIXiE9eCOvsIDEgdOHvjrOds6Oyti3nj7Adnr50dOXvhYi7tHmCXtxGynEng4QhRgjAdkSBo/cAjwVXnj4ml2/gBsRty/uiShBetH3ok7OLtXOx8qE+7+PCChF0dGhA62tX/3Csc79Xxd70oJTTYq+93/hUJO/4h8Blbf0sQvAO0sevbdvXa9aFdn+y6HUxpM9PtFX6ZNxtM8bUsVlLDSMIgUgyyf9aVmrMEzpvTMHFYWRUxVz3IDgJ7/HBkVNViYlHCoNk9OQjn6aIPNvGxVOlB8TWMvh6g3b9XD2qOVg8ySvS+M6XkuofAdMt6wJ7oe5V4afoEDOtTZEt20K3Y7Xk7wJ+wu6cBDMDg/wH4Qwag/QG8bx6D321e/bfouLMr1UndA3xC+oCe1HiLH8kc8CNB24bHmgb0hKwBPVQ2QMfiBvBI34D9jcRt1UOVW1aHQretjrRuW+3LfTob/AU=',
     ),
     (
+        'Minesweeper',
+        'm=edit&p=7ZTPb5swFMfv/BWTzz7wI7Qpt65rdsmydclUVQhFTkIbVIg7A+vkKP9733smIwYmbYdtPUwOTy8fP+yvsb8uv9ZCpTyEFoy5yz1ovj+mZ+Ti79gWWZWn0Rt+WVdbqSDh/ONkwu9FXqZO3FQlzl5fRPqG6/dRzDzGmQ+PxxKub6K9/hDpGddz6GLcAzY1RT6k1216S/2YXRnouZDPmhzSO0jXmVrn6XJqyKco1gvOcJ639DamrJDfUtbowP9rWawyBCtRwWLKbfbU9JT1Rj7WTa2XHLi+NHLnA3KDVi6mRi5mA3JxFX9Y7kVyOMBn/wyCl1GM2r+06bhN59Ee4izaM987rtTsDQt8BOEJGCOAvTuCkdsBYXeM8KwLzruv0KA/KkCMR5LuKE4o+hQXoJjrgOI7ii7FkOKUaq4p3lK8ojiieEY157jm3/oqf0FO7BuDYQt/LUucGDzFSpkvy1rdizWcELIcHAJgu7pYpcpCuZRPebaz67KHnVTpYBfCdPMwVL+SatMZ/VnkuQXMBWIhc9YtVCk4yCf/hVLy2SKFqLYWODn01kjprrIFVMKWKB5FZ7aiXfPBYd8ZPXEAF1bw/8L6RxcWboH72gz62uTQ6ZVq0PqAB9wPdNDlDe8ZHXjP0jhh39VAB4wNtOttQH17A+w5HNhPTI6jdn2OqrpWx6l6bsepTg0fJ84L',
+        'm=edit&p=7VRBb5swFL7nVyCffQAbEsKt65pdsmxdMlURiiKS0AYVcGdgnYj47302pMRgpPXQbYfJ8Pz43sPvs+F72Y8i4CF2YFAXm9iCQYgrb9sU13msojwOPQNfFfmRcXAw/jKb4fsgzsKR32RtRqdy6pW3uPzk+chCGBG4LbTB5a13Kj975QKXSwghbAE2r5MIuDeteyfjwruuQcsEf9H44K7B3Ud8H4fbeY189fxyhZGo80G+LVyUsJ8haniI5z1LdpEAdkEOm8mO0VMTyYoDeyzQuUSFy6ua7lJDl7Z06StdqqdL3p/udFNVcOzfgPDW8wX3763rtu7SO1WC1wkR67zT+tsgSgTgXACuAEgL2GYHcLprOOMuMOm+4ioZQMaSlNbSzqQl0q6AMS6ptB+lNaV1pJ3LnBtp76S9ltaWdixzJmLPcCpzzwDQgOx6XjSz2czLZl7DjAhs0oBf2UBZHnCEDfh6BiJEoLZAi3SbMJa+RuhgxB6MTHU1qLYytbToYFU6HYrY2pXswZ3Zk8GIq11psLKj3ZmjPYVxPxd+bZ/UbUkM5/e8zciHToQyFm+zgt8He9CVbFRYYmmR7EKuQDFjT3GUqnnRQ8p4qA0JMDw86PJ3jB86qz8HcawAmWy7ClR3CAXKeaQ8B5yzZwVJgvyoABetQlkpTHOVgDhgZe3HoFMtafdcjdAvJG+fQpun/9v8X2rz4hOYb2r2f6TL/lt05N/LuFb6AGvUD6hW5Q3eEzrgPUmLgn1VA6oRNqBdbQPUlzeAPYUDNiBysWpX54JVV+qiVE/totSl4KGBvgA=',
+    ),
+    (
         'Sudoku',
         'm=edit&p=7VZdT8M2FH3vr5jy7IfYTpyPN8ZgL4yNwYRQVKG0BKhIG5a2Y0rV/865N+7ifEzTNE3jYUrrnp7Y9xxf+zrZ7p+qt71IcOlY+ELi0rHP3zigj2+vu9WuLNJvxNl+91rVAEL8eHkpnvNyW8wy22s+OzRJ2tyI5vs086QnPIWv9OaiuUkPzQ9pcy2aW9zyhAR31XZSgBcdvOf7hM5bUvrA1xYDPgAuV/WyLB6vWuanNGvuhEc63/Jogt66+q3wrA/6v6zWixURi3yHyWxfV+/2TpsG21fOj6I5a+1eTNjVnV2CrV1CE3ZpFv+y3WR+PCLtP8PwY5qR9186GHfwNj2gvU4PnoppaAgv7dp4KiFCd4RWREQdEUgijEMEp2ydiJCIxCHMQCUc9gi5R9wRZqgSjQiO4TiNfSICh9CDoPFoCE/fsZ7wEGe2SUQEtu6JkP7QiPS5j8tITpo7Sg69SMV9HLtScR/HjVScWidPUrGWk0qph6mTmtfQmYQMODV/xMHiS94CD9xecqu4vcMOEY3m9jtufW5Dbq+4zwU2joyNkAmEFCImiVA0ZWD8CqWQZ8IqFEojxYRxpqgQqSMcSqEMpkbYBEJFmBThKBIqgVXCCU4eHwmh+DHi+za+j/jSxpeITzuYtRCftibhAPFDGz9EfGPjG8SnXUIYp5qi1WYtDS2kkeOQf8srDWzjKMRx56VO/Q2wja8Q3/VDxcQY/rXV1dDV1qehPNh5Gegaq2ug6+bHWF0DXWN1DXTdeRmra6BrrK6BbkS6WLR7XrpzbgNuDS9pREfC3zo0/vnu+Us7GbJHzx/3Cr8WM59leMR526p83O7r53yJA5ufgDiTwW3260VR96iyqt7L1abfb/Wyqepi8haRxdPLVP9FVT8Non/kZdkjtr/u87o/uH309KhdjeeK8z+v6+qjx6zz3WuPcJ5BvUjFZtc3sMv7FvO3fKC27uZ8nHm/e/zNNN4f9P/vD//R+wMtgf/VDoSvZod3b1VPlj7oieoHO1nllh8VOvhRSZPguKrBThQ22GFtgxqXN8hRhYP7kyKnqMM6J1fDUiepUbWTlFvw2Xz2CQ==',
         'm=edit&p=7ZdNbxs3EIbv+hXCnnngDL91S1O7F9dtaheFIRjG2lZiIZI3XUlNsYb+e4ZcuhKpKdCiKJpDIYs7fpb7zsuPIVab3WP3cScCfZQXUgB9lJfp63X8k/lzvdyuFrOpeLPbPnU9BUL8cH4u3rerzWIyz71uJy9DmA3vxPDdbN5AIxqkLzS3Yng3exm+nw2XYriiW40AYhdjJ6Tw7BD+ku7H6O0IQVJ8mWMKbyh8WPYPq8XdxUh+nM2Ha9HEPN+kp2PYrLvfFk32Ef9/6Nb3ywju2y0NZvO0/JTvbNI0NK8p9mJ4M9o9Y+yqg131h13F28V/32643e9p2n8iw3ezefT+8yH0h/Bq9rKPvl4a9PFRQ17GtWkwRKAOQGEE7gA0RGCPgH6drVdgIghHwFZZTN3DpB7+AGydxZ0AUzn1MgJ9BFQl6k8e8ZX1oKrRBhcBHgDI2ghIVxPA+imovQBiZRdQVW4AdTVPgK6aSlD11IEK1SBAy0KHFh/SFrhJ7XlqMbXXtEPEoFL7bWplak1qL1KfM9o44K2AQImQFEMQGIdMMV0FohljNAKVH2M6U9DAGBsQaPUYWy3QuTF2TmCQYxzo5JFq1PekL7O+JH3I+kD6mPWR9HXW16Rvsr4hfZv1Len7rE+nGgaVcynKZbNO9J85KoqzDupyXPja31Kc9dGVfjDkmPyrnFdRXpV92jgPeVyW8tqc16pyfmzOaymvzXmtLcdlc15LeW3Oaymvi3n38WyKS/c2tTq1Ni2pi0cCHRoXsynBKS3ueL2kaxNNT9MmnaKYps00baL7adrvx1Al6EuoEwwlNAlCCW2CWECNCboSKq6nS1CV0DPmdWB8Gs1YMpym4TRNYCzZcepMCbkRWcdYsp57PDDz6SSj6ZAZkVOMeacZ8x44iMy6e8349Jax5B1jPnAzHwwz88Fyj3PLEbglBsmtB0hOFaRnXIEMnAJIxiwAMDMAoBm7ANz2AZTcKJDVRcOsDKDlnClkKbc1QHGLC7mAK7/KcR7UyUzGs0XmM+YqX2/idT+Z05kJ1cd8XeR2MqcX22bTre42u/59+0Cvaem9VyT2vFvfL/oCrbru02r5XPZbfnju+gV7K8LF4weu/33XP1bqn9vVqgCbX3dtXz48vnAWaNsvi//bvu8+F2Tdbp8KcPTmWSgtnrelgW1bWmw/tlW29WHM+0nze5O+c0W/GtT/vxr+o18NcQnk3/rt8M9fIv/CW8nXZSft3q5nS58wU/1E2SrP/KTQiZ+UdEx4WtVEmcImWtc2odPyJnhS4cT+pMijal3n0VVd6jHVSbXHVMcFTwfoFw==',
     ),
 ]
 
+# Dynamically import all py files in this directory
 # https://stackoverflow.com/a/6246478
 for py in [f[:-3] for f in listdir(path.dirname(__file__)) if f.endswith('.py') and f != '__init__.py']:
     __import__('.'.join([__name__, py]), fromlist=[py])
 
 PENPA_PREFIX = 'm=edit&p='
-# https://github.com/swaroopg92/penpa-edit/blob/v3.0.3/docs/js/class_p.js#L131-L162
+# Copied from https://github.com/swaroopg92/penpa-edit/blob/v3.0.3/docs/js/class_p.js#L131-L162
 PENPA_ABBREVIATIONS = [
     ["\"qa\"", "z9"],
     ["\"pu_q\"", "zQ"],
@@ -77,18 +86,19 @@ def solve(puzzle_type: str, penpa: str, different_from: Optional[str] = None):
                   if subclass.__name__ == ''.join(c for c in puzzle_type if c.isalpha()))()
     parts = decompress(b64decode(penpa[len(PENPA_PREFIX):]), -15).decode().split('\n')
     header = parts[0].split(',')
-    q = loads(reduce(lambda s, abbr: s.replace(abbr[1], abbr[0]), PENPA_ABBREVIATIONS, parts[3]))
+    q = Penpa(**loads(reduce(lambda s, abbr: s.replace(abbr[1], abbr[0]), PENPA_ABBREVIATIONS, parts[3])))
 
     solver.width = int(header[1])
     solver.height = int(header[2])
     solver.symbols = {}
     solver.texts = {}
-    for k, (text, _, _) in q['number'].items():
+    for k, (text, _, _) in q.number.items():
         solver.texts[Point(int(k) // (solver.width + 4) - 2, int(k) % (solver.width + 4) - 2)] = text
-    for k, (style, shape, _) in q['symbol'].items():
+    for k, (style, shape, _) in q.symbol.items():
         solver.symbols[Point(int(k) // (solver.width + 4) - 2, int(k) % (solver.width + 4) - 2)] = Symbol(style, shape)
 
     def get_penpa():
+        solver.solved_symbols = {}
         solver.solved_texts = {}
         solver.solved_vertical_lines = set()
         solver.solved_horizontal_lines = set()
@@ -96,34 +106,29 @@ def solve(puzzle_type: str, penpa: str, different_from: Optional[str] = None):
         solver.solved_horizontal_borders = set()
         solver.to_standard_format(sg, sg.solved_grid())
 
-        line = {}
+        a = Penpa()
         for p in solver.solved_vertical_lines:
             start = (solver.width + 4) * (p.y + 2) + p.x + 2
-            line[f'{start},{start + solver.width + 4}'] = 2
+            a.line[f'{start},{start + solver.width + 4}'] = 2
         for p in solver.solved_horizontal_lines:
             start = (solver.width + 4) * (p.y + 2) + p.x + 2
-            line[f'{start},{start + 1}'] = 2
-        lineE = {}
+            a.line[f'{start},{start + 1}'] = 2
         for p in solver.solved_vertical_borders:
             start = (solver.width + 4) * (solver.height + 4) + (solver.width + 4) * (p.y + 1) + p.x + 2
-            lineE[f'{start},{start + solver.width + 4}'] = 2
+            a.lineE[f'{start},{start + solver.width + 4}'] = 2
         for p in solver.solved_horizontal_borders:
             start = (solver.width + 4) * (solver.height + 4) + (solver.width + 4) * (p.y + 2) + p.x + 1
-            lineE[f'{start},{start + 1}'] = 2
-        a = {
-            'line': line,
-            'lineE': lineE,
-            'number': dict([(str((p.y + 2) * (solver.width + 4) + p.x + 2), [solved_text, 2, '1'])
-                            for p, solved_text in solver.solved_texts.items()]),
-            'squareframe': {},
-            'surface': {},
-            'symbol': {},
-        }
-        parts[4] = reduce(lambda s, abbr: s.replace(abbr[0], abbr[1]), PENPA_ABBREVIATIONS, dumps(a))
+            a.lineE[f'{start},{start + 1}'] = 2
+        for p, solved_text in solver.solved_texts.items():
+            a.number[str((p.y + 2) * (solver.width + 4) + p.x + 2)] = (solved_text, 2, '1')
+        for p, solved_symbol in solver.solved_symbols.items():
+            a.symbol[str((p.y + 2) * (solver.width + 4) + p.x + 2)] = (solved_symbol.style, solved_symbol.shape, 2)
+        parts[4] = reduce(lambda s, abbr: s.replace(abbr[0], abbr[1]), PENPA_ABBREVIATIONS, dumps(a.__dict__))
         return PENPA_PREFIX + b64encode(compress('\n'.join(parts).encode())[2:-4]).decode()
 
     with GlobalTimeoutLock(timeout=30):
-        sg = solver.configure()
+        solver.configure()
+        sg = solver.sg
         sg.solver.set("timeout", 30000)
         if not sg.solve():
             if sg.solver.reason_unknown() == "timeout":
@@ -135,6 +140,24 @@ def solve(puzzle_type: str, penpa: str, different_from: Optional[str] = None):
         if sg.is_unique():
             return None
         return get_penpa()
+
+
+class Penpa(object):
+
+    def __init__(
+            self,
+            line: Dict[str, int] = None,
+            lineE: Dict[str, int] = None,
+            number: Dict[str, Tuple[str, int, str]] = None,
+            symbol: Dict[str, Tuple[str, int, str]] = None,
+            **_kwargs,
+    ):
+        self.line = line or {}
+        self.lineE = lineE or {}
+        self.number = number or {}
+        self.squareframe = {}
+        self.surface = {}
+        self.symbol = symbol or {}
 
 
 class GlobalTimeoutLock:

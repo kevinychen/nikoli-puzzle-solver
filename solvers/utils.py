@@ -4,14 +4,14 @@ from typing import Callable, List, Union
 from uuid import uuid4
 
 import grilops
-from grilops import Symbol, SymbolGrid, SymbolSet
+from grilops import SymbolGrid, SymbolSet
 from grilops.geometry import Direction, Point, RectangularLattice, Vector
 from grilops.loops import I, L, LoopConstrainer, LoopSymbolSet, O
 from grilops.regions import R, RegionConstrainer
 from grilops.shapes import Shape, ShapeConstrainer
 from z3 import And, BoolRef, Distinct, Implies, Int, Not, Or, PbEq, PbLe, Sum
 
-from solvers.abstract_solver import AbstractSolver
+from solvers.abstract_solver import AbstractSolver, Symbol
 
 
 def continuous_region(sg: SymbolGrid, rc: RegionConstrainer, good: Callable[[Point], BoolRef]):
