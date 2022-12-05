@@ -33,7 +33,7 @@ class Puzzle(object):
         self.vertical_lines = vertical_lines or set()
         # Contains (y, x) if there is a line from (y, x) to (y, x+1)
         self.horizontal_lines = horizontal_lines or set()
-        # Contains (y,x) if square (y,x) has a right border
+        # Contains (y,x) if square (y,x) has a left border
         self.vertical_borders = vertical_borders or set()
-        # Contains (y,x) if square (y,x) has a bottom border
+        # Contains (y,x) if square (y,x) has a top border
         self.horizontal_borders = horizontal_borders or set()

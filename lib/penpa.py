@@ -63,10 +63,10 @@ class Penpa(NamedTuple):
             start = (self.width + 4) * (p.y + 2) + p.x + 2
             a.line[f'{start},{start + 1}'] = 2
         for p in solved.vertical_borders:
-            start = (self.width + 4) * (self.height + 4) + (self.width + 4) * (p.y + 1) + p.x + 2
+            start = (self.width + 4) * (self.height + 4) + (self.width + 4) * (p.y + 1) + p.x + 1
             a.lineE[f'{start},{start + self.width + 4}'] = 2
         for p in solved.horizontal_borders:
-            start = (self.width + 4) * (self.height + 4) + (self.width + 4) * (p.y + 2) + p.x + 1
+            start = (self.width + 4) * (self.height + 4) + (self.width + 4) * (p.y + 1) + p.x + 1
             a.lineE[f'{start},{start + 1}'] = 2
         for p, text in solved.texts.items():
             a.number[str((p.y + 2) * (self.width + 4) + p.x + 2)] = (text, 2, '1')

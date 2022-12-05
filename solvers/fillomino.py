@@ -23,8 +23,8 @@ class Fillomino(AbstractSolver):
         for row in range(puzzle.height):
             for col in range(puzzle.width - 1):
                 if solved_grid[Point(row, col)] != solved_grid[Point(row, col + 1)]:
-                    solution.vertical_borders.add(Point(row, col))
+                    solution.vertical_borders.add(Point(row, col + 1))
         for row in range(puzzle.height - 1):
             for col in range(puzzle.width):
                 if solved_grid[Point(row, col)] != solved_grid[Point(row + 1, col)]:
-                    solution.horizontal_borders.add(Point(row, col))
+                    solution.horizontal_borders.add(Point(row + 1, col))
