@@ -15,4 +15,4 @@ class Minesweeper(AbstractSolver):
     def set_solved(self, puzzle, sg, solved_grid, solution):
         for p in sg.lattice.points:
             if p not in puzzle.texts:
-                solution.symbols[p] = Symbol(4, 'sun_moon') if solved_grid[p] else Symbol(0, 'star')
+                solution.symbols[p] = Symbols.BOMB if solved_grid[p] else Symbols.X

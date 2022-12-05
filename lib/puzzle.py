@@ -2,11 +2,20 @@ from typing import Dict, NamedTuple, Set, Tuple
 
 from grilops import Direction, Point
 
+from lib.union_find import UnionFind
+
 
 class Symbol(NamedTuple):
 
     style: int
     shape: str
+
+
+class Symbols:
+
+    X = Symbol(0, 'star')
+    STAR = Symbol(2, 'star')
+    BOMB = Symbol(4, 'sun_moon')
 
 
 class Puzzle(object):
@@ -15,6 +24,10 @@ class Puzzle(object):
             self,
             width: int = -1,
             height: int = -1,
+            top_space: int = -1,
+            bottom_space: int = -1,
+            left_space: int = -1,
+            right_space: int = -1,
             symbols: Dict[Point, Symbol] = None,
             texts: Dict[Point, str] = None,
             edge_texts: Dict[Tuple[Point, Direction], str] = None,
@@ -25,6 +38,10 @@ class Puzzle(object):
     ):
         self.width = width
         self.height = height
+        self.top_space = top_space
+        self.bottom_space = bottom_space
+        self.left_space = left_space
+        self.right_space = right_space
         self.texts = texts or {}
         # Text on an edge, for example ((y, x), NE) is the text in the top right corner of square (y, x)
         self.edge_texts = edge_texts or {}
@@ -37,3 +54,12 @@ class Puzzle(object):
         self.vertical_borders = vertical_borders or set()
         # Contains (y,x) if square (y,x) has a top border
         self.horizontal_borders = horizontal_borders or set()
+
+    def to_regions(self, points):
+        uf = UnionFind()
+        for p in points:
+            if p not in self.vertical_borders:
+                uf.union(Point(p.y, p.x - 1), p)
+            if p not in self.horizontal_borders:
+                uf.union(Point(p.y - 1, p.x), p)
+        return set([tuple(q for q in points if uf.find(q) == p) for p in points if uf.find(p) == p])

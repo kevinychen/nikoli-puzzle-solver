@@ -11,7 +11,7 @@ from grilops.regions import R, RegionConstrainer
 from grilops.shapes import Shape, ShapeConstrainer
 from z3 import And, BoolRef, Distinct, Implies, Int, Not, Or, PbEq, PbLe, Sum
 
-from lib import Directions, Puzzle, Symbol
+from lib import Directions, Puzzle, Symbol, Symbols
 from solvers.abstract_solver import AbstractSolver
 
 
@@ -80,16 +80,3 @@ def table(grid):
     return '/'.join(map(lambda row: ' '.join(row) + ' ', grid))
 
 
-class UnionFind:
-
-    def __init__(self):
-        self.parents = {}
-
-    def union(self, x, y):
-        self.parents[self.find(x)] = self.find(y)
-
-    def find(self, x):
-        if x not in self.parents or self.parents[x] == x:
-            return x
-        self.parents[x] = self.find(self.parents[x])
-        return self.parents[x]

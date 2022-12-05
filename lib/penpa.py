@@ -34,44 +34,80 @@ class Penpa(NamedTuple):
 
     width: int
     height: int
+    top_space: int
+    bottom_space: int
+    left_space: int
+    right_space: int
     q: PenpaPart
     parts: List[str]
 
+    @property
+    def w(self):
+        return self.width + 4 + self.left_space + self.right_space
+
+    @property
+    def h(self):
+        return self.height + 4 + self.top_space + self.bottom_space
+
+    @property
+    def v(self):
+        return Vector(2 + self.top_space, 2 + self.left_space)
+
     def to_puzzle(self) -> Puzzle:
-        puzzle = Puzzle(self.width, self.height)
+        puzzle = Puzzle(
+            width=self.width,
+            height=self.height,
+            top_space=self.top_space,
+            bottom_space=self.bottom_space,
+            left_space=self.left_space,
+            right_space=self.right_space,
+        )
         puzzle.texts = {}
         puzzle.edge_texts = {}
         puzzle.symbols = {}
+        for k, _ in self.q.lineE.items():
+            num1, num2 = map(lambda kp: int(kp) - self.w * self.h + self.w + 1, k.split(','))
+            p = Point(*divmod(num1, self.w)).translate(self.v.negate())
+            if num2 - num1 == self.w:
+                puzzle.vertical_borders.add(p)
+            elif num2 - num1 == 1:
+                puzzle.horizontal_borders.add(p)
         for k, (text, _, _) in self.q.number.items():
-            p = Point(*divmod(int(k), self.width + 4)).translate(Vector(-2, -2))
+            p = Point(*divmod(int(k), self.w)).translate(self.v.negate())
             puzzle.texts[p] = text
         for k, (text, _) in self.q.numberS.items():
-            kk = int(k) // 4 - (self.width + 4) * (self.height + 4)
-            p = Point(*divmod(int(kk), self.width + 4)).translate(Vector(-2, -2))
+            kk = int(k) // 4 - self.w * self.h
+            p = Point(*divmod(int(kk), self.w)).translate(self.v.negate())
             puzzle.edge_texts[p, DIAGONAL_DIRECTIONS[int(k) % 4]] = text
         for k, (style, shape, _) in self.q.symbol.items():
-            p = Point(*divmod(int(k), self.width + 4)).translate(Vector(-2, -2))
+            p = Point(*divmod(int(k), self.w)).translate(self.v.negate())
             puzzle.symbols[p] = Symbol(style, shape)
         return puzzle
 
     def to_url(self, solved: Puzzle):
         a = PenpaPart()
         for p in solved.vertical_lines:
-            start = (self.width + 4) * (p.y + 2) + p.x + 2
-            a.line[f'{start},{start + self.width + 4}'] = 2
+            y, x = p.translate(self.v)
+            start = self.w * y + x
+            a.line[f'{start},{start + self.w}'] = 2
         for p in solved.horizontal_lines:
-            start = (self.width + 4) * (p.y + 2) + p.x + 2
+            y, x = p.translate(self.v)
+            start = (self.width + 4) * y + x
             a.line[f'{start},{start + 1}'] = 2
         for p in solved.vertical_borders:
-            start = (self.width + 4) * (self.height + 4) + (self.width + 4) * (p.y + 1) + p.x + 1
-            a.lineE[f'{start},{start + self.width + 4}'] = 2
+            y, x = p.translate(self.v)
+            start = self.w * self.h - self.w - 1 + self.w * y + x
+            a.lineE[f'{start},{start + self.w}'] = 2
         for p in solved.horizontal_borders:
-            start = (self.width + 4) * (self.height + 4) + (self.width + 4) * (p.y + 1) + p.x + 1
+            y, x = p.translate(self.v)
+            start = self.w * self.h - self.w - 1 + self.w * y + x
             a.lineE[f'{start},{start + 1}'] = 2
         for p, text in solved.texts.items():
-            a.number[str((p.y + 2) * (self.width + 4) + p.x + 2)] = (text, 2, '1')
+            y, x = p.translate(self.v)
+            a.number[str(self.w * y + x)] = text, 2, '1'
         for p, symbol in solved.symbols.items():
-            a.symbol[str((p.y + 2) * (self.width + 4) + p.x + 2)] = (symbol.style, symbol.shape, 2)
+            y, x = p.translate(self.v)
+            a.symbol[str(self.w * y + x)] = symbol.style, symbol.shape, 2
         self.parts[4] = reduce(
             lambda s, abbr: s.replace(abbr[0], abbr[1]),
             PENPA_ABBREVIATIONS,
@@ -82,9 +118,15 @@ class Penpa(NamedTuple):
     def from_url(url: str):
         parts = decompress(b64decode(url[len(PENPA_PREFIX):]), -15).decode().split('\n')
         header = parts[0].split(',')
+        top_space, bottom_space, left_space, right_space = loads(parts[1])
+
         return Penpa(
-            width=int(header[1]),
-            height=int(header[2]),
+            width=int(header[1]) - left_space - right_space,
+            height=int(header[2]) - top_space - bottom_space,
+            top_space=top_space,
+            bottom_space=bottom_space,
+            left_space=left_space,
+            right_space=right_space,
             q=PenpaPart(**loads(reduce(lambda s, abbr: s.replace(abbr[1], abbr[0]), PENPA_ABBREVIATIONS, parts[3]))),
             parts=parts
         )
