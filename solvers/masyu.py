@@ -48,10 +48,10 @@ class Masyu(AbstractSolver):
         if circles:
             sg.solver.add(lc.loop_order_grid[circles[0]] == 0)
 
-    def set_solved(self, puzzle, sg, solved_grid, solved):
+    def set_solved(self, puzzle, sg, solved_grid, solution):
         for p in sg.lattice.points:
             name = sg.symbol_set.symbols[solved_grid[p]].name
             if 'S' in name:
-                solved.vertical_lines.add(p)
+                solution.vertical_lines.add(p)
             if 'E' in name:
-                solved.horizontal_lines.add(p)
+                solution.horizontal_lines.add(p)

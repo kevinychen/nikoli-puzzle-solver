@@ -23,7 +23,7 @@ class Kakuro(AbstractSolver):
             sg.solver.add(Sum([sg.grid[p] for p in line]) == total)
             sg.solver.add(Distinct([sg.grid[p] for p in line]))
 
-    def set_solved(self, puzzle, sg, solved_grid, solved):
+    def set_solved(self, puzzle, sg, solved_grid, solution):
         for p in sg.lattice.points:
             if p not in puzzle.symbols:
-                solved.texts[p] = int(solved_grid[p])
+                solution.texts[p] = int(solved_grid[p])

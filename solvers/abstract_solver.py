@@ -14,7 +14,18 @@ class AbstractSolver(ABC):
             puzzle: Puzzle,
             init_symbol_grid: Callable[[Lattice, SymbolSet], SymbolGrid],
     ):
-        """Converts the common Puzzle format into a constraint problem."""
+        """
+        Given the puzzle data, constructs a set of constraints for solving the puzzle.
+
+        :param puzzle: The puzzle input in Penpa (without the solution).
+        :param init_symbol_grid: This function must be called exactly once. It returns a SymbolGrid sg, which has
+        variables for each point in the Lattice (HEIGHT x WIDTH for a rectangular lattice) that are already constrained
+        by the given SymbolSet. More constraints can be added using the Grilops functions on sg. Alternatively,
+        "sg.solver" is the raw z3 solver, and new variables/constraints can be added to the solver directly.
+
+        Note that only the variables of sg are considered for uniqueness - a solution with the same values for the
+        variables in sg but different values for other variables is not considered different.
+        """
         raise NotImplementedError()
 
     @abstractmethod
@@ -23,6 +34,14 @@ class AbstractSolver(ABC):
             puzzle: Puzzle,
             sg: SymbolGrid,
             solved_grid: Dict[Point, int],
-            solved: Puzzle):
-        """Converts the solution to the constraint problem into the common Puzzle format."""
+            solution: Puzzle):
+        """
+        Given the result of the constraint problem, updates the solution accordingly.
+
+        :param puzzle: The original puzzle input in Penpa (without the solution)
+        :param sg: The SymbolGrid created in :func:`configure`.
+        :param solved_grid: A mapping from each point in the Lattice (as set in :func:`configure`) to the value of the
+        corresponding variable that satisfies the constraints.
+        :param solution: An initially empty object whose fields should be filled in by this method.
+        """
         raise NotImplementedError()

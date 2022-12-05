@@ -18,7 +18,7 @@ class Sudoku(AbstractSolver):
 
         distinct_rows_and_columns(sg)
 
-    def set_solved(self, puzzle, sg, solved_grid, solved):
+    def set_solved(self, puzzle, sg, solved_grid, solution):
         for p in sg.lattice.points:
             if p not in puzzle.texts:
-                solved.texts[p] = str(solved_grid[p])
+                solution.texts[p] = str(solved_grid[p])

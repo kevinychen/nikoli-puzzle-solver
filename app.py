@@ -7,17 +7,17 @@ app = Flask(__name__)
 
 @app.route("/")
 def root():
-    return send_file('index.html')
+    return send_file('static/index.html')
 
 
 @app.route("/app.js")
 def js():
-    return send_file('app.js')
+    return send_file('static/app.js')
 
 
 @app.route("/favicon.ico")
 def favicon():
-    return send_file('favicon.ico')
+    return send_file('static/favicon.ico')
 
 
 @app.route("/penpa-edit/", defaults={'path': ''})

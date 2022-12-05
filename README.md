@@ -36,7 +36,6 @@ Then go to http://localhost:5000.
 ### Adding a solver
 
 - Implement a new subclass of [AbstractSolver](solvers/abstract_solver.py) in the `solvers` directory.
-    - You'll need to implement two functions. The framework will construct a [Puzzle](lib/puzzle.py) object for you from what was input in Penpa, and the first function `configure` should create the system of constraints with the z3 and Grilops library. The framework will then solve the constraint system, and call the second function `set_solved` that should take the result and convert it to an answer Puzzle object.
 - Update `supported_puzzles.yml` with the puzzle type, and a sample puzzle and its solution.
     - You can construct the sample puzzle in Penpa, and click "Share" -> "Editing URL" to get the encoded puzzle.
 - Run the tests with `poetry run pytest` to verify the new solver implementation and sample puzzle are correct.

@@ -19,12 +19,12 @@ class Fillomino(AbstractSolver):
                 sg.solver.add(Implies(
                     rc.region_size_grid[p] == region_size.symbol, rc.region_id_grid[p] == region_id.symbol))
 
-    def set_solved(self, puzzle, sg, solved_grid, solved):
+    def set_solved(self, puzzle, sg, solved_grid, solution):
         for row in range(puzzle.height):
             for col in range(puzzle.width - 1):
                 if solved_grid[Point(row, col)] != solved_grid[Point(row, col + 1)]:
-                    solved.vertical_borders.add(Point(row, col))
+                    solution.vertical_borders.add(Point(row, col))
         for row in range(puzzle.height - 1):
             for col in range(puzzle.width):
                 if solved_grid[Point(row, col)] != solved_grid[Point(row + 1, col)]:
-                    solved.horizontal_borders.add(Point(row, col))
+                    solution.horizontal_borders.add(Point(row, col))
