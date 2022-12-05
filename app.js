@@ -7,10 +7,10 @@ function imp(penpa) {
 }
 
 window.onload = function () {
-    const select = document.getElementById('type');
     const iframe = document.getElementById('iframe');
-    const solveButton = document.getElementById('solve');
     const demoButton = document.getElementById('demo');
+    const select = document.getElementById('type');
+    const solveButton = document.getElementById('solve');
 
     let foundSolution = null;
     let localFoundSolution = null;

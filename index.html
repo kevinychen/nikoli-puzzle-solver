@@ -10,12 +10,11 @@
     <meta name="description" content="Solver for many types of Nikoli-style logic puzzles, including Sudoku, Slitherlink, Nurikabe, Fillomino, and more." />
     <style>
         body {
-            margin: 0px;
+            margin: 0;
         }
 
-        #iframe {
+        iframe {
             margin: 0;
-            padding: 0;
             width: 100vw;
             height: 100vh;
         }
@@ -23,39 +22,36 @@
         select, button {
             display: block;
             font-size: 36px;
-            margin: 0 auto;
+            margin: 10px 0;
+            width: 400px;
+            height: 50px;
             text-align: center;
+            cursor: pointer;
         }
 
-        #type {
+        .left {
             position: fixed;
-            left: 50%;
-            transform: translateX(-50%);
-            top: 10px;
-        }
-
-        #solve {
-            position: fixed;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 10px;
             bottom: 10px;
         }
 
-        #demo {
+        .right {
             position: fixed;
-            left: 10px;
+            right: 10px;
             bottom: 10px;
         }
     </style>
 </head>
 
 <body>
-    <select id="type"></select>
     <iframe id="iframe" src="penpa-edit/"></iframe>
-    <div class="bottom">
+    <div class="left">
+        <button id="demo">Demo</button>
+    </div>
+    <div class="right">
+        <select id="type"></select>
         <button id="solve">Solve</button>
     </div>
-    <button id="demo">Demo</button>
 
     <a href="https://github.com/kevinychen/nikoli-puzzle-solver" class="github-corner" aria-label="View source on GitHub">
         <svg width="100" height="100" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true">
