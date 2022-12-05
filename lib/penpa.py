@@ -4,8 +4,9 @@ from json import dumps, loads
 from typing import Dict, List, NamedTuple, Tuple
 from zlib import compress, decompress
 
-from grilops import Point
+from grilops import Point, Vector
 
+from lib.directions import Directions
 from lib.puzzle import Puzzle, Symbol
 
 
@@ -16,12 +17,14 @@ class PenpaPart(object):
             line: Dict[str, int] = None,
             lineE: Dict[str, int] = None,
             number: Dict[str, Tuple[str, int, str]] = None,
+            numberS: Dict[str, Tuple[str, int]] = None,
             symbol: Dict[str, Tuple[int, str, int]] = None,
             **_kwargs,
     ):
         self.line = line or {}
         self.lineE = lineE or {}
         self.number = number or {}
+        self.numberS = numberS or {}
         self.squareframe = {}
         self.surface = {}
         self.symbol = symbol or {}
@@ -36,12 +39,19 @@ class Penpa(NamedTuple):
 
     def to_puzzle(self) -> Puzzle:
         puzzle = Puzzle(self.width, self.height)
-        puzzle.symbols = {}
         puzzle.texts = {}
+        puzzle.edge_texts = {}
+        puzzle.symbols = {}
         for k, (text, _, _) in self.q.number.items():
-            puzzle.texts[Point(int(k) // (self.width + 4) - 2, int(k) % (self.width + 4) - 2)] = text
+            p = Point(*divmod(int(k), self.width + 4)).translate(Vector(-2, -2))
+            puzzle.texts[p] = text
+        for k, (text, _) in self.q.numberS.items():
+            kk = int(k) // 4 - (self.width + 4) * (self.height + 4)
+            p = Point(*divmod(int(kk), self.width + 4)).translate(Vector(-2, -2))
+            puzzle.edge_texts[p, DIAGONAL_DIRECTIONS[int(k) % 4]] = text
         for k, (style, shape, _) in self.q.symbol.items():
-            puzzle.symbols[Point(int(k) // (self.width + 4) - 2, int(k) % (self.width + 4) - 2)] = Symbol(style, shape)
+            p = Point(*divmod(int(k), self.width + 4)).translate(Vector(-2, -2))
+            puzzle.symbols[p] = Symbol(style, shape)
         return puzzle
 
     def to_url(self, solved: Puzzle):
@@ -114,3 +124,4 @@ PENPA_ABBREVIATIONS = [
     ["\"__a\"", "z_"],
     ["null", "zO"],
 ]
+DIAGONAL_DIRECTIONS = [Directions.NW, Directions.NE, Directions.SW, Directions.SE]

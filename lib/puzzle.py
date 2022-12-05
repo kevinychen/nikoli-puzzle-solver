@@ -1,5 +1,6 @@
-from grilops import Point
-from typing import Dict, NamedTuple, Set
+from typing import Dict, NamedTuple, Set, Tuple
+
+from grilops import Direction, Point
 
 
 class Symbol(NamedTuple):
@@ -16,6 +17,7 @@ class Puzzle(object):
             height: int = -1,
             symbols: Dict[Point, Symbol] = None,
             texts: Dict[Point, str] = None,
+            edge_texts: Dict[Tuple[Point, Direction], str] = None,
             vertical_lines: Set[Point] = None,
             horizontal_lines: Set[Point] = None,
             vertical_borders: Set[Point] = None,
@@ -24,6 +26,8 @@ class Puzzle(object):
         self.width = width
         self.height = height
         self.texts = texts or {}
+        # Text on an edge, for example ((y, x), NE) is the text in the top right corner of square (y, x)
+        self.edge_texts = edge_texts or {}
         self.symbols = symbols or {}
         # Contains (y, x) if there is a line from (y, x) to (y+1, x)
         self.vertical_lines = vertical_lines or set()
