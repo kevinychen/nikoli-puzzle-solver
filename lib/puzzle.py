@@ -24,13 +24,15 @@ class Puzzle(object):
             self,
             width: int = -1,
             height: int = -1,
+            parameters: Dict[str, str] = None,
             top_space: int = -1,
             bottom_space: int = -1,
             left_space: int = -1,
             right_space: int = -1,
-            symbols: Dict[Point, Symbol] = None,
+            shaded: Set[Point] = None,
             texts: Dict[Point, str] = None,
             edge_texts: Dict[Tuple[Point, Direction], str] = None,
+            symbols: Dict[Point, Symbol] = None,
             vertical_lines: Set[Point] = None,
             horizontal_lines: Set[Point] = None,
             vertical_borders: Set[Point] = None,
@@ -38,10 +40,13 @@ class Puzzle(object):
     ):
         self.width = width
         self.height = height
+        # Arbitrary additional parameters needed to solve the puzzle
+        self.parameters = parameters
         self.top_space = top_space
         self.bottom_space = bottom_space
         self.left_space = left_space
         self.right_space = right_space
+        self.shaded = shaded or set()
         self.texts = texts or {}
         # Text on an edge, for example ((y, x), NE) is the text in the top right corner of square (y, x)
         self.edge_texts = edge_texts or {}

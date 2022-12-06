@@ -18,6 +18,7 @@ class PenpaPart(object):
             lineE: Dict[str, int] = None,
             number: Dict[str, Tuple[str, int, str]] = None,
             numberS: Dict[str, Tuple[str, int]] = None,
+            surface: Dict[str, int] = None,
             symbol: Dict[str, Tuple[int, str, int]] = None,
             **_kwargs,
     ):
@@ -26,7 +27,7 @@ class PenpaPart(object):
         self.number = number or {}
         self.numberS = numberS or {}
         self.squareframe = {}
-        self.surface = {}
+        self.surface = surface or {}
         self.symbol = symbol or {}
 
 
@@ -34,6 +35,7 @@ class Penpa(NamedTuple):
 
     width: int
     height: int
+    parameters: str
     top_space: int
     bottom_space: int
     left_space: int
@@ -57,14 +59,15 @@ class Penpa(NamedTuple):
         puzzle = Puzzle(
             width=self.width,
             height=self.height,
+            parameters=self.parameters,
             top_space=self.top_space,
             bottom_space=self.bottom_space,
             left_space=self.left_space,
             right_space=self.right_space,
         )
-        puzzle.texts = {}
-        puzzle.edge_texts = {}
-        puzzle.symbols = {}
+        for k, _ in self.q.surface.items():
+            p = Point(*divmod(int(k), self.w)).translate(self.v.negate())
+            puzzle.shaded.add(p)
         for k, _ in self.q.lineE.items():
             num1, num2 = map(lambda kp: int(kp) - self.w * self.h + self.w + 1, k.split(','))
             p = Point(*divmod(num1, self.w)).translate(self.v.negate())
@@ -86,6 +89,15 @@ class Penpa(NamedTuple):
 
     def to_url(self, solved: Puzzle):
         a = PenpaPart()
+        for p in solved.shaded:
+            y, x = p.translate(self.v)
+            a.surface[str(self.w * y + x)] = 1
+        for p, text in solved.texts.items():
+            y, x = p.translate(self.v)
+            a.number[str(self.w * y + x)] = text, 2, '1'
+        for p, symbol in solved.symbols.items():
+            y, x = p.translate(self.v)
+            a.symbol[str(self.w * y + x)] = symbol.style, symbol.shape, 2
         for p in solved.vertical_lines:
             y, x = p.translate(self.v)
             start = self.w * y + x
@@ -102,12 +114,6 @@ class Penpa(NamedTuple):
             y, x = p.translate(self.v)
             start = self.w * self.h - self.w - 1 + self.w * y + x
             a.lineE[f'{start},{start + 1}'] = 2
-        for p, text in solved.texts.items():
-            y, x = p.translate(self.v)
-            a.number[str(self.w * y + x)] = text, 2, '1'
-        for p, symbol in solved.symbols.items():
-            y, x = p.translate(self.v)
-            a.symbol[str(self.w * y + x)] = symbol.style, symbol.shape, 2
         self.parts[4] = reduce(
             lambda s, abbr: s.replace(abbr[0], abbr[1]),
             PENPA_ABBREVIATIONS,
@@ -115,7 +121,7 @@ class Penpa(NamedTuple):
         return PENPA_PREFIX + b64encode(compress('\n'.join(self.parts).encode())[2:-4]).decode()
 
     @staticmethod
-    def from_url(url: str):
+    def from_url(url: str, parameters: str):
         parts = decompress(b64decode(url[len(PENPA_PREFIX):]), -15).decode().split('\n')
         header = parts[0].split(',')
         top_space, bottom_space, left_space, right_space = loads(parts[1])
@@ -123,6 +129,8 @@ class Penpa(NamedTuple):
         return Penpa(
             width=int(header[1]) - left_space - right_space,
             height=int(header[2]) - top_space - bottom_space,
+            parameters=dict(map(lambda s: s.strip(), line.split(':', 1))
+                            for line in parameters.split('\n') if ':' in line) if parameters else {},
             top_space=top_space,
             bottom_space=bottom_space,
             left_space=left_space,

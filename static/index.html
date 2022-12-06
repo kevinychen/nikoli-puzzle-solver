@@ -19,16 +19,6 @@
             height: 100vh;
         }
 
-        select, button {
-            display: block;
-            font-size: 36px;
-            margin: 10px 0;
-            width: 400px;
-            height: 50px;
-            text-align: center;
-            cursor: pointer;
-        }
-
         .left {
             position: fixed;
             left: 10px;
@@ -40,6 +30,27 @@
             right: 10px;
             bottom: 10px;
         }
+
+        select, button {
+            display: block;
+            font-size: 36px;
+            margin-bottom: 10px;
+            width: 400px;
+            height: 50px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        textarea {
+            display: none;
+            font-size: 24px;
+            margin-bottom: 10px;
+            width: 394px;
+            height: 30px;
+            text-align: center;
+            resize: none;
+            vertical-align: middle;
+        }
     </style>
 </head>
 
@@ -50,6 +61,7 @@
     </div>
     <div class="right">
         <select id="type"></select>
+        <textarea id="parameters"></textarea>
         <button id="solve">Solve</button>
     </div>
 

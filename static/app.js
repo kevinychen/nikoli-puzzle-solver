@@ -10,6 +10,7 @@ window.onload = function () {
     const iframe = document.getElementById('iframe');
     const demoButton = document.getElementById('demo');
     const select = document.getElementById('type');
+    const parameters = document.getElementById('parameters');
     const solveButton = document.getElementById('solve');
 
     let foundSolution = null;
@@ -25,8 +26,16 @@ window.onload = function () {
                 select.add(option);
             }
 
-            demoButton.addEventListener('click', function () {
-                imp(puzzles.find(puzzle => puzzle.type === select.value).demo);
+            demoButton.addEventListener('click', () => {
+                const puzzle = puzzles.find(puzzle => puzzle.type === select.value);
+                imp(puzzle.demo);
+                parameters.value = puzzle.parameters;
+            });
+
+            select.addEventListener('change', () => {
+                const puzzle = puzzles.find(puzzle => puzzle.type === select.value);
+                parameters.value = puzzle.parameters;
+                parameters.style.display = puzzle.parameters ? 'block' : 'none';
             });
         });
     })
@@ -39,6 +48,7 @@ window.onload = function () {
             body: JSON.stringify({
                 'type': select.value,
                 'url': exp(),
+                'parameters': parameters.value,
                 'different_from': foundSolution,
             }),
             headers: { 'Content-type': 'application/json' },

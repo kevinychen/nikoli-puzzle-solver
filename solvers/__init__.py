@@ -17,13 +17,14 @@ with open(path.join(path.dirname(__file__), '../supported_puzzles.yml')) as fh:
 
 
 def puzzle_list():
-    return [{'type': puzzle['type'], 'demo': puzzle['sample']} for puzzle in supported_puzzles]
+    return [{'type': puzzle['type'], 'demo': puzzle['sample'], 'parameters': puzzle.get('parameters')}
+            for puzzle in supported_puzzles]
 
 
-def solve(puzzle_type: str, url: str, different_from: Optional[str] = None):
+def solve(puzzle_type: str, url: str, parameters: str, different_from: Optional[str] = None):
     solver = next(subclass for subclass in AbstractSolver.__subclasses__()
                   if subclass.__name__ == ''.join(c for c in puzzle_type if c.isalpha()))()
-    penpa = Penpa.from_url(url)
+    penpa = Penpa.from_url(url, parameters)
     sg: Optional[SymbolGrid] = None
 
     def init_symbol_grid(lattice, symbol_set):

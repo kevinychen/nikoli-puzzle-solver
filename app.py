@@ -37,6 +37,7 @@ def solve():
         return {'url': solvers.solve(
             request.json['type'],
             request.json['url'],
+            request.json['parameters'],
             request.json['different_from'])}
     except TimeoutError as e:
         abort(e.args[0])
