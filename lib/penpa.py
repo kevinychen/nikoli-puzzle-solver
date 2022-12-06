@@ -94,7 +94,7 @@ class Penpa(NamedTuple):
             a.surface[str(self.w * y + x)] = 1
         for p, text in solved.texts.items():
             y, x = p.translate(self.v)
-            a.number[str(self.w * y + x)] = text, 2, '1'
+            a.number[str(self.w * y + x)] = str(text), 2, '1'
         for p, symbol in solved.symbols.items():
             y, x = p.translate(self.v)
             a.symbol[str(self.w * y + x)] = symbol.style, symbol.shape, 2

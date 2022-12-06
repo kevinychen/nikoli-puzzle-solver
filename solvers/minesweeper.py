@@ -8,9 +8,9 @@ class Minesweeper(AbstractSolver):
             grilops.get_rectangle_lattice(puzzle.height, puzzle.width),
             grilops.make_number_range_symbol_set(0, 1))
 
-        for p in puzzle.texts:
+        for p, text in puzzle.texts.items():
             sg.solver.add(sg.cell_is(p, 0))
-            sg.solver.add(Sum([is_mine.symbol for is_mine in sg.vertex_sharing_neighbors(p)]) == int(puzzle.texts[p]))
+            sg.solver.add(Sum([is_mine.symbol for is_mine in sg.vertex_sharing_neighbors(p)]) == int(text))
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         for p in sg.lattice.points:
