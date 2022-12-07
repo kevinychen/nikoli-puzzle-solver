@@ -12,13 +12,10 @@ from solvers.abstract_solver import AbstractSolver
 for py in [f[:-3] for f in listdir(path.dirname(__file__)) if f.endswith('.py') and f != '__init__.py']:
     __import__('.'.join([__name__, py]), fromlist=[py])
 
-with open(path.join(path.dirname(__file__), '../supported_puzzles.yml')) as fh:
-    supported_puzzles = safe_load(fh)
-
 
 def puzzle_list():
-    return [{'type': puzzle['type'], 'demo': puzzle['sample'], 'parameters': puzzle.get('parameters')}
-            for puzzle in supported_puzzles]
+    with open(path.join(path.dirname(__file__), '../supported_puzzles.yml')) as fh:
+        return safe_load(fh)
 
 
 def solve(puzzle_type: str, url: str, parameters: str, different_from: Optional[str] = None):

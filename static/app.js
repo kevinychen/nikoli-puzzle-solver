@@ -8,8 +8,8 @@ function imp(penpa) {
 
 window.onload = function () {
     const iframe = document.getElementById('iframe');
-    const demoButton = document.getElementById('demo');
-    const select = document.getElementById('type');
+    const sampleSelect = document.getElementById('sample');
+    const typeSelect = document.getElementById('type');
     const parameters = document.getElementById('parameters');
     const solveButton = document.getElementById('solve');
 
@@ -20,20 +20,25 @@ window.onload = function () {
         response.json().then(body => {
             const puzzles = body.puzzles;
             for (const solver of puzzles) {
-                const option = document.createElement('option');
-                option.value = solver.type;
-                option.text = solver.type;
-                select.add(option);
+                for (const select of [sampleSelect, typeSelect]) {
+                    const option = document.createElement('option');
+                    option.value = solver.type;
+                    option.text = solver.type;
+                    select.add(option);
+                }
             }
 
-            demoButton.addEventListener('click', () => {
-                const puzzle = puzzles.find(puzzle => puzzle.type === select.value);
-                imp(puzzle.demo);
+            sampleSelect.addEventListener('change', () => {
+                const puzzle = puzzles.find(puzzle => puzzle.type === sampleSelect.value);
+                imp(puzzle.sample);
+                typeSelect.value = sampleSelect.value;
+                sampleSelect.value = '';
                 parameters.value = puzzle.parameters;
+                parameters.style.display = puzzle.parameters ? 'block' : 'none';
             });
 
-            select.addEventListener('change', () => {
-                const puzzle = puzzles.find(puzzle => puzzle.type === select.value);
+            typeSelect.addEventListener('change', () => {
+                const puzzle = puzzles.find(puzzle => puzzle.type === typeSelect.value);
                 parameters.value = puzzle.parameters;
                 parameters.style.display = puzzle.parameters ? 'block' : 'none';
             });
@@ -46,7 +51,7 @@ window.onload = function () {
         fetch('/api/solve', {
             method: 'POST',
             body: JSON.stringify({
-                'type': select.value,
+                'type': typeSelect.value,
                 'url': exp(),
                 'parameters': parameters.value,
                 'different_from': foundSolution,
