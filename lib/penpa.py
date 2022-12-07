@@ -35,7 +35,7 @@ class Penpa(NamedTuple):
 
     width: int
     height: int
-    parameters: str
+    parameters: Dict[str, str]
     top_space: int
     bottom_space: int
     left_space: int
@@ -87,30 +87,30 @@ class Penpa(NamedTuple):
             puzzle.symbols[p] = Symbol(style, shape)
         return puzzle
 
-    def to_url(self, solved: Puzzle):
+    def to_url(self, solution: Puzzle):
         a = PenpaPart()
-        for p in solved.shaded:
+        for p in solution.shaded:
             y, x = p.translate(self.v)
             a.surface[str(self.w * y + x)] = 1
-        for p, text in solved.texts.items():
+        for p, text in solution.texts.items():
             y, x = p.translate(self.v)
             a.number[str(self.w * y + x)] = str(text), 2, '1'
-        for p, symbol in solved.symbols.items():
+        for p, symbol in solution.symbols.items():
             y, x = p.translate(self.v)
             a.symbol[str(self.w * y + x)] = symbol.style, symbol.shape, 2
-        for p in solved.vertical_lines:
+        for p, line in solution.vertical_lines.items():
             y, x = p.translate(self.v)
             start = self.w * y + x
-            a.line[f'{start},{start + self.w}'] = 2
-        for p in solved.horizontal_lines:
+            a.line[f'{start},{start + self.w}'] = 2 if line is True else line
+        for p, line in solution.horizontal_lines.items():
             y, x = p.translate(self.v)
             start = (self.width + 4) * y + x
-            a.line[f'{start},{start + 1}'] = 2
-        for p in solved.vertical_borders:
+            a.line[f'{start},{start + 1}'] = 2 if line is True else line
+        for p in solution.vertical_borders:
             y, x = p.translate(self.v)
             start = self.w * self.h - self.w - 1 + self.w * y + x
             a.lineE[f'{start},{start + self.w}'] = 2
-        for p in solved.horizontal_borders:
+        for p in solution.horizontal_borders:
             y, x = p.translate(self.v)
             start = self.w * self.h - self.w - 1 + self.w * y + x
             a.lineE[f'{start},{start + 1}'] = 2
@@ -129,8 +129,8 @@ class Penpa(NamedTuple):
         return Penpa(
             width=int(header[1]) - left_space - right_space,
             height=int(header[2]) - top_space - bottom_space,
-            parameters=dict(map(lambda s: s.strip(), line.split(':', 1))
-                            for line in parameters.split('\n') if ':' in line) if parameters else {},
+            parameters=dict((k.strip(), v.strip()) for (k, v) in
+                            [line.split(':', 1) for line in (parameters or '').split('\n') if ':' in line]),
             top_space=top_space,
             bottom_space=bottom_space,
             left_space=left_space,

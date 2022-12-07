@@ -38,13 +38,13 @@ def solve(puzzle_type: str, url: str, parameters: str, different_from: Optional[
             if sg.solver.reason_unknown() == "timeout":
                 raise TimeoutError(408)
             return None
-        solved = Puzzle()
-        solver.set_solved(original, sg, sg.solved_grid(), solved)
-        solution = penpa.to_url(solved)
+        solution = Puzzle()
+        solver.set_solved(original, sg, sg.solved_grid(), solution)
+        solution = penpa.to_url(solution)
         if solution != different_from:
             return solution
         if sg.is_unique():
             return None
-        solved = Puzzle()
-        solver.set_solved(original, sg, sg.solved_grid(), solved)
-        return penpa.to_url(solved)
+        solution = Puzzle()
+        solver.set_solved(original, sg, sg.solved_grid(), solution)
+        return penpa.to_url(solution)

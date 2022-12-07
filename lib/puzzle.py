@@ -1,4 +1,4 @@
-from typing import Dict, NamedTuple, Set, Tuple
+from typing import Dict, NamedTuple, Set, Tuple, Union
 
 from grilops import Direction, Point
 
@@ -33,8 +33,8 @@ class Puzzle(object):
             texts: Dict[Point, str] = None,
             edge_texts: Dict[Tuple[Point, Direction], str] = None,
             symbols: Dict[Point, Symbol] = None,
-            vertical_lines: Set[Point] = None,
-            horizontal_lines: Set[Point] = None,
+            vertical_lines: Dict[Point, Union[bool, int]] = None,
+            horizontal_lines: Dict[Point, Union[bool, int]] = None,
             vertical_borders: Set[Point] = None,
             horizontal_borders: Set[Point] = None,
     ):
@@ -52,9 +52,9 @@ class Puzzle(object):
         self.edge_texts = edge_texts or {}
         self.symbols = symbols or {}
         # Contains (y, x) if there is a line from (y, x) to (y+1, x)
-        self.vertical_lines = vertical_lines or set()
+        self.vertical_lines = vertical_lines or {}
         # Contains (y, x) if there is a line from (y, x) to (y, x+1)
-        self.horizontal_lines = horizontal_lines or set()
+        self.horizontal_lines = horizontal_lines or {}
         # Contains (y,x) if square (y,x) has a left border
         self.vertical_borders = vertical_borders or set()
         # Contains (y,x) if square (y,x) has a top border
