@@ -6,7 +6,7 @@ class Masyu(AbstractSolver):
     def configure(self, puzzle, init_symbol_grid):
         lattice = grilops.get_rectangle_lattice(puzzle.height, puzzle.width)
         symbol_set = LoopSymbolSet(lattice)
-        symbol_set.append('empty', ' ')
+        symbol_set.append('empty')
 
         sg = init_symbol_grid(lattice, symbol_set)
         lc = LoopConstrainer(sg, single_loop=True)
