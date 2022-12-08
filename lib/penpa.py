@@ -111,19 +111,19 @@ class Penpa(NamedTuple):
         for p, line in solution.vertical_lines.items():
             y, x = p.translate(self.v)
             start = self.w * y + x
-            a.line[f'{start},{start + self.w}'] = 2 if line is True else line
+            a.line[f'{start},{start + self.w}'] = 3 if line is True else line
         for p, line in solution.horizontal_lines.items():
             y, x = p.translate(self.v)
             start = (self.width + 4) * y + x
-            a.line[f'{start},{start + 1}'] = 2 if line is True else line
+            a.line[f'{start},{start + 1}'] = 3 if line is True else line
         for p in solution.vertical_borders:
             y, x = p.translate(self.v)
             start = self.w * self.h - self.w - 1 + self.w * y + x
-            a.lineE[f'{start},{start + self.w}'] = 2
+            a.lineE[f'{start},{start + self.w}'] = 3
         for p in solution.horizontal_borders:
             y, x = p.translate(self.v)
             start = self.w * self.h - self.w - 1 + self.w * y + x
-            a.lineE[f'{start},{start + 1}'] = 2
+            a.lineE[f'{start},{start + 1}'] = 3
         self.parts[4] = reduce(
             lambda s, abbr: s.replace(abbr[0], abbr[1]),
             PENPA_ABBREVIATIONS,

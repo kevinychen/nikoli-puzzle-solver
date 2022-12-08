@@ -130,14 +130,11 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "packaging"
-version = "21.3"
+version = "22.0"
 description = "Core utilities for Python packages"
 category = "main"
 optional = false
-python-versions = ">=3.6"
-
-[package.dependencies]
-pyparsing = ">=2.0.2,<3.0.5 || >3.0.5"
+python-versions = ">=3.7"
 
 [[package]]
 name = "pluggy"
@@ -153,17 +150,6 @@ importlib-metadata = {version = ">=0.12", markers = "python_version < \"3.8\""}
 [package.extras]
 dev = ["pre-commit", "tox"]
 testing = ["pytest", "pytest-benchmark"]
-
-[[package]]
-name = "pyparsing"
-version = "3.0.9"
-description = "pyparsing module - Classes and methods to define and execute parsing grammars"
-category = "main"
-optional = false
-python-versions = ">=3.6.8"
-
-[package.extras]
-diagrams = ["railroad-diagrams", "jinja2"]
 
 [[package]]
 name = "pytest"
@@ -262,7 +248,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "flake8 (<5)", "pytest-co
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "784abc037a083fb2d1045634d8d1bff03da07272a7ce294bfbc3688615be2bf3"
+content-hash = "f4679a7cc1c398b52282b4419e59b8316dd7e65226741b3aa703241de3760eb1"
 
 [metadata.files]
 attrs = []
@@ -281,7 +267,6 @@ jinja2 = []
 markupsafe = []
 packaging = []
 pluggy = []
-pyparsing = []
 pytest = []
 "ruamel.yaml" = []
 "ruamel.yaml.clib" = []
