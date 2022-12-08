@@ -72,9 +72,9 @@ class Penpa(NamedTuple):
             num1, num2 = map(lambda kp: int(kp) - self.w * self.h + self.w + 1, k.split(','))
             p = Point(*divmod(num1, self.w)).translate(self.v.negate())
             if num2 - num1 == self.w:
-                puzzle.vertical_borders.add(p)
+                puzzle.vertical_borders[p] = True
             elif num2 - num1 == 1:
-                puzzle.horizontal_borders.add(p)
+                puzzle.horizontal_borders[p] = True
         for k, (text, _, _) in self.q.number.items():
             p = Point(*divmod(int(k), self.w)).translate(self.v.negate())
             puzzle.texts[p] = text
@@ -83,8 +83,18 @@ class Penpa(NamedTuple):
             p = Point(*divmod(int(kk), self.w)).translate(self.v.negate())
             puzzle.edge_texts[p, DIAGONAL_DIRECTIONS[int(k) % 4]] = text
         for k, (style, shape, _) in self.q.symbol.items():
-            p = Point(*divmod(int(k), self.w)).translate(self.v.negate())
-            puzzle.symbols[p] = Symbol(style, shape)
+            category, kk = divmod(int(k), self.w * self.h)
+            if category == 0:
+                p = Point(*divmod(kk, self.w)).translate(self.v.negate())
+                puzzle.symbols[p] = Symbol(style, shape)
+            elif category == 1:
+                pass
+            elif category == 2:
+                p = Point(*divmod(kk + self.w, self.w)).translate(self.v.negate())
+                puzzle.horizontal_borders[p] = Symbol(style, shape)
+            elif category == 3:
+                p = Point(*divmod(kk + 1, self.w)).translate(self.v.negate())
+                puzzle.vertical_borders[p] = Symbol(style, shape)
         return puzzle
 
     def to_url(self, solution: Puzzle):

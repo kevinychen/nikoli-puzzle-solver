@@ -10,6 +10,9 @@ class Symbol(NamedTuple):
     style: int
     shape: str
 
+    def is_black(self):
+        return self.style == 2
+
 
 class Symbols:
 
@@ -35,8 +38,8 @@ class Puzzle(object):
             symbols: Dict[Point, Symbol] = None,
             vertical_lines: Dict[Point, Union[bool, int]] = None,
             horizontal_lines: Dict[Point, Union[bool, int]] = None,
-            vertical_borders: Set[Point] = None,
-            horizontal_borders: Set[Point] = None,
+            vertical_borders: Dict[Point, Union[bool, Symbol]] = None,
+            horizontal_borders: Dict[Point, Union[bool, Symbol]] = None,
     ):
         self.width = width
         self.height = height
@@ -56,9 +59,9 @@ class Puzzle(object):
         # Contains (y, x) if there is a line from (y, x) to (y, x+1)
         self.horizontal_lines = horizontal_lines or {}
         # Contains (y,x) if square (y,x) has a left border
-        self.vertical_borders = vertical_borders or set()
+        self.vertical_borders = vertical_borders or {}
         # Contains (y,x) if square (y,x) has a top border
-        self.horizontal_borders = horizontal_borders or set()
+        self.horizontal_borders = horizontal_borders or {}
 
     def to_regions(self, points):
         uf = UnionFind()

@@ -25,8 +25,8 @@ class Slitherlink(AbstractSolver):
         for row in range(puzzle.height):
             for col in range(puzzle.width + 1):
                 if solved_grid[Point(row, col - 1)] != solved_grid[Point(row, col)]:
-                    solution.vertical_borders.add(Point(row, col))
+                    solution.vertical_borders[Point(row, col)] = True
         for row in range(puzzle.height + 1):
             for col in range(puzzle.width):
                 if solved_grid[Point(row - 1, col)] != solved_grid[Point(row, col)]:
-                    solution.horizontal_borders.add(Point(row, col))
+                    solution.horizontal_borders[Point(row, col)] = True

@@ -14,18 +14,7 @@ class Masyu(AbstractSolver):
         circles = [p for p in sg.lattice.points
                    if p in puzzle.symbols and puzzle.symbols[p].shape.startswith('circle_')]
         for p in circles:
-            if puzzle.symbols[p].style in (1, 6, 8):  # white
-                choices = []
-                if 0 < p.x < puzzle.width - 1:
-                    choices.append(And(sg.cell_is(p, symbol_set.EW), Or(
-                        sg.cell_is_one_of(Point(p.y, p.x - 1), [symbol_set.NE, symbol_set.SE]),
-                        sg.cell_is_one_of(Point(p.y, p.x + 1), [symbol_set.NW, symbol_set.SW]))))
-                if 0 < p.y < puzzle.height - 1:
-                    choices.append(And(sg.cell_is(p, symbol_set.NS), Or(
-                        sg.cell_is_one_of(Point(p.y - 1, p.x), [symbol_set.SW, symbol_set.SE]),
-                        sg.cell_is_one_of(Point(p.y + 1, p.x), [symbol_set.NW, symbol_set.NE]))))
-                sg.solver.add(Or(*choices))
-            elif puzzle.symbols[p].style == 2:  # black
+            if puzzle.symbols[p].is_black():
                 sg.solver.add(sg.cell_is_one_of(p, [symbol_set.NW, symbol_set.NE, symbol_set.SW, symbol_set.SE]))
                 if p.x > 0:
                     sg.solver.add(Implies(
@@ -43,6 +32,17 @@ class Masyu(AbstractSolver):
                     sg.solver.add(Implies(
                         sg.cell_is_one_of(p, [symbol_set.SW, symbol_set.SE]),
                         sg.cell_is(Point(p.y + 1, p.x), symbol_set.NS)))
+            else:
+                choices = []
+                if 0 < p.x < puzzle.width - 1:
+                    choices.append(And(sg.cell_is(p, symbol_set.EW), Or(
+                        sg.cell_is_one_of(Point(p.y, p.x - 1), [symbol_set.NE, symbol_set.SE]),
+                        sg.cell_is_one_of(Point(p.y, p.x + 1), [symbol_set.NW, symbol_set.SW]))))
+                if 0 < p.y < puzzle.height - 1:
+                    choices.append(And(sg.cell_is(p, symbol_set.NS), Or(
+                        sg.cell_is_one_of(Point(p.y - 1, p.x), [symbol_set.SW, symbol_set.SE]),
+                        sg.cell_is_one_of(Point(p.y + 1, p.x), [symbol_set.NW, symbol_set.NE]))))
+                sg.solver.add(Or(*choices))
 
         # Optimization: loop starts at one of the circles
         if circles:
@@ -52,6 +52,6 @@ class Masyu(AbstractSolver):
         for p in sg.lattice.points:
             name = sg.symbol_set.symbols[solved_grid[p]].name
             if 'S' in name:
-                solution.vertical_lines.add(p)
+                solution.vertical_lines[p] = True
             if 'E' in name:
-                solution.horizontal_lines.add(p)
+                solution.horizontal_lines[p] = True
