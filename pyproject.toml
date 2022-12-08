@@ -8,8 +8,8 @@ authors = ["Kevin Y. Chen"]
 python = "^3.7"
 Flask = "^2.0.2"
 grilops = "^0.9.1"
-PyYAML = "^6.0"
 pytest = "^7.2.0"
+"ruamel.yaml" = "^0.17.21"
 
 [tool.poetry.dev-dependencies]
 

@@ -1,11 +1,13 @@
 from os import listdir, path
 from typing import Optional
-from yaml import safe_load
 
 from grilops import SymbolGrid
+from ruamel.yaml import YAML
 
 from lib import GlobalTimeoutLock, Penpa, Puzzle
 from solvers.abstract_solver import AbstractSolver
+
+yaml = YAML()
 
 # Dynamically import all py files in this directory
 # https://stackoverflow.com/a/6246478
@@ -15,7 +17,7 @@ for py in [f[:-3] for f in listdir(path.dirname(__file__)) if f.endswith('.py') 
 
 def puzzle_list():
     with open(path.join(path.dirname(__file__), '../supported_puzzles.yml')) as fh:
-        return safe_load(fh)
+        return yaml.load(fh)
 
 
 def solve(puzzle_type: str, url: str, parameters: str, different_from: Optional[str] = None):
