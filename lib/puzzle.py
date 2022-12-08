@@ -18,6 +18,7 @@ class Symbols:
 
     X = Symbol(0, 'star')
     STAR = Symbol(2, 'star')
+    LIGHT_BULB = Symbol(3, 'sun_moon')
     BOMB = Symbol(4, 'sun_moon')
 
 
