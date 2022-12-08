@@ -1,51 +1,38 @@
 from solvers.utils import *
 
-DIRECTIONS = {'1': Vector(-1, 0), '2': Vector(1, 0), '3': Vector(0, -1), '4': Vector(0, 1)}
 
+class Yajilin(AbstractSolver):
 
-class YajilinSolver(AbstractSolver):
+    def configure(self, puzzle, init_symbol_grid):
+        directions = [Directions.E, Directions.S, Directions.W, Directions.N,
+                      Directions.W, Directions.N, Directions.E, Directions.S]
+        lattice = grilops.get_rectangle_lattice(puzzle.height, puzzle.width)
+        symbol_set = LoopSymbolSet(lattice)
+        symbol_set.append('BLACK')
+        symbol_set.append('WALL')
 
-    def __init__(self, pzprv3):
-        matched = match('pzprv3/yajilin/(\\d+)/(\\d+)/(.*)/', pzprv3)
-        self.height = int(matched.group(1))
-        self.width = int(matched.group(2))
-        self.grid = parse_table(matched.group(3))[:self.height]
-
-    def to_pzprv3(self, solved_grid):
-        symbol_set = self.symbol_set()
-        result = [['#' if symbol_set.symbols[solved_grid[Point(row, col)]].label == '#' else '.'
-                   for col in range(self.width)] for row in range(self.height)]
-        horizontals = [['1' if 'E' in symbol_set.symbols[solved_grid[Point(row, col)]].name else '0'
-                        for col in range(self.width - 1)] for row in range(self.height)]
-        verticals = [['1' if 'S' in symbol_set.symbols[solved_grid[Point(row, col)]].name else '0'
-                      for col in range(self.width)] for row in range(self.height - 1)]
-        return (
-            'pzprv3/yajilin/'
-            f'{self.height}/{self.width}/{table(self.grid)}/{table(result)}/{table(horizontals)}/{table(verticals)}/')
-
-    def lattice(self):
-        return grilops.get_rectangle_lattice(self.height, self.width)
-
-    def symbol_set(self):
-        symbol_set = LoopSymbolSet(self.lattice())
-        symbol_set.append('BLACK', '#')
-        symbol_set.append('WALL', ' ')
-        return symbol_set
-
-    def configure(self, sg):
-        symbol_set = self.symbol_set()
+        sg = init_symbol_grid(
+            grilops.get_rectangle_lattice(puzzle.height, puzzle.width),
+            symbol_set)
         LoopConstrainer(sg, single_loop=True)
 
         for p in sg.lattice.points:
-            clue = self.grid[p.y][p.x]
-            if clue == '.':
-                sg.solver.add(Not(sg.cell_is(p, symbol_set.WALL)))
-            else:
-                direction, num = clue.split(',')
+            if p in puzzle.texts and p in puzzle.symbols and puzzle.symbols[p].shape == 'arrow_fouredge_B':
                 sg.solver.add(sg.cell_is(p, symbol_set.WALL))
-                if num != '-':
-                    sg.solver.add(PbEq(
-                        [(sg.cell_is(q, symbol_set.BLACK), 1) for q in sight_line(sg, p, DIRECTIONS[direction])],
-                        int(num)))
+                for direction, flag in enumerate(puzzle.symbols[p].style):
+                    if flag:
+                        sg.solver.add(PbEq(
+                            [(sg.cell_is(q, symbol_set.BLACK), 1) for q in sight_line(sg, p, directions[direction])],
+                            int(puzzle.texts[p])))
+            elif p in puzzle.shaded:
+                sg.solver.add(sg.cell_is(p, symbol_set.WALL))
+            else:
+                sg.solver.add(Not(sg.cell_is(p, symbol_set.WALL)))
 
             no_adjacent_symbols(sg, symbol_set.BLACK)
+
+    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solution.set_loop(sg, solved_grid)
+        for p in sg.lattice.points:
+            if solved_grid[p] == sg.symbol_set.BLACK:
+                solution.shaded.add(p)

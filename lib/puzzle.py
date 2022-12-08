@@ -1,13 +1,13 @@
-from typing import Dict, NamedTuple, Set, Tuple, Union
+from typing import Dict, List, NamedTuple, Set, Tuple, Union
 
-from grilops import Direction, Point
+from grilops import Direction, Point, SymbolGrid
 
 from lib.union_find import UnionFind
 
 
 class Symbol(NamedTuple):
 
-    style: int
+    style: Union[int, List[int]]
     shape: str
 
     def is_black(self):
@@ -71,3 +71,11 @@ class Puzzle(object):
             if p not in self.horizontal_borders:
                 uf.union(Point(p.y - 1, p.x), p)
         return set([tuple(q for q in points if uf.find(q) == p) for p in points if uf.find(p) == p])
+
+    def set_loop(self, sg: SymbolGrid, solved_grid: Dict[Point, int]):
+        for p in sg.lattice.points:
+            name = sg.symbol_set.symbols[solved_grid[p]].name
+            if 'S' in name:
+                self.vertical_lines[p] = True
+            if 'E' in name:
+                self.horizontal_lines[p] = True
