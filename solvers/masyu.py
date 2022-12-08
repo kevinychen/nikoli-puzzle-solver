@@ -11,8 +11,7 @@ class Masyu(AbstractSolver):
         sg = init_symbol_grid(lattice, symbol_set)
         lc = LoopConstrainer(sg, single_loop=True)
 
-        circles = [p for p in sg.lattice.points
-                   if p in puzzle.symbols and puzzle.symbols[p].shape.startswith('circle_')]
+        circles = [p for p in sg.grid if p in puzzle.symbols and puzzle.symbols[p].shape.startswith('circle_')]
         for p in circles:
             if puzzle.symbols[p].is_black():
                 sg.solver.add(sg.cell_is_one_of(p, [symbol_set.NW, symbol_set.NE, symbol_set.SW, symbol_set.SE]))

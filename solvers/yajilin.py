@@ -16,7 +16,7 @@ class Yajilin(AbstractSolver):
             symbol_set)
         LoopConstrainer(sg, single_loop=True)
 
-        for p in sg.lattice.points:
+        for p in sg.grid:
             if p in puzzle.texts and p in puzzle.symbols and puzzle.symbols[p].shape == 'arrow_fouredge_B':
                 sg.solver.add(sg.cell_is(p, symbol_set.WALL))
                 for direction, flag in enumerate(puzzle.symbols[p].style):
@@ -33,6 +33,6 @@ class Yajilin(AbstractSolver):
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         solution.set_loop(sg, solved_grid)
-        for p in sg.lattice.points:
+        for p in sg.grid:
             if solved_grid[p] == sg.symbol_set.BLACK:
                 solution.shaded.add(p)

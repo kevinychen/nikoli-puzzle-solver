@@ -20,11 +20,4 @@ class Fillomino(AbstractSolver):
                     rc.region_size_grid[p] == region_size.symbol, rc.region_id_grid[p] == region_id.symbol))
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
-        for row in range(puzzle.height):
-            for col in range(puzzle.width - 1):
-                if solved_grid[Point(row, col)] != solved_grid[Point(row, col + 1)]:
-                    solution.vertical_borders[Point(row, col + 1)] = True
-        for row in range(puzzle.height - 1):
-            for col in range(puzzle.width):
-                if solved_grid[Point(row, col)] != solved_grid[Point(row + 1, col)]:
-                    solution.horizontal_borders[Point(row + 1, col)] = True
+        solution.set_regions(sg, solved_grid)

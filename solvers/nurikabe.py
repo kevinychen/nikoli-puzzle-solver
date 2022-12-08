@@ -9,7 +9,7 @@ class Nurikabe(AbstractSolver):
             grilops.make_number_range_symbol_set(0, 1))
         rc = RegionConstrainer(sg.lattice, sg.solver)
 
-        for p in sg.lattice.points:
+        for p in sg.grid:
             if p in puzzle.texts:
                 # All numbers correspond to a different region with the given size, rooted at the number
                 sg.solver.add(sg.cell_is(p, 0))
@@ -21,7 +21,7 @@ class Nurikabe(AbstractSolver):
                 sg.solver.add(Implies(sg.cell_is(p, 0), rc.parent_grid[p] != R))
 
         # No two regions with the same color may be adjacent
-        for p in sg.lattice.points:
+        for p in sg.grid:
             for color, region_id in zip(
                     sg.lattice.edge_sharing_neighbors(sg.grid, p),
                     sg.lattice.edge_sharing_neighbors(rc.region_id_grid, p)):
@@ -31,6 +31,6 @@ class Nurikabe(AbstractSolver):
         no2x2(sg, 1)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
-        for p in sg.lattice.points:
+        for p in sg.grid:
             if solved_grid[p] == 1:
                 solution.shaded.add(p)

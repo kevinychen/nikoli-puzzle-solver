@@ -26,6 +26,6 @@ class Aquarium(AbstractSolver):
                     [(sg.cell_is(q, 1), 1) for q in sight_line(sg, p.translate(v), v)], int(puzzle.texts[p])))
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
-        for p in sg.lattice.points:
+        for p in sg.grid:
             if solved_grid[p] == 1:
                 solution.shaded.add(p)

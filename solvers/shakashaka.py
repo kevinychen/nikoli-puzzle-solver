@@ -25,7 +25,7 @@ class Shakashaka(AbstractSolver):
                         And([sg.cell_is(q, symbol_set.EMPTY) for q in box if q != p]),
                         Or(sg.cell_is(p, symbol_set.EMPTY), sg.cell_is(p, corresponding_direction))))
 
-        for p in sg.lattice.points:
+        for p in sg.grid:
             if not (0 <= p.x < puzzle.width and 0 <= p.y < puzzle.height):
                 sg.solver.add(sg.cell_is(p, symbol_set.WALL))
             elif p in puzzle.shaded:
@@ -55,6 +55,6 @@ class Shakashaka(AbstractSolver):
                 sg.solver.add(Or(choices))
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
-        for p in sg.lattice.points:
+        for p in sg.grid:
             if p not in puzzle.symbols and solved_grid[p] > 0:
                 solution.symbols[p] = Symbol(solved_grid[p], 'tri')

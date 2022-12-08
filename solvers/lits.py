@@ -28,7 +28,7 @@ class LITS(AbstractSolver):
             sg.solver.add(Or([sg.cell_is(p, 1) for p in region]))
 
         # No two pieces with the same shape may be adjacent
-        for p in sg.lattice.points:
+        for p in sg.grid:
             for color, shape_instance, shape_type in \
                     zip(sg.lattice.edge_sharing_neighbors(sg.grid, p),
                         sg.lattice.edge_sharing_neighbors(sc.shape_instance_grid, p),
@@ -42,6 +42,6 @@ class LITS(AbstractSolver):
         no2x2(sg, 1)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
-        for p in sg.lattice.points:
+        for p in sg.grid:
             if solved_grid[p] == 1:
                 solution.shaded.add(p)

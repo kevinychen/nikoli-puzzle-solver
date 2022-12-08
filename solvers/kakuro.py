@@ -24,6 +24,6 @@ class Kakuro(AbstractSolver):
             sg.solver.add(Distinct([sg.grid[p] for p in line]))
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
-        for p in sg.lattice.points:
+        for p in sg.grid:
             if p not in puzzle.symbols:
                 solution.texts[p] = solved_grid[p]

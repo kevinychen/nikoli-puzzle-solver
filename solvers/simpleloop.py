@@ -12,11 +12,11 @@ class SimpleLoop(AbstractSolver):
             grilops.get_rectangle_lattice(puzzle.height, puzzle.width),
             symbol_set)
         lc = LoopConstrainer(sg, single_loop=True)
-        for p in sg.lattice.points:
+        for p in sg.grid:
             sg.solver.add((lc.inside_outside_grid[p] == L) == (p not in puzzle.shaded))
 
         # Optimization: loop starts at one of the empty squares
-        sg.solver.add(lc.loop_order_grid[next(p for p in sg.lattice.points if p not in puzzle.shaded)] == 0)
+        sg.solver.add(lc.loop_order_grid[next(p for p in sg.grid if p not in puzzle.shaded)] == 0)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         solution.set_loop(sg, solved_grid)

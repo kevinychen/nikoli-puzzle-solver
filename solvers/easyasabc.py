@@ -36,7 +36,7 @@ class EasyAsABC(AbstractSolver):
     def set_solved(self, puzzle, sg, solved_grid, solution):
         letters = puzzle.parameters['letters']
 
-        for p in sg.lattice.points:
+        for p in sg.grid:
             if p not in puzzle.texts:
                 if solved_grid[p] > 0:
                     solution.texts[p] = letters[solved_grid[p] - 1]

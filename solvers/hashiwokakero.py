@@ -11,13 +11,13 @@ class Hashiwokakero(AbstractSolver):
             grilops.make_number_range_symbol_set(0, 2))
 
         # Neighbor graph is symmetric and has no self-edges
-        for edge in sg.lattice.points:
+        for edge in sg.grid:
             if edge.x < edge.y:
                 sg.solver.add(sg.grid[edge] == sg.grid[Point(edge.x, edge.y)])
 
         # Only orthogonally adjacent islands can have bridges
         edges = []
-        for edge in sg.lattice.points:
+        for edge in sg.grid:
             p, q = number_positions[edge.x], number_positions[edge.y]
             if edge.x == edge.y:
                 sg.solver.add(sg.cell_is(edge, 0))
@@ -58,7 +58,7 @@ class Hashiwokakero(AbstractSolver):
     def set_solved(self, puzzle, sg, solved_grid, solution):
         number_positions = list(puzzle.texts.keys())
 
-        for edge in sg.lattice.points:
+        for edge in sg.grid:
             if solved_grid[edge] != 0:
                 p, q = number_positions[edge.x], number_positions[edge.y]
                 if p.y == q.y:

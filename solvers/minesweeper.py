@@ -13,6 +13,6 @@ class Minesweeper(AbstractSolver):
             sg.solver.add(Sum([is_mine.symbol for is_mine in sg.vertex_sharing_neighbors(p)]) == int(text))
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
-        for p in sg.lattice.points:
+        for p in sg.grid:
             if p not in puzzle.texts:
                 solution.symbols[p] = Symbols.BOMB if solved_grid[p] else Symbols.X

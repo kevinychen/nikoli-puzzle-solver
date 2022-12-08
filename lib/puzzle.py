@@ -2,6 +2,7 @@ from typing import Dict, List, NamedTuple, Set, Tuple, Union
 
 from grilops import Direction, Point, SymbolGrid
 
+from lib import Directions
 from lib.union_find import UnionFind
 
 
@@ -80,3 +81,10 @@ class Puzzle(object):
                 self.vertical_lines[p] = True
             if 'E' in name:
                 self.horizontal_lines[p] = True
+
+    def set_regions(self, sg: SymbolGrid, solved_grid: Dict[Point, int]):
+        for p in sg.lattice.points:
+            for v, borders in [(Directions.W, self.vertical_borders), (Directions.N, self.horizontal_borders)]:
+                q = p.translate(v)
+                if q in sg.lattice.points and solved_grid[p] != solved_grid[q]:
+                    borders[p] = True

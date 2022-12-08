@@ -1,10 +1,6 @@
 from solvers.utils import *
 
 
-def _is_wall(val):
-    return val.isnumeric() or val == '-'
-
-
 class LightUpAkari(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
@@ -12,7 +8,7 @@ class LightUpAkari(AbstractSolver):
             grilops.get_rectangle_lattice(puzzle.height, puzzle.width),
             grilops.make_number_range_symbol_set(0, 1))
 
-        for p in sg.lattice.points:
+        for p in sg.grid:
             if p in puzzle.shaded:
                 sg.solver.add(sg.cell_is(p, 0))
                 if p in puzzle.texts:
@@ -25,6 +21,6 @@ class LightUpAkari(AbstractSolver):
                 sg.solver.add(Implies(sg.cell_is(p, 0), Or([sg.cell_is(q, 1) for q in lines])))
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
-        for p in sg.lattice.points:
+        for p in sg.grid:
             if solved_grid[p] == 1:
                 solution.symbols[p] = Symbols.LIGHT_BULB
