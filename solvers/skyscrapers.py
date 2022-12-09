@@ -10,19 +10,19 @@ class Skyscrapers(AbstractSolver):
 
         border_lines = []
         for i in range(puzzle.width):
-            border_lines.append((Point(i, -1), Vector(0, 1)))
-            border_lines.append((Point(i, puzzle.width), Vector(0, -1)))
-            border_lines.append((Point(-1, i), Vector(1, 0)))
-            border_lines.append((Point(puzzle.width, i), Vector(-1, 0)))
+            border_lines.append((Point(i, -1), Directions.E))
+            border_lines.append((Point(i, puzzle.width), Directions.W))
+            border_lines.append((Point(-1, i), Directions.S))
+            border_lines.append((Point(puzzle.width, i), Directions.N))
         for p, v in border_lines:
             if p in puzzle.texts:
                 line = sight_line(sg, p.translate(v), v)
-                sg.solver.add(PbEq(
-                    [(And([sg.grid[q] > sg.grid[r] for r in line[:i]]), 1) for i, q in enumerate(line)],
-                    int(puzzle.texts[p])))
+                sg.solver.add(
+                    Sum([And([sg.grid[q] > sg.grid[r] for r in line[:i]]) for i, q in enumerate(line)])
+                    == puzzle.texts[p])
         for p, text in puzzle.texts.items():
             if 0 <= p.y < puzzle.height and 0 <= p.x < puzzle.width:
-                sg.solver.add(sg.cell_is(p, int(text)))
+                sg.solver.add(sg.cell_is(p, text))
 
         distinct_rows_and_columns(sg)
 

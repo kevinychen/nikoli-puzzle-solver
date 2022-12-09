@@ -21,6 +21,8 @@ class Symbols:
     STAR = Symbol(2, 'star')
     LIGHT_BULB = Symbol(3, 'sun_moon')
     BOMB = Symbol(4, 'sun_moon')
+    TREE = Symbol(1, 'tents')
+    TENT = Symbol(2, 'tents')
 
 
 class Puzzle(object):

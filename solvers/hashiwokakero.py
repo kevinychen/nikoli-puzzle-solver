@@ -30,7 +30,7 @@ class Hashiwokakero(AbstractSolver):
 
         # Each island has the correct number of bridges connected to it
         for i, p in enumerate(number_positions):
-            sg.solver.add(Sum([sg.grid[edge] for edge in edges if i == edge.x]) == int(puzzle.texts[p]))
+            sg.solver.add(Sum([sg.grid[edge] for edge in edges if i == edge.x]) == puzzle.texts[p])
 
         # Bridges cannot intersect
         for edge1 in edges:
@@ -42,7 +42,7 @@ class Hashiwokakero(AbstractSolver):
 
         # Bridges are all connected
         graph = defaultdict(lambda: Int(str(uuid4())))
-        sg.solver.add(PbEq([(graph[edge] == 0, 1) for edge in edges if edge.x < edge.y], 1))
+        sg.solver.add(Sum([graph[edge] == 0 for edge in edges if edge.x < edge.y]) == 1)
         for edge in edges:
             sg.solver.add(graph[edge] >= 0)
             sg.solver.add(graph[edge] < len(number_positions))

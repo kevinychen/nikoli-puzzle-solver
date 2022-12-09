@@ -1,6 +1,6 @@
 from collections import defaultdict
 from re import match
-from typing import Callable, List, Union
+from typing import Callable, Dict, List, Union
 from uuid import uuid4
 
 import grilops
@@ -19,20 +19,6 @@ def continuous_region(sg: SymbolGrid, rc: RegionConstrainer, good: Callable[[Poi
     region_root = Int(str(uuid4()))
     for p in sg.lattice.points:
         sg.solver.add(good(p) == (rc.region_id_grid[p] == region_root))
-
-
-def convert_pzprv3_borders_to_regions(
-        sg: SymbolGrid, vertical_borders: List[List[str]], horizontal_borders: List[List[str]]) -> List[List[Point]]:
-    uf = UnionFind()
-    for row in range(len(vertical_borders)):
-        for col in range(len(vertical_borders[row])):
-            if vertical_borders[row][col] == '0':
-                uf.union(Point(row, col), Point(row, col + 1))
-    for row in range(len(horizontal_borders)):
-        for col in range(len(horizontal_borders[row])):
-            if horizontal_borders[row][col] == '0':
-                uf.union(Point(row, col), Point(row + 1, col))
-    return [[q for q in sg.lattice.points if uf.find(q) == p] for p in sg.lattice.points if uf.find(p) == p]
 
 
 def distinct_rows_and_columns(sg: SymbolGrid):
@@ -60,10 +46,6 @@ def no2x2(sg: SymbolGrid, symbol: int):
             sg.solver.add(Not(And([sg.cell_is(p, symbol) for p in box])))
 
 
-def parse_table(grid_str):
-    return list(map(lambda row: row.split(' ')[:-1], grid_str.split('/')))
-
-
 def sight_line(
         sg: SymbolGrid,
         p: Point,
@@ -74,9 +56,3 @@ def sight_line(
         line.append(p)
         p = p.translate(direction)
     return line
-
-
-def table(grid):
-    return '/'.join(map(lambda row: ' '.join(row) + ' ', grid))
-
-

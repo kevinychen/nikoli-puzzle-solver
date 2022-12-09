@@ -11,7 +11,7 @@ class Fillomino(AbstractSolver):
 
         for p in sg.lattice.points:
             if p in puzzle.texts:
-                sg.solver.add(sg.cell_is(p, int(puzzle.texts[p])))
+                sg.solver.add(sg.cell_is(p, puzzle.texts[p]))
             sg.solver.add(sg.grid[p] == rc.region_size_grid[p])
             for region_size, region_id in zip(
                     sg.lattice.edge_sharing_neighbors(rc.region_size_grid, p),

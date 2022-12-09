@@ -12,11 +12,11 @@ class EasyAsABC(AbstractSolver):
 
         border_lines = []
         for i in range(puzzle.height):
-            border_lines.append((Point(i, -1), Vector(0, 1)))
-            border_lines.append((Point(i, puzzle.width), Vector(0, -1)))
+            border_lines.append((Point(i, -1), Directions.E))
+            border_lines.append((Point(i, puzzle.width), Directions.W))
         for i in range(puzzle.width):
-            border_lines.append((Point(-1, i), Vector(1, 0)))
-            border_lines.append((Point(puzzle.height, i), Vector(-1, 0)))
+            border_lines.append((Point(-1, i), Directions.S))
+            border_lines.append((Point(puzzle.height, i), Directions.N))
 
         # Each border letter is the first one visible on that line
         for p, v in border_lines:
@@ -29,9 +29,9 @@ class EasyAsABC(AbstractSolver):
         # Each letter appears in each row and in each column exactly once
         for i in range(1, len(letters) + 1):
             for row in range(puzzle.height):
-                sg.solver.add(PbEq([(sg.grid[Point(row, col)] == i, 1) for col in range(puzzle.width)], 1))
+                sg.solver.add(Sum([sg.grid[Point(row, col)] == i for col in range(puzzle.width)]) == 1)
             for col in range(puzzle.width):
-                sg.solver.add(PbEq([(sg.grid[Point(row, col)] == i, 1) for row in range(puzzle.height)], 1))
+                sg.solver.add(Sum([sg.grid[Point(row, col)] == i for row in range(puzzle.height)]) == 1)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         letters = puzzle.parameters['letters']

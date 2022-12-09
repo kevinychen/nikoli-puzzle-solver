@@ -21,9 +21,9 @@ class Yajilin(AbstractSolver):
                 sg.solver.add(sg.cell_is(p, symbol_set.WALL))
                 for direction, flag in enumerate(puzzle.symbols[p].style):
                     if flag:
-                        sg.solver.add(PbEq(
-                            [(sg.cell_is(q, symbol_set.BLACK), 1) for q in sight_line(sg, p, directions[direction])],
-                            int(puzzle.texts[p])))
+                        sg.solver.add(
+                            Sum([sg.cell_is(q, symbol_set.BLACK) for q in sight_line(sg, p, directions[direction])])
+                            == puzzle.texts[p])
             elif p in puzzle.shaded:
                 sg.solver.add(sg.cell_is(p, symbol_set.WALL))
             else:

@@ -12,7 +12,7 @@ class LightUpAkari(AbstractSolver):
             if p in puzzle.shaded:
                 sg.solver.add(sg.cell_is(p, 0))
                 if p in puzzle.texts:
-                    sg.solver.add(Sum([n.symbol for n in sg.edge_sharing_neighbors(p)]) == int(puzzle.texts[p]))
+                    sg.solver.add(Sum([n.symbol for n in sg.edge_sharing_neighbors(p)]) == puzzle.texts[p])
             else:
                 lines = []
                 for n in sg.edge_sharing_neighbors(p):

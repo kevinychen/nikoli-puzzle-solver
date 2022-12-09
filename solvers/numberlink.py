@@ -13,13 +13,12 @@ class Numberlink(AbstractSolver):
         for p in sg.grid:
             if p in puzzle.texts:
                 # A number endpoint must be orthogonally connected to one other square on the chain
-                sg.solver.add(sg.cell_is(p, int(puzzle.texts[p])))
-                sg.solver.add(PbEq([(n.symbol == sg.grid[p], 1) for n in sg.edge_sharing_neighbors(p)], 1))
+                sg.solver.add(sg.cell_is(p, puzzle.texts[p]))
+                sg.solver.add(Sum([n.symbol == sg.grid[p] for n in sg.edge_sharing_neighbors(p)]) == 1)
             else:
                 # Every other square on the chain must be orthogonally connected to two others
-                sg.solver.add(Or(
-                    sg.cell_is(p, 0),
-                    PbEq([(n.symbol == sg.grid[p], 1) for n in sg.edge_sharing_neighbors(p)], 2)))
+                sg.solver.add(
+                    Or(sg.cell_is(p, 0), Sum([n.symbol == sg.grid[p] for n in sg.edge_sharing_neighbors(p)]) == 2))
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         for p in sg.grid:

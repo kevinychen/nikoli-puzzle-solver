@@ -9,7 +9,7 @@ class MeanderingNumbers(AbstractSolver):
             grilops.make_number_range_symbol_set(0, puzzle.height * puzzle.width))
 
         for p, text in puzzle.texts.items():
-            sg.solver.add(sg.cell_is(p, int(text)))
+            sg.solver.add(sg.cell_is(p, text))
 
         for region in puzzle.to_regions(sg.lattice.points):
             # Each region must have numbers from 1 to n in an orthogonally connected path

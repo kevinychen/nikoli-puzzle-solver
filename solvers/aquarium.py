@@ -17,13 +17,12 @@ class Aquarium(AbstractSolver):
         # Satisfy water counts
         border_lines = []
         for row in range(puzzle.height):
-            border_lines.append((Point(row, -1), Vector(0, 1)))
+            border_lines.append((Point(row, -1), Directions.E))
         for col in range(puzzle.width):
-            border_lines.append((Point(-1, col), Vector(1, 0)))
+            border_lines.append((Point(-1, col), Directions.S))
         for p, v in border_lines:
             if p in puzzle.texts:
-                sg.solver.add(PbEq(
-                    [(sg.cell_is(q, 1), 1) for q in sight_line(sg, p.translate(v), v)], int(puzzle.texts[p])))
+                sg.solver.add(Sum([sg.cell_is(q, 1) for q in sight_line(sg, p.translate(v), v)]) == puzzle.texts[p])
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         for p in sg.grid:

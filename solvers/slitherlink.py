@@ -15,8 +15,7 @@ class Slitherlink(AbstractSolver):
                 # Add dummy OUTSIDE squares around the grid, so we can assert all OUTSIDE squares are connected
                 sg.solver.add(sg.cell_is(p, 0))
             elif p in puzzle.texts:
-                sg.solver.add(
-                    PbEq([(sg.grid[p] != n.symbol, 1) for n in sg.edge_sharing_neighbors(p)], int(puzzle.texts[p])))
+                sg.solver.add(Sum([sg.grid[p] != n.symbol for n in sg.edge_sharing_neighbors(p)]) == puzzle.texts[p])
 
         for symbol in range(2):
             continuous_region(sg, rc, lambda q: sg.cell_is(q, symbol))

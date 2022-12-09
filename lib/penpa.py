@@ -77,7 +77,7 @@ class Penpa(NamedTuple):
                 puzzle.horizontal_borders[p] = True
         for k, (text, _, _) in self.q.number.items():
             p = Point(*divmod(int(k), self.w)).translate(self.v.negate())
-            puzzle.texts[p] = text
+            puzzle.texts[p] = int(text) if text.isnumeric() else text
         for k, (text, _) in self.q.numberS.items():
             kk = int(k) // 4 - self.w * self.h
             p = Point(*divmod(int(kk), self.w)).translate(self.v.negate())

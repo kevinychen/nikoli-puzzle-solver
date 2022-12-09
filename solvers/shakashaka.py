@@ -31,8 +31,9 @@ class Shakashaka(AbstractSolver):
             elif p in puzzle.shaded:
                 sg.solver.add(sg.cell_is(p, symbol_set.WALL))
                 if p in puzzle.texts:
-                    sg.solver.add(PbEq([(sg.cell_is_one_of(q, diagonal_symbols), 1)
-                                        for q in sg.lattice.edge_sharing_points(p)], int(puzzle.texts[p])))
+                    sg.solver.add(
+                        Sum([sg.cell_is_one_of(q, diagonal_symbols) for q in sg.lattice.edge_sharing_points(p)])
+                        == puzzle.texts[p])
             else:
                 sg.solver.add(Not(sg.cell_is(p, symbol_set.WALL)))
 
