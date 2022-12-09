@@ -10,28 +10,28 @@ class TentaishoSpiralGalaxies(AbstractSolver):
         rc = RegionConstrainer(sg.lattice, sg.solver)
 
         centers = [
-            *[(2 * p.y, 2 * p.x) for p in puzzle.symbols],
-            *[(2 * p.y, 2 * p.x - 1) for p in puzzle.vertical_borders],
-            *[(2 * p.y - 1, 2 * p.x) for p in puzzle.horizontal_borders],
-            *[(2 * p.y - 1, 2 * p.x - 1) for p in puzzle.corner_symbols],
+            *[(p.y, p.x) for p in puzzle.symbols],
+            *[(p.y, p.x - .5) for p in puzzle.vertical_borders],
+            *[(p.y - .5, p.x) for p in puzzle.horizontal_borders],
+            *[(p.y - .5, p.x - .5) for p in puzzle.corner_symbols],
         ]
 
-        for p in sg.lattice.points:
+        for p in sg.grid:
             sg.solver.add(sg.grid[p] == rc.region_id_grid[p])
 
             # Each square must be part of some galaxy, and the opposite square must be in the same galaxy
             choices = []
             for y, x in centers:
-                opposite = Point(y - p.y, x - p.x)
+                opposite = Point(2 * y - p.y, 2 * x - p.x)
                 if opposite in sg.lattice.points:
                     choices.append(And(
-                        sg.cell_is(p, sg.lattice.point_to_index(Point(y // 2, x // 2))),
+                        sg.cell_is(p, sg.lattice.point_to_index(Point(int(y), int(x)))),
                         sg.grid[p] == sg.grid[opposite]))
             sg.solver.add(Or(choices))
 
         # All galaxies have at least one square, rooted at the center (or closest square to the center)
         for y, x in centers:
-            sg.solver.add(rc.parent_grid[Point(y // 2, x // 2)] == R)
+            sg.solver.add(rc.parent_grid[Point(int(y), int(x))] == R)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         solution.set_regions(sg, solved_grid)

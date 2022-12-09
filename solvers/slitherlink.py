@@ -12,7 +12,7 @@ class Slitherlink(AbstractSolver):
 
         for p in sg.grid:
             if not (0 <= p.x < puzzle.width and 0 <= p.y < puzzle.height):
-                # Add dummy OUTSIDE squares around the grid, so we can assert all OUTSIDE squares are connected
+                # Add dummy outside squares around the grid, so we can assert all outside squares are connected
                 sg.solver.add(sg.cell_is(p, 0))
             elif p in puzzle.texts:
                 sg.solver.add(Sum([sg.grid[p] != n.symbol for n in sg.edge_sharing_neighbors(p)]) == puzzle.texts[p])
