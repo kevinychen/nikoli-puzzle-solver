@@ -14,9 +14,14 @@ class Symbol(NamedTuple):
     def is_black(self):
         return self.style == 2
 
+    def is_circle(self):
+        return self.shape.startswith('circle_')
+
 
 class Symbols:
 
+    BLACK_CIRCLE = Symbol(2, 'circle_L')
+    WHITE_CIRCLE = Symbol(8, 'circle_L')
     X = Symbol(0, 'star')
     STAR = Symbol(2, 'star')
     LIGHT_BULB = Symbol(3, 'sun_moon')

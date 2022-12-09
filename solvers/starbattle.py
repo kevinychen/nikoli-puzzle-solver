@@ -21,4 +21,4 @@ class StarBattle(AbstractSolver):
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         for p in sg.grid:
-            solution.symbols[p] = Symbols.STAR if solved_grid[p] == 1 else Symbols.X
+            solution.symbols[p] = Symbols.STAR if solved_grid[p] else Symbols.X
