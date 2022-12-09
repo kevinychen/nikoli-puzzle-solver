@@ -14,7 +14,7 @@ class StarBattle(AbstractSolver):
             sg.solver.add(Sum([sg.grid[Point(row, col)] for col in range(puzzle.width)]) == num_stars)
         for col in range(puzzle.width):
             sg.solver.add(Sum([sg.grid[Point(row, col)] for row in range(puzzle.height)]) == num_stars)
-        for region in puzzle.to_regions(sg.grid):
+        for region in puzzle.to_regions(sg.lattice.points):
             sg.solver.add(Sum([sg.grid[p] for p in region]) == num_stars)
 
         no_adjacent_symbols(sg, 1, no_diagonal=True)

@@ -65,9 +65,9 @@ class Penpa(NamedTuple):
             left_space=self.left_space,
             right_space=self.right_space,
         )
-        for k, _ in self.q.surface.items():
+        for k, surface in self.q.surface.items():
             p = Point(*divmod(int(k), self.w)).translate(self.v.negate())
-            puzzle.shaded.add(p)
+            puzzle.shaded[p] = surface
         for k, _ in self.q.lineE.items():
             num1, num2 = map(lambda kp: int(kp) - self.w * self.h + self.w + 1, k.split(','))
             p = Point(*divmod(num1, self.w)).translate(self.v.negate())

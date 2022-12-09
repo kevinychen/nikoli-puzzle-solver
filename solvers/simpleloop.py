@@ -8,9 +8,7 @@ class SimpleLoop(AbstractSolver):
         symbol_set = LoopSymbolSet(lattice)
         symbol_set.append('black')
 
-        sg = init_symbol_grid(
-            grilops.get_rectangle_lattice(puzzle.height, puzzle.width),
-            symbol_set)
+        sg = init_symbol_grid(lattice, symbol_set)
         lc = LoopConstrainer(sg, single_loop=True)
         for p in sg.grid:
             sg.solver.add((lc.inside_outside_grid[p] == L) == (p not in puzzle.shaded))

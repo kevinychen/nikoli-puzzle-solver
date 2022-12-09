@@ -41,4 +41,4 @@ class EasyAsABC(AbstractSolver):
                 if solved_grid[p] > 0:
                     solution.texts[p] = letters[solved_grid[p] - 1]
                 else:
-                    solution.shaded.add(p)
+                    solution.shaded[p] = True

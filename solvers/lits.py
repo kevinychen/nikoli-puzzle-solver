@@ -44,4 +44,4 @@ class LITS(AbstractSolver):
     def set_solved(self, puzzle, sg, solved_grid, solution):
         for p in sg.grid:
             if solved_grid[p] == 1:
-                solution.shaded.add(p)
+                solution.shaded[p] = True

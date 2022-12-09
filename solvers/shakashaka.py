@@ -7,7 +7,7 @@ class Shakashaka(AbstractSolver):
         # SW means a black triangle with a SW corner, i.e. a line going from NW to SE with the bottom left shaded.
         symbol_set = SymbolSet(['EMPTY', 'NW', 'SW', 'SE', 'NE', 'WALL'])
         diagonal_symbols = [symbol_set.NW, symbol_set.SW, symbol_set.SE, symbol_set.NE]
-        dirs = [Vector(1, 0), Vector(0, 1), Vector(-1, 0), Vector(0, -1)]
+        dirs = [Directions.S, Directions.E, Directions.N, Directions.W]
 
         sg = init_symbol_grid(
             RectangularLattice(

@@ -17,9 +17,8 @@ class Skyscrapers(AbstractSolver):
         for p, v in border_lines:
             if p in puzzle.texts:
                 line = sight_line(sg, p.translate(v), v)
-                sg.solver.add(
-                    Sum([And([sg.grid[q] > sg.grid[r] for r in line[:i]]) for i, q in enumerate(line)])
-                    == puzzle.texts[p])
+                sg.solver.add(Sum([And([sg.grid[q] > sg.grid[r] for r in line[:i]]) for i, q in enumerate(line)])
+                              == puzzle.texts[p])
         for p, text in puzzle.texts.items():
             if 0 <= p.y < puzzle.height and 0 <= p.x < puzzle.width:
                 sg.solver.add(sg.cell_is(p, text))

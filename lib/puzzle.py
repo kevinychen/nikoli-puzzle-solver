@@ -36,7 +36,7 @@ class Puzzle(object):
             bottom_space: int = -1,
             left_space: int = -1,
             right_space: int = -1,
-            shaded: Set[Point] = None,
+            shaded: Dict[Point, bool] = None,
             texts: Dict[Point, str] = None,
             edge_texts: Dict[Tuple[Point, Direction], str] = None,
             symbols: Dict[Point, Symbol] = None,
@@ -53,7 +53,7 @@ class Puzzle(object):
         self.bottom_space = bottom_space
         self.left_space = left_space
         self.right_space = right_space
-        self.shaded = shaded or set()
+        self.shaded = shaded or {}
         self.texts = texts or {}
         # Text on an edge, for example ((y, x), NE) is the text in the top right corner of square (y, x)
         self.edge_texts = edge_texts or {}
