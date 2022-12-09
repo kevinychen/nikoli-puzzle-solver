@@ -9,7 +9,7 @@ from grilops.geometry import Direction, Point, RectangularLattice, Vector
 from grilops.loops import I, L, LoopConstrainer, LoopSymbolSet, O
 from grilops.regions import R, RegionConstrainer
 from grilops.shapes import Shape, ShapeConstrainer
-from z3 import And, BoolRef, Distinct, Implies, Int, Not, Or, PbEq, PbLe, Sum
+from z3 import And, BoolRef, Distinct, Implies, Int, Not, Or, PbEq, Sum
 
 from lib import Directions, Puzzle, Symbol, Symbols
 from solvers.abstract_solver import AbstractSolver

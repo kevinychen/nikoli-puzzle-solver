@@ -1,37 +1,26 @@
 from solvers.utils import *
 
 
-class HitoriSolver(AbstractSolver):
+class Hitori(AbstractSolver):
 
-    def __init__(self, pzprv3):
-        matched = match('pzprv3/hitori/(\\d+)/(\\d+)/(.*)/', pzprv3)
-        self.size = int(matched.group(1))
-        self.grid = parse_table(matched.group(3))[:self.size]
-
-    def to_pzprv3(self, solved_grid):
-        symbol_set = self.symbol_set()
-        result = [[symbol_set.symbols[solved_grid[Point(row, col)]].label
-                   for col in range(self.size)] for row in range(self.size)]
-        return f'pzprv3/hitori/{self.size}/{self.size}/{table(self.grid)}/{table(result)}/'
-
-    def lattice(self):
-        return grilops.get_square_lattice(self.size)
-
-    def symbol_set(self):
-        return SymbolSet(['#'] + [str(i) for i in range(1, self.size + 1)])
-
-    def configure(self, sg):
+    def configure(self, puzzle, init_symbol_grid):
+        sg = init_symbol_grid(
+            grilops.get_square_lattice(puzzle.width),
+            grilops.make_number_range_symbol_set(0, puzzle.width))
         rc = RegionConstrainer(sg.lattice, sg.solver)
 
-        for p in sg.lattice.points:
-            sg.solver.add(sg.cell_is_one_of(p, [0, int(self.grid[p.y][p.x])]))
+        for p, text in puzzle.texts.items():
+            sg.solver.add(sg.cell_is_one_of(p, (0, text)))
 
         # Each number appears in each row and in each column at most once
-        for i in range(1, self.size + 1):
-            for row in range(self.size):
-                sg.solver.add(PbLe([(sg.grid[Point(row, col)] == i, 1) for col in range(self.size)], 1))
-            for col in range(self.size):
-                sg.solver.add(PbLe([(sg.grid[Point(row, col)] == i, 1) for row in range(self.size)], 1))
+        for i in range(1, puzzle.width + 1):
+            for p, v in puzzle.border_lines(Directions.E, Directions.S):
+                sg.solver.add(Sum([sg.cell_is(q, i) for q in sight_line(sg, p.translate(v), v)]) <= 1)
 
         continuous_region(sg, rc, lambda q: sg.grid[q] != 0)
         no_adjacent_symbols(sg, 0)
+
+    def set_solved(self, puzzle, sg, solved_grid, solution):
+        for p in sg.grid:
+            if solved_grid[p] == 0:
+                solution.shaded[p] = True
