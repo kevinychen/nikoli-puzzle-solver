@@ -10,16 +10,8 @@ class EasyAsABC(AbstractSolver):
             grilops.get_rectangle_lattice(puzzle.height, puzzle.width),
             grilops.make_number_range_symbol_set(0, len(letters)))
 
-        border_lines = []
-        for i in range(puzzle.height):
-            border_lines.append((Point(i, -1), Directions.E))
-            border_lines.append((Point(i, puzzle.width), Directions.W))
-        for i in range(puzzle.width):
-            border_lines.append((Point(-1, i), Directions.S))
-            border_lines.append((Point(puzzle.height, i), Directions.N))
-
         # Each border letter is the first one visible on that line
-        for p, v in border_lines:
+        for p, v in puzzle.border_lines(Directions.E, Directions.N, Directions.W, Directions.S):
             if p in puzzle.texts:
                 line = sight_line(sg, p.translate(v), v)
                 sg.solver.add(Or([

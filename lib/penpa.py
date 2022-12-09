@@ -88,7 +88,8 @@ class Penpa(NamedTuple):
                 p = Point(*divmod(kk, self.w)).translate(self.v.negate())
                 puzzle.symbols[p] = Symbol(style, shape)
             elif category == 1:
-                pass
+                p = Point(*divmod(kk + self.w + 1, self.w)).translate(self.v.negate())
+                puzzle.corner_symbols[p] = Symbol(style, shape)
             elif category == 2:
                 p = Point(*divmod(kk + self.w, self.w)).translate(self.v.negate())
                 puzzle.horizontal_borders[p] = Symbol(style, shape)

@@ -44,6 +44,7 @@ class Puzzle(object):
             horizontal_lines: Dict[Point, Union[bool, int]] = None,
             vertical_borders: Dict[Point, Union[bool, Symbol]] = None,
             horizontal_borders: Dict[Point, Union[bool, Symbol]] = None,
+            corner_symbols: Dict[Point, Symbol] = None,
     ):
         self.width = width
         self.height = height
@@ -66,8 +67,19 @@ class Puzzle(object):
         self.vertical_borders = vertical_borders or {}
         # Contains (y,x) if square (y,x) has a top border
         self.horizontal_borders = horizontal_borders or {}
+        # Contains (y,x) if square (y,x) has a top left object
+        self.corner_symbols = corner_symbols or {}
 
-    def to_regions(self, points):
+    def border_lines(self, *directions: Direction) -> List[Tuple[Point, Direction]]:
+        border_lines = [
+            *[(Point(i, -1), Directions.E) for i in range(self.height)],
+            *[(Point(i, self.width), Directions.W) for i in range(self.height)],
+            *[(Point(-1, i), Directions.S) for i in range(self.width)],
+            *[(Point(self.height, i), Directions.N) for i in range(self.width)],
+        ]
+        return [line for line in border_lines if line[1] in directions]
+
+    def to_regions(self, points: List[Point]) -> Set[Tuple[Point]]:
         uf = UnionFind()
         for p in points:
             if p not in self.vertical_borders:

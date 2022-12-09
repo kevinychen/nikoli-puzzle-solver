@@ -8,13 +8,7 @@ class Skyscrapers(AbstractSolver):
             grilops.get_square_lattice(puzzle.width),
             grilops.make_number_range_symbol_set(1, puzzle.width))
 
-        border_lines = []
-        for i in range(puzzle.width):
-            border_lines.append((Point(i, -1), Directions.E))
-            border_lines.append((Point(i, puzzle.width), Directions.W))
-            border_lines.append((Point(-1, i), Directions.S))
-            border_lines.append((Point(puzzle.width, i), Directions.N))
-        for p, v in border_lines:
+        for p, v in puzzle.border_lines(Directions.E, Directions.N, Directions.S, Directions.W):
             if p in puzzle.texts:
                 line = sight_line(sg, p.translate(v), v)
                 sg.solver.add(Sum([And([sg.grid[q] > sg.grid[r] for r in line[:i]]) for i, q in enumerate(line)])
