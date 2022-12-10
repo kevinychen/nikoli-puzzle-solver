@@ -4,8 +4,8 @@ from solvers.utils import *
 class Yajilin(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
-        directions = [Directions.E, Directions.S, Directions.W, Directions.N,
-                      Directions.W, Directions.N, Directions.E, Directions.S]
+        directions = (Directions.E, Directions.S, Directions.W, Directions.N,
+                      Directions.W, Directions.N, Directions.E, Directions.S)
         lattice = grilops.get_rectangle_lattice(puzzle.height, puzzle.width)
         symbol_set = LoopSymbolSet(lattice)
         symbol_set.append('BLACK')
