@@ -1,6 +1,6 @@
 from itertools import groupby, product
 
-from solvers.utils import *
+from lib import *
 
 
 class Tapa(AbstractSolver):

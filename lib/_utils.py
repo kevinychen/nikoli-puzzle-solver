@@ -1,18 +1,11 @@
 from collections import defaultdict
-from re import match
-from typing import Callable, Dict, List, Union
+from typing import Callable, List, Union
 from uuid import uuid4
 
-import grilops
-from grilops import SymbolGrid, SymbolSet
-from grilops.geometry import Direction, Point, RectangularLattice, Vector
-from grilops.loops import I, L, LoopConstrainer, LoopSymbolSet, O
-from grilops.regions import R, RegionConstrainer
-from grilops.shapes import Shape, ShapeConstrainer
-from z3 import And, BoolRef, Distinct, Implies, Int, Not, Or, PbEq, Sum
-
-from lib import Directions, Puzzle, Symbol, Symbols
-from solvers.abstract_solver import AbstractSolver
+from grilops import SymbolGrid
+from grilops.geometry import Direction, Point, Vector
+from grilops.regions import RegionConstrainer
+from z3 import And, BoolRef, Distinct, Int, Not
 
 
 def continuous_region(sg: SymbolGrid, rc: RegionConstrainer, good: Callable[[Point], BoolRef]):

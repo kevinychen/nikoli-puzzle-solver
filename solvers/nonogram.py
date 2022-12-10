@@ -1,4 +1,6 @@
-from solvers.utils import *
+from uuid import uuid4
+
+from lib import *
 
 
 class Nonogram(AbstractSolver):

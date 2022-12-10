@@ -1,6 +1,6 @@
 from itertools import combinations
 
-from solvers.utils import *
+from lib import *
 
 
 class BalanceLoop(AbstractSolver):

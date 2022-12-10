@@ -1,11 +1,11 @@
-from solvers.utils import *
+from lib import *
 
 
 class Shakashaka(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
         # SW means a black triangle with a SW corner, i.e. a line going from NW to SE with the bottom left shaded.
-        symbol_set = SymbolSet(['EMPTY', 'NW', 'SW', 'SE', 'NE', 'WALL'])
+        symbol_set = grilops.SymbolSet(['EMPTY', 'NW', 'SW', 'SE', 'NE', 'WALL'])
         diagonal_symbols = [symbol_set.NW, symbol_set.SW, symbol_set.SE, symbol_set.NE]
         dirs = [Directions.S, Directions.E, Directions.N, Directions.W]
 

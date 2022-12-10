@@ -2,8 +2,8 @@ from typing import Dict, List, NamedTuple, Set, Tuple, Union
 
 from grilops import Direction, Point, SymbolGrid
 
-from lib import Directions
-from lib.union_find import UnionFind
+from lib._directions import Directions
+from lib._union_find import UnionFind
 
 
 class Symbol(NamedTuple):

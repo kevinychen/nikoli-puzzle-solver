@@ -1,4 +1,7 @@
-from solvers.utils import *
+from collections import defaultdict
+from uuid import uuid4
+
+from lib import *
 
 
 class Hashiwokakero(AbstractSolver):

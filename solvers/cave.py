@@ -1,4 +1,4 @@
-from solvers.utils import *
+from lib import *
 
 
 class Cave(AbstractSolver):
@@ -19,7 +19,7 @@ class Cave(AbstractSolver):
                 line = sight_line(sg, p, direction)
                 for i in range(1, len(line)):
                     all_is_visible.append(And([sg.cell_is(q, 0) for q in line[:i+1]]))
-            sg.solver.add(PbEq([(is_visible, 1) for is_visible in all_is_visible], text))
+            sg.solver.add(Sum(all_is_visible) == text)
 
         for i in range(2):
             continuous_region(sg, rc, lambda q: sg.cell_is(q, i))

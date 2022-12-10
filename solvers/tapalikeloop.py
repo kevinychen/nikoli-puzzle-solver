@@ -1,6 +1,6 @@
 from itertools import permutations
 
-from solvers.utils import *
+from lib import *
 
 
 class TapaLikeLoop(AbstractSolver):

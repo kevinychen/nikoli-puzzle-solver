@@ -6,8 +6,8 @@ from zlib import compress, decompress
 
 from grilops import Point, Vector
 
-from lib.directions import Directions
-from lib.puzzle import Puzzle, Symbol
+from lib._directions import Directions
+from lib._puzzle import Puzzle, Symbol
 
 
 class PenpaPart(object):

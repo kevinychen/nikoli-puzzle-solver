@@ -1,4 +1,4 @@
-from solvers.utils import *
+from lib import *
 
 
 class Shikaku(AbstractSolver):
