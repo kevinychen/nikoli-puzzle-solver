@@ -1,34 +1,20 @@
-from solvers.utils import *
+from lib import *
 
 
-class SimpleLoopSolver(AbstractSolver):
+class SimpleLoop(AbstractSolver):
 
-    def __init__(self, pzprv3):
-        matched = match('pzprv3/simpleloop/(\\d+)/(\\d+)/(.*)/', pzprv3)
-        self.height = int(matched.group(1))
-        self.width = int(matched.group(2))
-        self.grid = parse_table(matched.group(3))[:self.height]
+    def configure(self, puzzle, init_symbol_grid):
+        lattice = grilops.get_rectangle_lattice(puzzle.height, puzzle.width)
+        symbol_set = LoopSymbolSet(lattice)
+        symbol_set.append('black')
 
-    def to_pzprv3(self, solved_grid):
-        symbol_set = self.symbol_set()
-        horizontals = [['1' if 'E' in symbol_set.symbols[solved_grid[Point(row, col)]].name else '0'
-                        for col in range(self.width - 1)] for row in range(self.height)]
-        verticals = [['1' if 'S' in symbol_set.symbols[solved_grid[Point(row, col)]].name else '0'
-                      for col in range(self.width)] for row in range(self.height - 1)]
-        return f'pzprv3/simpleloop/{self.height}/{self.width}/{table(self.grid)}/{table(horizontals)}/{table(verticals)}/'
-
-    def lattice(self):
-        return grilops.get_rectangle_lattice(self.height, self.width)
-
-    def symbol_set(self):
-        symbol_set = LoopSymbolSet(self.lattice())
-        symbol_set.append('BLACK', '#')
-        return symbol_set
-
-    def configure(self, sg):
+        sg = init_symbol_grid(lattice, symbol_set)
         lc = LoopConstrainer(sg, single_loop=True)
-        for p in sg.lattice.points:
-            sg.solver.add((lc.inside_outside_grid[p] == L) == (self.grid[p.y][p.x] == '.'))
+        for p in sg.grid:
+            sg.solver.add((lc.inside_outside_grid[p] == L) == (p not in puzzle.shaded))
 
         # Optimization: loop starts at one of the empty squares
-        sg.solver.add(lc.loop_order_grid[next(p for p in sg.lattice.points if self.grid[p.y][p.x] == '.')] == 0)
+        sg.solver.add(lc.loop_order_grid[next(p for p in sg.grid if p not in puzzle.shaded)] == 0)
+
+    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solution.set_loop(sg, solved_grid)

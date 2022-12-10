@@ -1,37 +1,23 @@
-from solvers.utils import *
-
-BLANK_WALL = '5'
-DIRS = [Vector(0, 1), Vector(-1, 0), Vector(0, -1), Vector(1, 0)]
+from lib import *
 
 
-class ShakashakaSolver(AbstractSolver):
+class Shakashaka(AbstractSolver):
 
-    def __init__(self, pzprv3):
-        matched = match('pzprv3/shakashaka/(\\d+)/(\\d+)/(.*)/', pzprv3)
-        self.height = int(matched.group(1))
-        self.width = int(matched.group(2))
-        self.grid = parse_table(matched.group(3))[:self.height]
+    def configure(self, puzzle, init_symbol_grid):
+        # SW means a black triangle with a SW corner, i.e. a line going from NW to SE with the bottom left shaded.
+        symbol_set = grilops.SymbolSet(['EMPTY', 'NW', 'SW', 'SE', 'NE', 'WALL'])
+        diagonal_symbols = [symbol_set.NW, symbol_set.SW, symbol_set.SE, symbol_set.NE]
+        dirs = [Directions.S, Directions.E, Directions.N, Directions.W]
 
-    def to_pzprv3(self, solved_grid):
-        symbol_set = self.symbol_set()
-        result = [[symbol_set.symbols[solved_grid[Point(row, col)]].label
-                   for col in range(self.width)] for row in range(self.height)]
-        return  f'pzprv3/shakashaka/{self.height}/{self.width}/{table(self.grid)}/{table(result)}/'
-
-    def lattice(self):
-        return RectangularLattice(
-            [Point(row, col) for row in range(-1, self.height + 1) for col in range(-1, self.width + 1)])
-
-    def symbol_set(self):
-        return SymbolSet([("WALL", "."), ("EMPTY", "+"), ("SW", "2"), ("SE", "3"), ("NE", "4"), ("NW", "5")])
-
-    def configure(self, sg):
-        symbol_set = self.symbol_set()
+        sg = init_symbol_grid(
+            RectangularLattice(
+                [Point(row, col) for row in range(-1, puzzle.height + 1) for col in range(-1, puzzle.width + 1)]),
+            symbol_set)
 
         # In every 2x2 box, if there are 3 empty squares, the 4th is either empty
         # or contains a triangle in the corresponding direction as its position in the box
-        for row in range(self.height - 1):
-            for col in range(self.width - 1):
+        for row in range(puzzle.height - 1):
+            for col in range(puzzle.width - 1):
                 box = [Point(y, x) for y in range(row, row + 2) for x in range(col, col + 2)]
                 for (i, p) in enumerate(box):
                     corresponding_direction = [symbol_set.NW, symbol_set.NE, symbol_set.SW, symbol_set.SE][i]
@@ -39,35 +25,37 @@ class ShakashakaSolver(AbstractSolver):
                         And([sg.cell_is(q, symbol_set.EMPTY) for q in box if q != p]),
                         Or(sg.cell_is(p, symbol_set.EMPTY), sg.cell_is(p, corresponding_direction))))
 
-        # SW means a black triangle with a SW corner, i.e. a line going from NW to SE with the bottom left shaded.
-        diagonal_symbols = [symbol_set.SW, symbol_set.SE, symbol_set.NE, symbol_set.NW]
-        for p in sg.lattice.points:
-            if p.x == -1 or p.x == self.width or p.y == -1 or p.y == self.height:
+        for p in sg.grid:
+            if not puzzle.in_bounds(p):
                 sg.solver.add(sg.cell_is(p, symbol_set.WALL))
+            elif p in puzzle.shaded:
+                sg.solver.add(sg.cell_is(p, symbol_set.WALL))
+                if p in puzzle.texts:
+                    sg.solver.add(
+                        Sum([sg.cell_is_one_of(q, diagonal_symbols) for q in sg.lattice.edge_sharing_points(p)])
+                        == puzzle.texts[p])
             else:
-                num = self.grid[p.y][p.x]
-                if num.isnumeric():
-                    sg.solver.add(sg.cell_is(p, symbol_set.WALL))
-                    if num != BLANK_WALL:
-                        sg.solver.add(PbEq([(sg.cell_is_one_of(q, diagonal_symbols), 1)
-                                            for q in sg.lattice.edge_sharing_points(p)], int(num)))
-                else:
-                    sg.solver.add(Not(sg.cell_is(p, symbol_set.WALL)))
+                sg.solver.add(Not(sg.cell_is(p, symbol_set.WALL)))
 
-                    # A SW must have either a SE to its east, or a blank to its east and a SW to its southeast.
-                    # Also, it must either have an empty or NE to its northeast.
-                    # Similar logic applies for the other directions.
-                    choices = [sg.cell_is(p, symbol_set.EMPTY)]
-                    for i in range(4):
-                        choices.append(And(
-                            sg.cell_is(p, diagonal_symbols[i]),
-                            Or(
-                                sg.cell_is(p.translate(DIRS[i]), diagonal_symbols[(i + 1) % 4]),
-                                And(
-                                    sg.cell_is(p.translate(DIRS[i]), symbol_set.EMPTY),
-                                    sg.cell_is(p.translate(DIRS[i]).translate(DIRS[(i + 3) % 4]), diagonal_symbols[i]))
-                            ),
-                            sg.cell_is_one_of(
-                                p.translate(DIRS[i]).translate(DIRS[(i + 1) % 4]),
-                                [symbol_set.EMPTY, diagonal_symbols[(i + 2) % 4]])))
-                    sg.solver.add(Or(choices))
+                # A SW must have either a SE to its east, or a blank to its east and a SW to its southeast.
+                # Also, it must either have an empty or NE to its northeast.
+                # Similar logic applies for the other directions.
+                choices = [sg.cell_is(p, symbol_set.EMPTY)]
+                for i in range(4):
+                    choices.append(And(
+                        sg.cell_is(p, diagonal_symbols[i]),
+                        Or(
+                            sg.cell_is(p.translate(dirs[i]), diagonal_symbols[(i + 1) % 4]),
+                            And(
+                                sg.cell_is(p.translate(dirs[i]), symbol_set.EMPTY),
+                                sg.cell_is(p.translate(dirs[i]).translate(dirs[(i + 3) % 4]), diagonal_symbols[i]))
+                        ),
+                        sg.cell_is_one_of(
+                            p.translate(dirs[i]).translate(dirs[(i + 1) % 4]),
+                            [symbol_set.EMPTY, diagonal_symbols[(i + 2) % 4]])))
+                sg.solver.add(Or(choices))
+
+    def set_solved(self, puzzle, sg, solved_grid, solution):
+        for p in sg.grid:
+            if p not in puzzle.symbols and solved_grid[p] > 0:
+                solution.symbols[p] = Symbol(solved_grid[p], 'tri')

@@ -1,31 +1,17 @@
-from solvers.utils import *
+from lib import *
 
 
-class MeanderingNumbersSolver(AbstractSolver):
+class MeanderingNumbers(AbstractSolver):
 
-    def __init__(self, pzprv3):
-        matched = match('pzprv3/meander/(\\d+)/(\\d+)/(.*)/', pzprv3)
-        self.height = int(matched.group(1))
-        self.width = int(matched.group(2))
-        self.verticals = parse_table(matched.group(3))[:self.height]
-        self.horizontals = parse_table(matched.group(3))[self.height:2 * self.height - 1]
-        self.grid = parse_table(matched.group(3))[2 * self.height - 1:3 * self.height - 1]
+    def configure(self, puzzle, init_symbol_grid):
+        sg = init_symbol_grid(
+            grilops.get_rectangle_lattice(puzzle.height, puzzle.width),
+            grilops.make_number_range_symbol_set(0, puzzle.height * puzzle.width))
 
-    def to_pzprv3(self, solved_grid):
-        result = [[str(solved_grid[Point(row, col)]) for col in range(self.width)] for row in range(self.height)]
-        return (
-            'pzprv3/meander/'
-            f'{self.height}/{self.width}/'
-            f'{table(self.verticals)}/{table(self.horizontals)}/{table(self.grid)}/{table(result)}/')
+        for p, text in puzzle.texts.items():
+            sg.solver.add(sg.cell_is(p, text))
 
-    def lattice(self):
-        return grilops.get_rectangle_lattice(self.height, self.width)
-
-    def symbol_set(self):
-        return grilops.make_number_range_symbol_set(0, self.height * self.width)
-
-    def configure(self, sg):
-        for region in convert_pzprv3_borders_to_regions(sg, self.verticals, self.horizontals):
+        for region in puzzle.to_regions(sg.lattice.points):
             # Each region must have numbers from 1 to n in an orthogonally connected path
             sg.solver.add(Or([sg.cell_is(p, 1) for p in region]))
             for p in region:
@@ -36,7 +22,7 @@ class MeanderingNumbersSolver(AbstractSolver):
                 # Two of the same number may not be adjacent
                 sg.solver.add(And([sg.grid[n.location] != sg.grid[p] for n in sg.vertex_sharing_neighbors(p)]))
 
-                # Givens must be correct
-                num = self.grid[p.y][p.x]
-                if num.isnumeric():
-                    sg.solver.add(sg.cell_is(p, int(num)))
+    def set_solved(self, puzzle, sg, solved_grid, solution):
+        for p in sg.grid:
+            if p not in puzzle.texts:
+                solution.texts[p] = solved_grid[p]

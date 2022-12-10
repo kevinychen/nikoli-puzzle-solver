@@ -1,80 +1,47 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Optional
+from typing import Callable, Dict
 
 from grilops import Lattice, Point, SymbolGrid, SymbolSet
-from threading import Condition, Lock
-from time import time
+
+from lib import Puzzle
 
 
 class AbstractSolver(ABC):
-    """
-    Every subclass must have a constructor that takes a single string parameter, the pzprv3 string for the puzzle.
-    Examples of this format can be found by inputting a puzzle and clicking "File" -> "Save file as ...".
-    The constructor should parse the pzprv3 string into more convenient data structures.
-    """
-
-    def solve(self, different_from: Optional[str] = None) -> Optional[str]:
-        """Return the pzprv3 string for the solved puzzle."""
-        with GlobalTimeoutLock(timeout=30):
-            sg = SymbolGrid(self.lattice(), self.symbol_set())
-            self.configure(sg)
-            sg.solver.set("timeout", 30000)
-            if not sg.solve():
-                if sg.solver.reason_unknown() == "timeout":
-                    raise TimeoutError(408)
-                return None
-            pzprv3 = self.to_pzprv3(sg.solved_grid())
-            if pzprv3 != different_from:
-                return pzprv3
-            if sg.is_unique():
-                return None
-            return self.to_pzprv3(sg.solved_grid())
 
     @abstractmethod
-    def to_pzprv3(self, solved_grid: Dict[Point, int]) -> str:
-        """Converts a solved grid into a pzprv3 string."""
-        raise NotImplementedError()
-
-    @abstractmethod
-    def lattice(self) -> Lattice:
-        """The coordinates of the grid to solve, and the keys of solved_grid."""
-        raise NotImplementedError()
-
-    @abstractmethod
-    def symbol_set(self) -> SymbolSet:
+    def configure(
+            self,
+            puzzle: Puzzle,
+            init_symbol_grid: Callable[[Lattice, SymbolSet], SymbolGrid],
+    ):
         """
-        The list of valid symbols in the solved grid.
-        Each value in solved_grid is the index of the symbol in this list.
+        Given the puzzle data, constructs a set of constraints for solving the puzzle.
+
+        :param puzzle: The puzzle input in Penpa (without the solution).
+        :param init_symbol_grid: This function must be called exactly once. It returns a SymbolGrid sg, which has
+        variables for each point in the Lattice (HEIGHT x WIDTH for a rectangular lattice) that are already constrained
+        by the given SymbolSet. More constraints can be added using the Grilops functions on sg. Alternatively,
+        "sg.solver" is the raw z3 solver, and new variables/constraints can be added to the solver directly.
+
+        Note that only the variables of sg are considered for uniqueness - a solution with the same values for the
+        variables in sg but different values for other variables is not considered different.
         """
         raise NotImplementedError()
 
     @abstractmethod
-    def configure(self, sg: SymbolGrid):
-        """Add constraints to the solver (sg.solver) based on the rules of the puzzle."""
+    def set_solved(
+            self,
+            puzzle: Puzzle,
+            sg: SymbolGrid,
+            solved_grid: Dict[Point, int],
+            solution: Puzzle):
+        """
+        Given the result of the constraint problem, updates the solution accordingly.
+
+        :param puzzle: The original puzzle input in Penpa (without the solution)
+        :param sg: The SymbolGrid created in :func:`configure`.
+        :param solved_grid: A mapping from each point in the Lattice (as set in :func:`configure`) to the value of the
+        corresponding variable that satisfies the constraints.
+        :param solution: An initially empty object whose fields should be filled in by this method.
+        """
         raise NotImplementedError()
-
-
-class GlobalTimeoutLock:
-
-    _lock = Lock()
-    _cond = Condition(Lock())
-
-    def __init__(self, timeout):
-        self.timeout = timeout
-
-    def __enter__(self):
-        with GlobalTimeoutLock._cond:
-            current_time = time()
-            stop_time = current_time + self.timeout
-            while current_time < stop_time:
-                if GlobalTimeoutLock._lock.acquire(False):
-                    return self
-                else:
-                    GlobalTimeoutLock._cond.wait(stop_time - current_time)
-                    current_time = time()
-            raise TimeoutError(503)
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        with GlobalTimeoutLock._cond:
-            GlobalTimeoutLock._lock.release()
-            GlobalTimeoutLock._cond.notify()

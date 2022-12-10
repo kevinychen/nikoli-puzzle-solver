@@ -2,12 +2,15 @@
 name = "nikoli-puzzle-solver"
 version = "0.1.0"
 description = ""
-authors = ["Kevin Chen"]
+authors = ["Kevin Y. Chen"]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.7"
 Flask = "^2.0.2"
 grilops = "^0.9.1"
+pytest = "^7.2.0"
+"ruamel.yaml" = "^0.17.21"
+z3-solver = "^4.11.2"
 
 [tool.poetry.dev-dependencies]
 

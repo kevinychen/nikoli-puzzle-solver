@@ -1,44 +1,23 @@
-from solvers.utils import *
+from lib import *
 
 
-class SlitherlinkSolver(AbstractSolver):
+class Slitherlink(AbstractSolver):
 
-    def __init__(self, pzprv3):
-        matched = match('pzprv3\\.1/slither/(\\d+)/(\\d+)/(.*)/', pzprv3)
-        self.height = int(matched.group(1))
-        self.width = int(matched.group(2))
-        self.grid = parse_table(matched.group(3))[:self.height]
-
-    def to_pzprv3(self, solved_grid):
-        zeroes = [['0' for _ in range(self.width)] for _ in range(self.height)]
-        verticals = [['0' if solved_grid[Point(row, col - 1)] == solved_grid[Point(row, col)] else '1'
-                      for col in range(self.width + 1)] for row in range(self.height)]
-        horizontals = [['0' if solved_grid[Point(row - 1, col)] == solved_grid[Point(row, col)] else '1'
-                        for col in range(self.width)] for row in range(self.height + 1)]
-        return (
-            'pzprv3.1/slither/'
-            f'{self.height}/{self.width}/{table(self.grid)}/{table(zeroes)}/{table(verticals)}/{table(horizontals)}/')
-
-    def lattice(self):
-        return RectangularLattice(
-            [Point(row, col) for row in range(-1, self.height + 1) for col in range(-1, self.width + 1)])
-
-    def symbol_set(self):
-        return SymbolSet(["INSIDE", "OUTSIDE"])
-
-    def configure(self, sg):
-        symbol_set = self.symbol_set()
+    def configure(self, puzzle, init_symbol_grid):
+        sg = init_symbol_grid(
+            RectangularLattice(
+                [Point(row, col) for row in range(-1, puzzle.height + 1) for col in range(-1, puzzle.width + 1)]),
+            grilops.make_number_range_symbol_set(0, 1))
         rc = RegionConstrainer(sg.lattice, sg.solver)
 
-        for p in sg.lattice.points:
-            if p.x == -1 or p.x == self.width or p.y == -1 or p.y == self.height:
-                # Add dummy OUTSIDE squares around the grid, so we can assert all OUTSIDE squares are connected
-                sg.solver.add(sg.cell_is(p, symbol_set.OUTSIDE))
-            else:
-                num = self.grid[p.y][p.x]
-                if num.isnumeric():
-                    sg.solver.add(
-                        PbEq([(sg.grid[p] != n.symbol, 1) for n in sg.edge_sharing_neighbors(p)], int(num)))
+        for p in sg.grid:
+            if not puzzle.in_bounds(p):
+                sg.solver.add(sg.cell_is(p, 0))
+            elif p in puzzle.texts:
+                sg.solver.add(Sum([sg.grid[p] != n.symbol for n in sg.edge_sharing_neighbors(p)]) == puzzle.texts[p])
 
-        continuous_region(sg, rc, lambda q: sg.cell_is(q, symbol_set.INSIDE))
-        continuous_region(sg, rc, lambda q: sg.cell_is(q, symbol_set.OUTSIDE))
+        for i in range(2):
+            continuous_region(sg, rc, lambda q: sg.cell_is(q, i))
+
+    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solution.set_regions(sg, solved_grid)
