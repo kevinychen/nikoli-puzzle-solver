@@ -14,14 +14,13 @@ class Heteromino(AbstractSolver):
         ]
 
         sg = init_symbol_grid(
-            RectangularLattice(
-                [Point(row, col) for row in range(-1, puzzle.height + 1) for col in range(-1, puzzle.width + 1)]),
+            grilops.get_rectangle_lattice(puzzle.height, puzzle.width),
             grilops.make_number_range_symbol_set(-1, len(shapes) - 1))
         sc = ShapeConstrainer(sg.lattice, shapes, sg.solver, allow_copies=True)
 
         for p in sg.grid:
             sg.solver.add(sg.grid[p] == sc.shape_type_grid[p])
-            if not (0 <= p.x < puzzle.width and 0 <= p.y < puzzle.height) or p in puzzle.shaded:
+            if p in puzzle.shaded:
                 sg.solver.add(sg.cell_is(p, -1))
             else:
                 sg.solver.add(sg.grid[p] != -1)

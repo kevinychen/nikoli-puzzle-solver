@@ -97,7 +97,7 @@ class Puzzle(object):
         return set([tuple(q for q in points if uf.find(q) == p) for p in points if uf.find(p) == p])
 
     def set_loop(self, sg: SymbolGrid, solved_grid: Dict[Point, int]):
-        for p in sg.lattice.points:
+        for p in sg.grid:
             name = sg.symbol_set.symbols[solved_grid[p]].name
             if 'S' in name:
                 self.vertical_lines[p] = True
@@ -105,8 +105,9 @@ class Puzzle(object):
                 self.horizontal_lines[p] = True
 
     def set_regions(self, sg: SymbolGrid, solved_grid: Dict[Point, int]):
-        for p in sg.lattice.points:
-            for v, borders in [(Directions.W, self.vertical_borders), (Directions.N, self.horizontal_borders)]:
-                q = p.translate(v)
-                if q in sg.lattice.points and solved_grid[p] != solved_grid[q]:
+        for p in sg.grid:
+            for v, borders in ((Directions.E, self.vertical_borders), (Directions.S, self.horizontal_borders)):
+                if solved_grid.get(p) != solved_grid.get(p.translate(v.vector.negate())):
                     borders[p] = True
+                if solved_grid.get(p) != solved_grid.get(p.translate(v)):
+                    borders[p.translate(v)] = True
