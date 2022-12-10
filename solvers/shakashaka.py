@@ -26,7 +26,7 @@ class Shakashaka(AbstractSolver):
                         Or(sg.cell_is(p, symbol_set.EMPTY), sg.cell_is(p, corresponding_direction))))
 
         for p in sg.grid:
-            if not (0 <= p.x < puzzle.width and 0 <= p.y < puzzle.height):
+            if not puzzle.in_bounds(p):
                 sg.solver.add(sg.cell_is(p, symbol_set.WALL))
             elif p in puzzle.shaded:
                 sg.solver.add(sg.cell_is(p, symbol_set.WALL))

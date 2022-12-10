@@ -11,8 +11,7 @@ class Nonogram(AbstractSolver):
             grilops.make_number_range_symbol_set(0, 1))
 
         for p in sg.grid:
-            if not (0 <= p.x < puzzle.width and 0 <= p.y < puzzle.height):
-                # Add sentinel white squares around the grid, to avoid special-case logic for edges
+            if not puzzle.in_bounds(p):
                 sg.solver.add(sg.cell_is(p, 0))
 
         lines = []

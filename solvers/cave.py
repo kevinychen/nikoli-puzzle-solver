@@ -1,43 +1,30 @@
 from solvers.utils import *
 
 
-class CaveSolver(AbstractSolver):
+class Cave(AbstractSolver):
 
-    def __init__(self, pzprv3):
-        matched = match('pzprv3/cave/(\\d+)/(\\d+)/(.*)/', pzprv3)
-        self.height = int(matched.group(1))
-        self.width = int(matched.group(2))
-        self.grid = parse_table(matched.group(3))[:self.height]
-
-    def to_pzprv3(self, solved_grid):
-        symbol_set = self.symbol_set()
-        result = [[symbol_set.symbols[solved_grid[Point(row, col)]].label
-                   for col in range(self.width)] for row in range(self.height)]
-        return f'pzprv3/cave/{self.height}/{self.width}/{table(self.grid)}/{table(result)}/'
-
-    def lattice(self):
-        return RectangularLattice(
-            [Point(row, col) for row in range(-1, self.height + 1) for col in range(-1, self.width + 1)])
-
-    def symbol_set(self):
-        return SymbolSet([("WHITE", "+"), ("BLACK", "#")])
-
-    def configure(self, sg):
-        symbol_set = self.symbol_set()
+    def configure(self, puzzle, init_symbol_grid):
+        sg = init_symbol_grid(
+            RectangularLattice(
+                [Point(row, col) for row in range(-1, puzzle.height + 1) for col in range(-1, puzzle.width + 1)]),
+            grilops.make_number_range_symbol_set(0, 1))
         rc = RegionConstrainer(sg.lattice, sg.solver)
 
-        for p in sg.lattice.points:
-            if p.x == -1 or p.x == self.width or p.y == -1 or p.y == self.height:
-                sg.solver.add(sg.cell_is(p, symbol_set.BLACK))
-            else:
-                num = self.grid[p.y][p.x]
-                if num.isnumeric():
-                    all_is_visible = [sg.cell_is(p, symbol_set.WHITE)]
-                    for direction in sg.lattice.edge_sharing_directions():
-                        line = sight_line(sg, p, direction)
-                        for i in range(1, len(line)):
-                            all_is_visible.append(And([sg.cell_is(q, symbol_set.WHITE) for q in line[:i+1]]))
-                    sg.solver.add(PbEq([(is_visible, 1) for is_visible in all_is_visible], int(num)))
+        for p in sg.grid:
+            if not puzzle.in_bounds(p):
+                sg.solver.add(sg.cell_is(p, 1))
+        for p, text in puzzle.texts.items():
+            all_is_visible = [sg.cell_is(p, 0)]
+            for direction in sg.lattice.edge_sharing_directions():
+                line = sight_line(sg, p, direction)
+                for i in range(1, len(line)):
+                    all_is_visible.append(And([sg.cell_is(q, 0) for q in line[:i+1]]))
+            sg.solver.add(PbEq([(is_visible, 1) for is_visible in all_is_visible], text))
 
-        continuous_region(sg, rc, lambda q: sg.cell_is(q, symbol_set.WHITE))
-        continuous_region(sg, rc, lambda q: sg.cell_is(q, symbol_set.BLACK))
+        for i in range(2):
+            continuous_region(sg, rc, lambda q: sg.cell_is(q, i))
+
+    def set_solved(self, puzzle, sg, solved_grid, solution):
+        for p in sg.grid:
+            if puzzle.in_bounds(p) and solved_grid[p] == 1:
+                solution.shaded[p] = True

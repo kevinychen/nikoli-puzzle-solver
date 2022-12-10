@@ -84,6 +84,9 @@ class Puzzle(object):
         ]
         return [line for line in border_lines if line[1] in directions]
 
+    def in_bounds(self, p: Point) -> bool:
+        return 0 <= p.y < self.height and 0 <= p.x < self.width
+
     def to_regions(self, points: List[Point]) -> Set[Tuple[Point]]:
         uf = UnionFind()
         for p in points:
