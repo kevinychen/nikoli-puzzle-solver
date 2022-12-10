@@ -1,4 +1,5 @@
 from itertools import groupby, product
+
 from solvers.utils import *
 
 
