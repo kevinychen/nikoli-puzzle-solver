@@ -1,5 +1,4 @@
 from collections import defaultdict
-from uuid import uuid4
 
 from lib import *
 
@@ -44,7 +43,7 @@ class Hashiwokakero(AbstractSolver):
                     sg.solver.add(Or(sg.cell_is(edge1, 0), sg.cell_is(edge2, 0)))
 
         # Bridges are all connected
-        graph = defaultdict(lambda: Int(str(uuid4())))
+        graph = defaultdict(var)
         sg.solver.add(Sum([graph[edge] == 0 for edge in edges if edge.x < edge.y]) == 1)
         for edge in edges:
             sg.solver.add(graph[edge] >= 0)

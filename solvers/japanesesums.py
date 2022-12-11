@@ -1,5 +1,3 @@
-from uuid import uuid4
-
 from lib import *
 
 
@@ -30,7 +28,7 @@ class JapaneseSums(AbstractSolver):
         for block_sums, line in lines:
             if not block_sums:
                 continue
-            num_blocks = [Int(str(uuid4())) for _ in line]
+            num_blocks = [var() for _ in line]
             for i in range(1, len(line)):
                 choices = [And(
                     num_blocks[i] == num_blocks[i - 1],

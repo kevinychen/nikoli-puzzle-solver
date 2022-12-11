@@ -9,15 +9,15 @@ from z3 import And, BoolRef, Distinct, Int, Not
 
 
 def continuous_region(sg: SymbolGrid, rc: RegionConstrainer, good: Callable[[Point], BoolRef]):
-    region_root = Int(str(uuid4()))
-    for p in sg.lattice.points:
+    region_root = var()
+    for p in sg.grid:
         sg.solver.add(good(p) == (rc.region_id_grid[p] == region_root))
 
 
 def distinct_rows_and_columns(sg: SymbolGrid):
     rows = defaultdict(list)
     cols = defaultdict(list)
-    for p in sg.lattice.points:
+    for p in sg.grid:
         rows[p.x].append(sg.grid[p])
         cols[p.y].append(sg.grid[p])
     for row in rows.values():
@@ -27,7 +27,7 @@ def distinct_rows_and_columns(sg: SymbolGrid):
 
 
 def no_adjacent_symbols(sg: SymbolGrid, symbol: int, no_diagonal: bool = False):
-    for p in sg.lattice.points:
+    for p in sg.grid:
         for n in sg.vertex_sharing_neighbors(p) if no_diagonal else sg.edge_sharing_neighbors(p):
             sg.solver.add(Not(And(sg.cell_is(p, symbol), n.symbol == symbol)))
 
@@ -49,3 +49,7 @@ def sight_line(
         line.append(p)
         p = p.translate(direction)
     return line
+
+
+def var():
+    return Int(str(uuid4()))

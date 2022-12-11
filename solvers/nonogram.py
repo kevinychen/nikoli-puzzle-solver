@@ -1,5 +1,3 @@
-from uuid import uuid4
-
 from lib import *
 
 
@@ -26,7 +24,7 @@ class Nonogram(AbstractSolver):
         # blocks seen so far. Then anytime we end a block, we check if the block is the right size and increment
         # num_blocks[i] if so. Otherwise, we keep num_blocks[i] as the same value.
         for block_sizes, line in lines:
-            num_blocks = [Int(str(uuid4())) for _ in line]
+            num_blocks = [var() for _ in line]
             for i in range(1, len(line)):
                 choices = [And(
                     num_blocks[i] == num_blocks[i - 1],
