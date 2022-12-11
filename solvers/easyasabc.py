@@ -25,10 +25,8 @@ class EasyAsABC(AbstractSolver):
 
         # Each letter appears in each row and in each column exactly once
         for i in range(1, len(letters) + 1):
-            for row in range(puzzle.width):
-                sg.solver.add(Sum([sg.grid[Point(row, col)] == i for col in range(puzzle.width)]) == 1)
-            for col in range(puzzle.width):
-                sg.solver.add(Sum([sg.grid[Point(row, col)] == i for row in range(puzzle.width)]) == 1)
+            for p, v in puzzle.border_lines(Directions.E, Directions.S):
+                sg.solver.add(Sum([sg.cell_is(q, i) for q in sight_line(sg, p.translate(v), v)]) == 1)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         letters = puzzle.parameters['letters']
