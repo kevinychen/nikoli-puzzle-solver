@@ -10,10 +10,8 @@ class StarBattle(AbstractSolver):
             grilops.get_rectangle_lattice(puzzle.height, puzzle.width),
             grilops.make_number_range_symbol_set(0, 1))
 
-        for row in range(puzzle.height):
-            sg.solver.add(Sum([sg.grid[Point(row, col)] for col in range(puzzle.width)]) == num_stars)
-        for col in range(puzzle.width):
-            sg.solver.add(Sum([sg.grid[Point(row, col)] for row in range(puzzle.height)]) == num_stars)
+        for p, v in puzzle.border_lines(Directions.E, Directions.S):
+            sg.solver.add(Sum([sg.grid[q] for q in sight_line(sg, p.translate(v), v)]) == num_stars)
         for region in puzzle.get_regions(sg.lattice.points):
             sg.solver.add(Sum([sg.grid[p] for p in region]) == num_stars)
 

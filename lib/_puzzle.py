@@ -26,6 +26,7 @@ class Symbol(NamedTuple):
 
 class Symbols:
 
+    WATER = Symbol(7, 'battleship_B')
     BLACK_CIRCLE = Symbol(2, 'circle_L')
     WHITE_CIRCLE = Symbol(8, 'circle_L')
     X = Symbol(0, 'star')

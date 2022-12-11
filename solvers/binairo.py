@@ -16,7 +16,7 @@ class Binairo(AbstractSolver):
 
         # Each row and column contains the same number of whites and blacks
         for p, v in puzzle.border_lines(Directions.E, Directions.S):
-            sg.solver.add(Sum([sg.cell_is(q, 1) for q in sight_line(sg, p.translate(v), v)]) == puzzle.width // 2)
+            sg.solver.add(Sum([sg.grid[q] for q in sight_line(sg, p.translate(v), v)]) == puzzle.width // 2)
 
         # No three-in-a-row of the same color
         for p in sg.grid:

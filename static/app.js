@@ -67,7 +67,7 @@ window.onload = function () {
             } else {
                 body = await response.json();
                 if (body.url === null) {
-                    alert('No solution found.');
+                    alert(foundSolution ? 'No other solution found.' : 'No solution found.');
                 } else {
                     foundSolution = body.url;
                     iframe.contentWindow.load(foundSolution);

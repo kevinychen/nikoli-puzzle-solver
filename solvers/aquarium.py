@@ -16,7 +16,7 @@ class Aquarium(AbstractSolver):
         # Satisfy water counts
         for p, v in puzzle.border_lines(Directions.E, Directions.S):
             if p in puzzle.texts:
-                sg.solver.add(Sum([sg.cell_is(q, 1) for q in sight_line(sg, p.translate(v), v)]) == puzzle.texts[p])
+                sg.solver.add(Sum([sg.grid[q] for q in sight_line(sg, p.translate(v), v)]) == puzzle.texts[p])
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         for p in sg.grid:
