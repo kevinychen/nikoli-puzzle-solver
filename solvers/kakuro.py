@@ -13,11 +13,11 @@ class Kakuro(AbstractSolver):
             sg.solver.add(sg.cell_is(p, 1))
             if (p, Directions.NE) in puzzle.edge_texts:
                 line_totals.append((
-                    int(puzzle.edge_texts[p, Directions.NE]),
+                    puzzle.edge_texts[p, Directions.NE],
                     sight_line(sg, Point(p.y, p.x + 1), Directions.E, lambda q: q not in puzzle.symbols)))
             if (p, Directions.SW) in puzzle.edge_texts:
                 line_totals.append((
-                    int(puzzle.edge_texts[p, Directions.SW]),
+                    puzzle.edge_texts[p, Directions.SW],
                     sight_line(sg, Point(p.y + 1, p.x), Directions.S, lambda q: q not in puzzle.symbols)))
         for total, line in line_totals:
             sg.solver.add(Sum([sg.grid[p] for p in line]) == total)

@@ -20,7 +20,7 @@ class Binairo(AbstractSolver):
 
         # No three-in-a-row of the same color
         for p in sg.grid:
-            for v in (Directions.E, Directions.S):
+            for v in Directions.E, Directions.S:
                 q = p.translate(v)
                 r = q.translate(v)
                 if r in sg.grid:

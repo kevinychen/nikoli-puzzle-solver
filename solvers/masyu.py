@@ -44,8 +44,7 @@ class Masyu(AbstractSolver):
                 sg.solver.add(Or(*choices))
 
         # Optimization: loop starts at one of the circles
-        if circles:
-            sg.solver.add(lc.loop_order_grid[circles[0]] == 0)
+        sg.solver.add(lc.loop_order_grid[circles[0] or sg.lattice.points[0]] == 0)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         solution.set_loop(sg, solved_grid)

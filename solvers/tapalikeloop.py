@@ -6,12 +6,11 @@ from lib import *
 class TapaLikeLoop(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
-        directions = (Directions.E, Directions.NE, Directions.N, Directions.NW,
-                      Directions.W, Directions.SW, Directions.S, Directions.SE)
         lattice = RectangularLattice(
             [Point(row, col) for row in range(-1, puzzle.height + 1) for col in range(-1, puzzle.width + 1)])
         symbol_set = LoopSymbolSet(lattice)
         symbol_set.append('empty')
+        # Corresponds to Directions.ALL: for example, the square east of a number would have a NS segment
         donut_parts = (symbol_set.NS, symbol_set.SW, symbol_set.EW, symbol_set.SE,
                        symbol_set.NS, symbol_set.NE, symbol_set.EW, symbol_set.NW)
 
@@ -35,7 +34,7 @@ class TapaLikeLoop(AbstractSolver):
                 for segment_len, loop_entrance in zip(segment_lens, loop_entrances):
                     for i in range(segment_len):
                         loop_dir = (loop_entrance + i) % 8
-                        square = p.translate(directions[loop_dir])
+                        square = p.translate(Directions.ALL[loop_dir])
                         processed_squares.append(square)
                         requirements.append(sg.cell_is(square, donut_parts[loop_dir]) == (0 < i < segment_len - 1))
                 for square in lattice.vertex_sharing_points(p):

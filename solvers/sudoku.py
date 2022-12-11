@@ -6,8 +6,8 @@ class Sudoku(AbstractSolver):
     def configure(self, puzzle, init_symbol_grid):
         sg = init_symbol_grid(grilops.get_square_lattice(9), grilops.make_number_range_symbol_set(1, 9))
 
-        for p, text in puzzle.texts.items():
-            sg.solver.add(sg.cell_is(p, text))
+        for p, number in puzzle.texts.items():
+            sg.solver.add(sg.cell_is(p, number))
 
         # Numbers in each 3x3 box are distinct
         for subgrid in range(9):

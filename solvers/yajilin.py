@@ -4,8 +4,6 @@ from lib import *
 class Yajilin(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
-        directions = (Directions.E, Directions.S, Directions.W, Directions.N,
-                      Directions.W, Directions.N, Directions.E, Directions.S)
         lattice = grilops.get_rectangle_lattice(puzzle.height, puzzle.width)
         symbol_set = LoopSymbolSet(lattice)
         symbol_set.append('BLACK')
@@ -15,12 +13,10 @@ class Yajilin(AbstractSolver):
         LoopConstrainer(sg, single_loop=True)
 
         for p in sg.grid:
-            if p in puzzle.texts and p in puzzle.symbols and puzzle.symbols[p].shape == 'arrow_fouredge_B':
+            if p in puzzle.texts and p in puzzle.symbols:
                 sg.solver.add(sg.cell_is(p, symbol_set.WALL))
-                for direction in [i for i, flag in enumerate(puzzle.symbols[p].style) if flag]:
-                    sg.solver.add(
-                        Sum([sg.cell_is(q, symbol_set.BLACK) for q in sight_line(sg, p, directions[direction])])
-                        == puzzle.texts[p])
+                v = puzzle.symbols[p].to_arrow()
+                sg.solver.add(Sum([sg.cell_is(q, symbol_set.BLACK) for q in sight_line(sg, p, v)]) == puzzle.texts[p])
             elif p in puzzle.shaded:
                 sg.solver.add(sg.cell_is(p, symbol_set.WALL))
             else:

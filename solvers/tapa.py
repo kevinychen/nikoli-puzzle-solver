@@ -6,9 +6,6 @@ from lib import *
 class Tapa(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
-        directions = (Directions.E, Directions.NE, Directions.N, Directions.NW,
-                      Directions.W, Directions.SW, Directions.S, Directions.SE)
-
         sg = init_symbol_grid(
             RectangularLattice(
                 [Point(row, col) for row in range(-1, puzzle.height + 1) for col in range(-1, puzzle.width + 1)]),
@@ -27,7 +24,8 @@ class Tapa(AbstractSolver):
             block_sizes = [int(c) for c in str(text)]
             choices = []
             for neighbor_colors in self._valid_neighbor_colors(block_sizes):
-                choices.append(And([sg.cell_is(p.translate(v), neighbor_colors[i]) for i, v in enumerate(directions)]))
+                choices.append(
+                    And([sg.cell_is(p.translate(v), neighbor_colors[i]) for i, v in enumerate(Directions.ALL)]))
             sg.solver.add(Or(choices))
 
         continuous_region(sg, rc, lambda q: sg.cell_is(q, 1))

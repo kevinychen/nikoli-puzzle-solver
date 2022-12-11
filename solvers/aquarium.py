@@ -9,10 +9,9 @@ class Aquarium(AbstractSolver):
             grilops.make_number_range_symbol_set(0, 1))
 
         # Each region must have all water at the same level
-        for region in puzzle.to_regions(sg.lattice.points):
+        for region in puzzle.get_regions(sg.lattice.points):
             sg.solver.add(Or(
-                [And([sg.cell_is(p, 1 if p.y >= height else 0) for p in region])
-                 for height in range(puzzle.height + 1)]))
+                [And([sg.cell_is(p, p.y >= height) for p in region]) for height in range(puzzle.height + 1)]))
 
         # Satisfy water counts
         for p, v in puzzle.border_lines(Directions.E, Directions.S):

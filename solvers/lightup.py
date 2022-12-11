@@ -8,11 +8,12 @@ class LightUpAkari(AbstractSolver):
             grilops.get_rectangle_lattice(puzzle.height, puzzle.width),
             grilops.make_number_range_symbol_set(0, 1))
 
+        for p, number in puzzle.texts.items():
+            sg.solver.add(Sum([n.symbol for n in sg.edge_sharing_neighbors(p)]) == number)
+
         for p in sg.grid:
             if p in puzzle.shaded:
                 sg.solver.add(sg.cell_is(p, 0))
-                if p in puzzle.texts:
-                    sg.solver.add(Sum([n.symbol for n in sg.edge_sharing_neighbors(p)]) == puzzle.texts[p])
             else:
                 lines = []
                 for n in sg.edge_sharing_neighbors(p):

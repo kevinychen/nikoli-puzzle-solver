@@ -13,8 +13,9 @@ class Slitherlink(AbstractSolver):
         for p in sg.grid:
             if not puzzle.in_bounds(p):
                 sg.solver.add(sg.cell_is(p, 0))
-            elif p in puzzle.texts:
-                sg.solver.add(Sum([sg.grid[p] != n.symbol for n in sg.edge_sharing_neighbors(p)]) == puzzle.texts[p])
+
+        for p, number in puzzle.texts.items():
+            sg.solver.add(Sum([sg.grid[p] != n.symbol for n in sg.edge_sharing_neighbors(p)]) == number)
 
         for i in range(2):
             continuous_region(sg, rc, lambda q: sg.cell_is(q, i))

@@ -9,7 +9,7 @@ class Heyawake(AbstractSolver):
             grilops.make_number_range_symbol_set(0, 1))
         rc = RegionConstrainer(sg.lattice, sg.solver)
 
-        regions = dict([(p, i) for i, region in enumerate(puzzle.to_regions(sg.lattice.points)) for p in region])
+        regions = dict([(p, i) for i, region in enumerate(puzzle.get_regions(sg.lattice.points)) for p in region])
 
         # No "word", i.e. line of white squares visiting at least three regions
         for v in Directions.E, Directions.S:
@@ -23,8 +23,8 @@ class Heyawake(AbstractSolver):
                     p = p.translate(v)
 
         # Number of black squares in each region is correct
-        for p, text in puzzle.texts.items():
-            sg.solver.add(Sum([sg.grid[q] for q in sg.lattice.points if regions[q] == regions[p]]) == text)
+        for p, number in puzzle.texts.items():
+            sg.solver.add(Sum([sg.grid[q] for q in sg.lattice.points if regions[q] == regions[p]]) == number)
 
         continuous_region(sg, rc, lambda q: sg.cell_is(q, 0))
         no_adjacent_symbols(sg, 1)

@@ -4,10 +4,10 @@ from lib import *
 class Shakashaka(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
-        # SW means a black triangle with a SW corner, i.e. a line going from NW to SE with the bottom left shaded.
+        # SW means a black triangle with an SW corner, i.e. a line going from NW to SE with the bottom left shaded.
         symbol_set = grilops.SymbolSet(['EMPTY', 'NW', 'SW', 'SE', 'NE', 'WALL'])
-        diagonal_symbols = [symbol_set.NW, symbol_set.SW, symbol_set.SE, symbol_set.NE]
-        dirs = [Directions.S, Directions.E, Directions.N, Directions.W]
+        diagonal_symbols = (symbol_set.NW, symbol_set.SW, symbol_set.SE, symbol_set.NE)
+        dirs = (Directions.S, Directions.E, Directions.N, Directions.W)
 
         sg = init_symbol_grid(
             RectangularLattice(
@@ -37,7 +37,7 @@ class Shakashaka(AbstractSolver):
             else:
                 sg.solver.add(Not(sg.cell_is(p, symbol_set.WALL)))
 
-                # A SW must have either a SE to its east, or a blank to its east and a SW to its southeast.
+                # An SW must have either a SE to its east, or a blank to its east and an SW to its southeast.
                 # Also, it must either have an empty or NE to its northeast.
                 # Similar logic applies for the other directions.
                 choices = [sg.cell_is(p, symbol_set.EMPTY)]

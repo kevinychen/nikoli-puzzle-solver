@@ -9,8 +9,8 @@ class Hitori(AbstractSolver):
             grilops.make_number_range_symbol_set(0, puzzle.width))
         rc = RegionConstrainer(sg.lattice, sg.solver)
 
-        for p, text in puzzle.texts.items():
-            sg.solver.add(sg.cell_is_one_of(p, (0, text)))
+        for p, number in puzzle.texts.items():
+            sg.solver.add(sg.cell_is_one_of(p, (0, number)))
 
         # Each number appears in each row and in each column at most once
         for i in range(1, puzzle.width + 1):

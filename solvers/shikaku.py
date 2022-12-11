@@ -9,10 +9,11 @@ class Shikaku(AbstractSolver):
             grilops.make_number_range_symbol_set(0, puzzle.height * puzzle.width))
         rc = RegionConstrainer(sg.lattice, sg.solver, rectangular=True)
 
+        for p, number in puzzle.texts.items():
+            sg.solver.add(rc.parent_grid[p] == R)
+            sg.solver.add(rc.region_size_grid[p] == number)
+
         for p in sg.grid:
-            if p in puzzle.texts:
-                sg.solver.add(rc.parent_grid[p] == R)
-                sg.solver.add(rc.region_size_grid[p] == puzzle.texts[p])
             sg.solver.add(sg.grid[p] == rc.region_id_grid[p])
 
     def set_solved(self, puzzle, sg, solved_grid, solution):

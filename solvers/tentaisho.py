@@ -9,12 +9,12 @@ class TentaishoSpiralGalaxies(AbstractSolver):
             grilops.make_number_range_symbol_set(0, puzzle.height * puzzle.width))
         rc = RegionConstrainer(sg.lattice, sg.solver)
 
-        centers = [
+        centers = (
             *[(p.y, p.x) for p in puzzle.symbols],
             *[(p.y, p.x - .5) for p in puzzle.vertical_borders],
             *[(p.y - .5, p.x) for p in puzzle.horizontal_borders],
             *[(p.y - .5, p.x - .5) for p in puzzle.corner_symbols],
-        ]
+        )
 
         for p in sg.grid:
             sg.solver.add(sg.grid[p] == rc.region_id_grid[p])

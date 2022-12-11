@@ -7,7 +7,7 @@ class EasyAsABC(AbstractSolver):
         letters = puzzle.parameters['letters']
 
         sg = init_symbol_grid(
-            grilops.get_rectangle_lattice(puzzle.height, puzzle.width),
+            grilops.get_square_lattice(puzzle.width),
             grilops.make_number_range_symbol_set(0, len(letters)))
 
         # Each border letter is the first one visible on that line
@@ -18,12 +18,17 @@ class EasyAsABC(AbstractSolver):
                     And(sg.grid[q] == letters.index(puzzle.texts[p]) + 1, *[sg.grid[r] == 0 for r in line[:i]])
                     for i, q in enumerate(line)]))
 
+        # Each given letter is correct
+        for p, text in puzzle.texts.items():
+            if puzzle.in_bounds(p):
+                sg.solver.add(sg.cell_is(p, letters.index(text)))
+
         # Each letter appears in each row and in each column exactly once
         for i in range(1, len(letters) + 1):
-            for row in range(puzzle.height):
+            for row in range(puzzle.width):
                 sg.solver.add(Sum([sg.grid[Point(row, col)] == i for col in range(puzzle.width)]) == 1)
             for col in range(puzzle.width):
-                sg.solver.add(Sum([sg.grid[Point(row, col)] == i for row in range(puzzle.height)]) == 1)
+                sg.solver.add(Sum([sg.grid[Point(row, col)] == i for row in range(puzzle.width)]) == 1)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         letters = puzzle.parameters['letters']

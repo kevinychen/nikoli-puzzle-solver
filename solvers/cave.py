@@ -13,13 +13,14 @@ class Cave(AbstractSolver):
         for p in sg.grid:
             if not puzzle.in_bounds(p):
                 sg.solver.add(sg.cell_is(p, 1))
-        for p, text in puzzle.texts.items():
+
+        for p, number in puzzle.texts.items():
             all_is_visible = [sg.cell_is(p, 0)]
             for direction in sg.lattice.edge_sharing_directions():
                 line = sight_line(sg, p, direction)
                 for i in range(1, len(line)):
                     all_is_visible.append(And([sg.cell_is(q, 0) for q in line[:i+1]]))
-            sg.solver.add(Sum(all_is_visible) == text)
+            sg.solver.add(Sum(all_is_visible) == number)
 
         for i in range(2):
             continuous_region(sg, rc, lambda q: sg.cell_is(q, i))

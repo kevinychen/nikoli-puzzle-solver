@@ -19,7 +19,7 @@ class LITS(AbstractSolver):
             sg.lattice, shapes, sg.solver, allow_rotations=True, allow_reflections=True, allow_copies=True)
 
         # Each region has one piece
-        for i, region in enumerate(puzzle.to_regions(sg.lattice.points)):
+        for i, region in enumerate(puzzle.get_regions(sg.lattice.points)):
             region_root = Int(f'region{i}')
             for p in region:
                 sg.solver.add(Implies(sg.cell_is(p, 1), sc.shape_instance_grid[p] == region_root))
@@ -29,9 +29,8 @@ class LITS(AbstractSolver):
 
         # No two pieces with the same shape may be adjacent
         for p in sg.grid:
-            for color, shape_instance, shape_type in \
-                    zip(sg.lattice.edge_sharing_neighbors(sg.grid, p),
-                        sg.lattice.edge_sharing_neighbors(sc.shape_instance_grid, p),
+            for shape_instance, shape_type in \
+                    zip(sg.lattice.edge_sharing_neighbors(sc.shape_instance_grid, p),
                         sg.lattice.edge_sharing_neighbors(sc.shape_type_grid, p)):
                 sg.solver.add(
                     Implies(

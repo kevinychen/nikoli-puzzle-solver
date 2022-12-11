@@ -9,7 +9,7 @@ class Kropki(AbstractSolver):
             grilops.make_number_range_symbol_set(1, puzzle.width))
 
         for p in sg.grid:
-            for v, borders in [(Directions.W, puzzle.vertical_borders), (Directions.N, puzzle.horizontal_borders)]:
+            for v, borders in (Directions.W, puzzle.vertical_borders), (Directions.N, puzzle.horizontal_borders):
                 q = p.translate(v)
                 if q in sg.grid:
                     white_condition = Or(sg.grid[p] == sg.grid[q] + 1, sg.grid[p] + 1 == sg.grid[q])

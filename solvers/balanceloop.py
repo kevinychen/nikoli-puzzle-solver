@@ -16,6 +16,7 @@ class BalanceLoop(AbstractSolver):
 
         circles = [p for p in puzzle.symbols if puzzle.symbols[p].is_circle()]
         for p in circles:
+            # Each circle must have two "arms". Try all possibilities of lengths of these arms, subject to constraints.
             choices = []
             for dir1, dir2 in combinations(sg.lattice.edge_sharing_directions(), 2):
                 line1, line2 = sight_line(sg, p, dir1), sight_line(sg, p, dir2)
@@ -29,8 +30,7 @@ class BalanceLoop(AbstractSolver):
                             continue
                         choices.append(And(
                             sg.cell_is_one_of(
-                                p,
-                                [i for i, s in symbol_set.symbols.items() if s.name == dir1.name + dir2.name]),
+                                p, [i for i, s in symbol_set.symbols.items() if s.name == dir1.name + dir2.name]),
                             *[sg.cell_is_one_of(q, straight_lines) for q in line1[1:len1]],
                             Not(sg.cell_is_one_of(line1[len1], straight_lines)),
                             *[sg.cell_is_one_of(q, straight_lines) for q in line2[1:len2]],
@@ -38,8 +38,7 @@ class BalanceLoop(AbstractSolver):
             sg.solver.add(Or(choices))
 
         # Optimization: loop starts at one of the circles
-        if circles:
-            sg.solver.add(lc.loop_order_grid[circles[0]] == 0)
+        sg.solver.add(lc.loop_order_grid[circles[0] or sg.lattice.points[0]] == 0)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         solution.set_loop(sg, solved_grid)

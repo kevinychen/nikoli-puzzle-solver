@@ -8,10 +8,10 @@ class MeanderingNumbers(AbstractSolver):
             grilops.get_rectangle_lattice(puzzle.height, puzzle.width),
             grilops.make_number_range_symbol_set(0, puzzle.height * puzzle.width))
 
-        for p, text in puzzle.texts.items():
-            sg.solver.add(sg.cell_is(p, text))
+        for p, number in puzzle.texts.items():
+            sg.solver.add(sg.cell_is(p, number))
 
-        for region in puzzle.to_regions(sg.lattice.points):
+        for region in puzzle.get_regions(sg.lattice.points):
             # Each region must have numbers from 1 to n in an orthogonally connected path
             sg.solver.add(Or([sg.cell_is(p, 1) for p in region]))
             for p in region:

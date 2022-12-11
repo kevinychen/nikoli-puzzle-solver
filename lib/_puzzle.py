@@ -17,6 +17,12 @@ class Symbol(NamedTuple):
     def is_circle(self):
         return self.shape.startswith('circle_')
 
+    def to_arrow(self) -> Direction:
+        directions = (Directions.E, Directions.S, Directions.W, Directions.N,
+                      Directions.W, Directions.N, Directions.E, Directions.S)
+        assert self.shape.startswith('arrow_fouredge_')
+        return dict(zip(self.style, directions))[1]
+
 
 class Symbols:
 
@@ -84,10 +90,7 @@ class Puzzle(object):
         ]
         return [line for line in border_lines if line[1] in directions]
 
-    def in_bounds(self, p: Point) -> bool:
-        return 0 <= p.y < self.height and 0 <= p.x < self.width
-
-    def to_regions(self, points: List[Point]) -> Set[Tuple[Point]]:
+    def get_regions(self, points: List[Point]) -> Set[Tuple[Point]]:
         uf = UnionFind()
         for p in points:
             if p not in self.vertical_borders:
@@ -95,6 +98,9 @@ class Puzzle(object):
             if p not in self.horizontal_borders:
                 uf.union(Point(p.y - 1, p.x), p)
         return set([tuple(q for q in points if uf.find(q) == p) for p in points if uf.find(p) == p])
+
+    def in_bounds(self, p: Point) -> bool:
+        return 0 <= p.y < self.height and 0 <= p.x < self.width
 
     def set_loop(self, sg: SymbolGrid, solved_grid: Dict[Point, int]):
         for p in sg.grid:

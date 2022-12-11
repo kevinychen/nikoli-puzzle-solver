@@ -81,7 +81,7 @@ class Penpa(NamedTuple):
         for k, (text, _) in self.q.numberS.items():
             kk = int(k) // 4 - self.w * self.h
             p = Point(*divmod(int(kk), self.w)).translate(self.v.negate())
-            puzzle.edge_texts[p, DIAGONAL_DIRECTIONS[int(k) % 4]] = text
+            puzzle.edge_texts[p, DIAGONAL_DIRECTIONS[int(k) % 4]] = int(text) if text.isnumeric() else text
         for k, (style, shape, _) in self.q.symbol.items():
             category, kk = divmod(int(k), self.w * self.h)
             if category == 0:
