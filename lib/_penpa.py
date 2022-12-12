@@ -84,8 +84,10 @@ class Penpa(NamedTuple):
         for index, (text, _, _) in self.q.number.items():
             puzzle.texts[self._from_index(index)[0]] = int(text) if text.isnumeric() else text
         for index, (text, _) in self.q.numberS.items():
-            v = [Directions.NW, Directions.NE, Directions.SW, Directions.SE][int(index) % 4]
-            puzzle.edge_texts[self._from_index(index)[0], v] = int(text) if text.isnumeric() else text
+            p, category = self._from_index(index)
+            v = ((Directions.N, Directions.E, Directions.W, Directions.S) if category == 8
+                 else (Directions.NW, Directions.NE, Directions.SW, Directions.SE))[int(index) % 4]
+            puzzle.edge_texts[p, v] = int(text) if text.isnumeric() else text
         for index, (style, shape, _) in self.q.symbol.items():
             p, category = self._from_index(index)
             if category == 0:
@@ -128,7 +130,9 @@ class Penpa(NamedTuple):
 
     def _from_index(self, index):
         category, num = divmod(int(index), self._w() * self._h())
-        if category >= 4:
+        if category >= 8:
+            category, num = 8, (num + (category - 8) * self._w() * self._h()) // 4
+        elif category >= 4:
             category, num = 4, (num + (category - 4) * self._w() * self._h()) // 4
         return Point(*divmod(num, self._w())).translate(Vector(-2 - self.top_space, -2 - self.left_space)), category
 
@@ -176,4 +180,3 @@ PENPA_ABBREVIATIONS = [
     ["\"__a\"", "z_"],
     ["null", "zO"],
 ]
-DIAGONAL_DIRECTIONS = [Directions.NW, Directions.NE, Directions.SW, Directions.SE]
