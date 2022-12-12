@@ -43,94 +43,6 @@ class Penpa(NamedTuple):
     q: PenpaPart
     parts: List[str]
 
-    @property
-    def w(self):
-        return self.width + 4 + self.left_space + self.right_space
-
-    @property
-    def h(self):
-        return self.height + 4 + self.top_space + self.bottom_space
-
-    @property
-    def v(self):
-        return Vector(2 + self.top_space, 2 + self.left_space)
-
-    def to_puzzle(self) -> Puzzle:
-        puzzle = Puzzle(
-            width=self.width,
-            height=self.height,
-            parameters=self.parameters,
-            top_space=self.top_space,
-            bottom_space=self.bottom_space,
-            left_space=self.left_space,
-            right_space=self.right_space,
-        )
-        for k, surface in self.q.surface.items():
-            p = Point(*divmod(int(k), self.w)).translate(self.v.negate())
-            puzzle.shaded[p] = surface
-        for k, _ in self.q.lineE.items():
-            num1, num2 = map(lambda kp: int(kp) - self.w * self.h + self.w + 1, k.split(','))
-            p = Point(*divmod(num1, self.w)).translate(self.v.negate())
-            if num2 - num1 == self.w:
-                puzzle.vertical_borders[p] = True
-            elif num2 - num1 == 1:
-                puzzle.horizontal_borders[p] = True
-        for k, (text, _, _) in self.q.number.items():
-            p = Point(*divmod(int(k), self.w)).translate(self.v.negate())
-            puzzle.texts[p] = int(text) if text.isnumeric() else text
-        for k, (text, _) in self.q.numberS.items():
-            kk = int(k) // 4 - self.w * self.h
-            p = Point(*divmod(int(kk), self.w)).translate(self.v.negate())
-            puzzle.edge_texts[p, DIAGONAL_DIRECTIONS[int(k) % 4]] = int(text) if text.isnumeric() else text
-        for k, (style, shape, _) in self.q.symbol.items():
-            category, kk = divmod(int(k), self.w * self.h)
-            if category == 0:
-                p = Point(*divmod(kk, self.w)).translate(self.v.negate())
-                puzzle.symbols[p] = Symbol(style, shape)
-            elif category == 1:
-                p = Point(*divmod(kk + self.w + 1, self.w)).translate(self.v.negate())
-                puzzle.corner_symbols[p] = Symbol(style, shape)
-            elif category == 2:
-                p = Point(*divmod(kk + self.w, self.w)).translate(self.v.negate())
-                puzzle.horizontal_borders[p] = Symbol(style, shape)
-            elif category == 3:
-                p = Point(*divmod(kk + 1, self.w)).translate(self.v.negate())
-                puzzle.vertical_borders[p] = Symbol(style, shape)
-        return puzzle
-
-    def to_url(self, solution: Puzzle):
-        a = PenpaPart()
-        for p in solution.shaded:
-            y, x = p.translate(self.v)
-            a.surface[str(self.w * y + x)] = 1
-        for p, text in solution.texts.items():
-            y, x = p.translate(self.v)
-            a.number[str(self.w * y + x)] = str(text), 2, '1'
-        for p, symbol in solution.symbols.items():
-            y, x = p.translate(self.v)
-            a.symbol[str(self.w * y + x)] = symbol.style, symbol.shape, 2
-        for p, line in solution.vertical_lines.items():
-            y, x = p.translate(self.v)
-            start = self.w * y + x
-            a.line[f'{start},{start + self.w}'] = 3 if line is True else line
-        for p, line in solution.horizontal_lines.items():
-            y, x = p.translate(self.v)
-            start = (self.width + 4) * y + x
-            a.line[f'{start},{start + 1}'] = 3 if line is True else line
-        for p in solution.vertical_borders:
-            y, x = p.translate(self.v)
-            start = self.w * self.h - self.w - 1 + self.w * y + x
-            a.lineE[f'{start},{start + self.w}'] = 3
-        for p in solution.horizontal_borders:
-            y, x = p.translate(self.v)
-            start = self.w * self.h - self.w - 1 + self.w * y + x
-            a.lineE[f'{start},{start + 1}'] = 3
-        self.parts[4] = reduce(
-            lambda s, abbr: s.replace(abbr[0], abbr[1]),
-            PENPA_ABBREVIATIONS,
-            dumps(a.__dict__))
-        return PENPA_PREFIX + b64encode(compress('\n'.join(self.parts).encode())[2:-4]).decode()
-
     @staticmethod
     def from_url(url: str, parameters: str):
         parts = decompress(b64decode(url[len(PENPA_PREFIX):]), -15).decode().split('\n')
@@ -149,6 +61,85 @@ class Penpa(NamedTuple):
             q=PenpaPart(**loads(reduce(lambda s, abbr: s.replace(abbr[1], abbr[0]), PENPA_ABBREVIATIONS, parts[3]))),
             parts=parts
         )
+
+    def to_puzzle(self) -> Puzzle:
+        puzzle = Puzzle(
+            width=self.width,
+            height=self.height,
+            parameters=self.parameters,
+            top_space=self.top_space,
+            bottom_space=self.bottom_space,
+            left_space=self.left_space,
+            right_space=self.right_space,
+        )
+        for index, surface in self.q.surface.items():
+            puzzle.shaded[self._from_index(index)[0]] = surface
+        for index, _ in self.q.lineE.items():
+            p, q = map(lambda i: self._from_index(i)[0], index.split(','))
+            dy, dx = q.y - p.y, q.x - p.x
+            p, q = (Point(p.y + (dy - dx + 1) // 2, p.x + (dy + dx + 1) // 2),
+                    Point(p.y + (dy + dx + 1) // 2, p.x + (-dy + dx + 1) // 2))
+            puzzle.borders[p, next(v for v in Directions.ALL if p.translate(v) == q)] = True
+            puzzle.borders[q, next(v for v in Directions.ALL if q.translate(v) == p)] = True
+        for index, (text, _, _) in self.q.number.items():
+            puzzle.texts[self._from_index(index)[0]] = int(text) if text.isnumeric() else text
+        for index, (text, _) in self.q.numberS.items():
+            v = [Directions.NW, Directions.NE, Directions.SW, Directions.SE][int(index) % 4]
+            puzzle.edge_texts[self._from_index(index)[0], v] = int(text) if text.isnumeric() else text
+        for index, (style, shape, _) in self.q.symbol.items():
+            p, category = self._from_index(index)
+            if category == 0:
+                puzzle.symbols[p] = Symbol(style, shape)
+            elif category == 1:
+                puzzle.borders[p.translate(Directions.SE), Directions.NW] = Symbol(style, shape)
+                puzzle.borders[p.translate(Directions.S), Directions.NE] = Symbol(style, shape)
+                puzzle.borders[p.translate(Directions.E), Directions.SW] = Symbol(style, shape)
+                puzzle.borders[p, Directions.SE] = Symbol(style, shape)
+            elif category == 2:
+                puzzle.borders[p.translate(Directions.S), Directions.N] = Symbol(style, shape)
+                puzzle.borders[p, Directions.S] = Symbol(style, shape)
+            elif category == 3:
+                puzzle.borders[p.translate(Directions.E), Directions.W] = Symbol(style, shape)
+                puzzle.borders[p, Directions.E] = Symbol(style, shape)
+        return puzzle
+
+    def to_url(self, solution: Puzzle):
+        a = PenpaPart()
+        for p in solution.shaded:
+            a.surface[self._to_index(p)] = 1
+        for p, text in solution.texts.items():
+            a.number[self._to_index(p)] = str(text), 2, '1'
+        for p, symbol in solution.symbols.items():
+            a.symbol[self._to_index(p)] = symbol.style, symbol.shape, 2
+        for p, v in solution.borders:
+            y, x = v.vector
+            index1 = self._to_index(p.translate(Vector((y - x - 1) // 2, (y + x - 1) // 2)), 1)
+            index2 = self._to_index(p.translate(Vector((y + x - 1) // 2, (-y + x - 1) // 2)), 1)
+            a.lineE[f'{min(index1, index2)},{max(index1, index2)}'] = 3
+        for (p, v), line in solution.lines.items():
+            index1 = self._to_index(p)
+            index2 = self._to_index(p.translate(v))
+            a.line[f'{min(index1, index2)},{max(index1, index2)}'] = 3 if line is True else line
+        self.parts[4] = reduce(
+            lambda s, abbr: s.replace(abbr[0], abbr[1]),
+            PENPA_ABBREVIATIONS,
+            dumps(a.__dict__))
+        return PENPA_PREFIX + b64encode(compress('\n'.join(self.parts).encode())[2:-4]).decode()
+
+    def _from_index(self, index):
+        category, num = divmod(int(index), self._w() * self._h())
+        if category >= 4:
+            category, num = 4, (num + (category - 4) * self._w() * self._h()) // 4
+        return Point(*divmod(num, self._w())).translate(Vector(-2 - self.top_space, -2 - self.left_space)), category
+
+    def _to_index(self, p, category=0):
+        return self._w() * self._h() * category + self._w() * (p.y + 2 + self.top_space) + p.x + 2 + self.left_space
+
+    def _w(self):
+        return self.width + 4 + self.left_space + self.right_space
+
+    def _h(self):
+        return self.height + 4 + self.top_space + self.bottom_space
 
 
 PENPA_PREFIX = 'm=edit&p='

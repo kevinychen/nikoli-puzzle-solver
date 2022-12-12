@@ -12,7 +12,7 @@ class StarBattle(AbstractSolver):
 
         for p, v in puzzle.border_lines(Directions.E, Directions.S):
             sg.solver.add(Sum([sg.grid[q] for q in sight_line(sg, p.translate(v), v)]) == num_stars)
-        for region in puzzle.get_regions(sg.lattice.points):
+        for region in puzzle.get_regions(sg.lattice):
             sg.solver.add(Sum([sg.grid[p] for p in region]) == num_stars)
 
         no_adjacent_symbols(sg, 1, no_diagonal=True)

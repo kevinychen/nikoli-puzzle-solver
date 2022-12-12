@@ -9,7 +9,7 @@ class Heyawake(AbstractSolver):
             grilops.make_number_range_symbol_set(0, 1))
         rc = RegionConstrainer(sg.lattice, sg.solver)
 
-        regions = dict([(p, i) for i, region in enumerate(puzzle.get_regions(sg.lattice.points)) for p in region])
+        regions = dict([(p, i) for i, region in enumerate(puzzle.get_regions(sg.lattice)) for p in region])
 
         # No "word", i.e. line of white squares visiting at least three regions
         for v in Directions.E, Directions.S:

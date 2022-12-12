@@ -11,9 +11,7 @@ class TentaishoSpiralGalaxies(AbstractSolver):
 
         centers = (
             *[(p.y, p.x) for p in puzzle.symbols],
-            *[(p.y, p.x - .5) for p in puzzle.vertical_borders],
-            *[(p.y - .5, p.x) for p in puzzle.horizontal_borders],
-            *[(p.y - .5, p.x - .5) for p in puzzle.corner_symbols],
+            *[(p.y + v.vector.dy / 2, p.x + v.vector.dx / 2) for (p, v) in puzzle.borders],
         )
 
         for p in sg.grid:

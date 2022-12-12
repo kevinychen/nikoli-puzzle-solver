@@ -20,7 +20,7 @@ class Numberlink(AbstractSolver):
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         for p in sg.grid:
-            for v, lines in (Directions.S, solution.vertical_lines), (Directions.E, solution.horizontal_lines):
+            for v in Directions.N, Directions.W:
                 q = p.translate(v)
                 if solved_grid[p] != 0 and q in solved_grid and solved_grid[p] == solved_grid[q]:
-                    lines[p] = True
+                    solution.lines[p, v] = True

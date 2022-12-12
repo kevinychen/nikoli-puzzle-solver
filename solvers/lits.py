@@ -19,7 +19,7 @@ class LITS(AbstractSolver):
             sg.lattice, shapes, sg.solver, allow_rotations=True, allow_reflections=True, allow_copies=True)
 
         # Each region has one piece
-        for i, region in enumerate(puzzle.get_regions(sg.lattice.points)):
+        for i, region in enumerate(puzzle.get_regions(sg.lattice)):
             region_root = Int(f'region{i}')
             for p in region:
                 sg.solver.add(Implies(sg.cell_is(p, 1), sc.shape_instance_grid[p] == region_root))

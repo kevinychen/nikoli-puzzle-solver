@@ -8,7 +8,7 @@ class BalanceLoop(AbstractSolver):
     def configure(self, puzzle, init_symbol_grid):
         lattice = grilops.get_rectangle_lattice(puzzle.height, puzzle.width)
         symbol_set = LoopSymbolSet(lattice)
-        symbol_set.append('empty')
+        symbol_set.append('EMPTY')
         straight_lines = symbol_set.NS, symbol_set.EW
 
         sg = init_symbol_grid(lattice, symbol_set)

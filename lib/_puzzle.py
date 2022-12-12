@@ -1,6 +1,6 @@
 from typing import Dict, List, NamedTuple, Set, Tuple, Union
 
-from grilops import Direction, Point, SymbolGrid
+from grilops import Direction, Lattice, Point, SymbolGrid
 
 from lib._directions import Directions
 from lib._union_find import UnionFind
@@ -50,37 +50,37 @@ class Puzzle(object):
             right_space: int = -1,
             shaded: Dict[Point, bool] = None,
             texts: Dict[Point, str] = None,
-            edge_texts: Dict[Tuple[Point, Direction], str] = None,
             symbols: Dict[Point, Symbol] = None,
-            vertical_lines: Dict[Point, Union[bool, int]] = None,
-            horizontal_lines: Dict[Point, Union[bool, int]] = None,
-            vertical_borders: Dict[Point, Union[bool, Symbol]] = None,
-            horizontal_borders: Dict[Point, Union[bool, Symbol]] = None,
-            corner_symbols: Dict[Point, Symbol] = None,
+            edge_texts: Dict[Tuple[Point, Direction], str] = None,
+            borders: Dict[Tuple[Point, Direction], Union[bool, Symbol]] = None,
+            lines: Dict[Tuple[Point, Direction], Union[bool, int]] = None,
     ):
         self.width = width
         self.height = height
+
         # Arbitrary additional parameters needed to solve the puzzle
         self.parameters = parameters
+
         self.top_space = top_space
         self.bottom_space = bottom_space
         self.left_space = left_space
         self.right_space = right_space
+
         self.shaded = shaded or {}
         self.texts = texts or {}
-        # Text on an edge, for example ((y, x), NE) is the text in the top right corner of square (y, x)
-        self.edge_texts = edge_texts or {}
         self.symbols = symbols or {}
-        # Contains (y, x) if there is a line from (y, x) to (y+1, x)
-        self.vertical_lines = vertical_lines or {}
-        # Contains (y, x) if there is a line from (y, x) to (y, x+1)
-        self.horizontal_lines = horizontal_lines or {}
-        # Contains (y,x) if square (y,x) has a left border
-        self.vertical_borders = vertical_borders or {}
-        # Contains (y,x) if square (y,x) has a top border
-        self.horizontal_borders = horizontal_borders or {}
-        # Contains (y,x) if square (y,x) has a top left object
-        self.corner_symbols = corner_symbols or {}
+
+        # Text on an edge, for example ((y,x), NE) is the text in the top right corner of square (y, x)
+        self.edge_texts = edge_texts or {}
+
+        # For example, ((y,x), N) means the point (y,x) has a top border.
+        # In the original puzzle, both directions will be given, but only one needs to be specified in the solution.
+        # As a special case, an object at a corner of a square grid is represented using a diagonal direction.
+        # For example, ((y,x), NE) means a symbol on the top right of (y,x). All four directions will be given.
+        self.borders = borders or {}
+
+        # Contains ((y,x), dir) if there is a line going through borders[(y,x), dir]
+        self.lines = lines or {}
 
     def border_lines(self, *directions: Direction) -> List[Tuple[Point, Direction]]:
         border_lines = [
@@ -91,30 +91,25 @@ class Puzzle(object):
         ]
         return [line for line in border_lines if line[1] in directions]
 
-    def get_regions(self, points: List[Point]) -> Set[Tuple[Point]]:
+    def get_regions(self, lattice: Lattice) -> Set[Tuple[Point]]:
         uf = UnionFind()
-        for p in points:
-            if p not in self.vertical_borders:
-                uf.union(Point(p.y, p.x - 1), p)
-            if p not in self.horizontal_borders:
-                uf.union(Point(p.y - 1, p.x), p)
-        return set([tuple(q for q in points if uf.find(q) == p) for p in points if uf.find(p) == p])
+        for p in lattice.points:
+            for v in lattice.edge_sharing_directions():
+                if p.translate(v) in lattice.points and (p, v) not in self.borders:
+                    uf.union(p, p.translate(v))
+        return set([tuple(q for q in lattice.points if uf.find(q) == p) for p in lattice.points if uf.find(p) == p])
 
     def in_bounds(self, p: Point) -> bool:
         return 0 <= p.y < self.height and 0 <= p.x < self.width
 
     def set_loop(self, sg: SymbolGrid, solved_grid: Dict[Point, int]):
         for p in sg.grid:
-            name = sg.symbol_set.symbols[solved_grid[p]].name
-            if 'S' in name:
-                self.vertical_lines[p] = True
-            if 'E' in name:
-                self.horizontal_lines[p] = True
+            for v in sg.lattice.edge_sharing_directions():
+                if solved_grid[p] in sg.symbol_set.symbols_for_direction(v):
+                    self.lines[p, v] = True
 
     def set_regions(self, sg: SymbolGrid, solved_grid: Dict[Point, int]):
         for p in sg.grid:
-            for v, borders in ((Directions.E, self.vertical_borders), (Directions.S, self.horizontal_borders)):
-                if solved_grid.get(p) != solved_grid.get(p.translate(v.vector.negate())):
-                    borders[p] = True
-                if solved_grid.get(p) != solved_grid.get(p.translate(v)):
-                    borders[p.translate(v)] = True
+            for v in sg.lattice.edge_sharing_directions():
+                if solved_grid[p] != solved_grid.get(p.translate(v)):
+                    self.borders[p, v] = True

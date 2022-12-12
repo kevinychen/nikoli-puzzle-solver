@@ -11,7 +11,7 @@ class MeanderingNumbers(AbstractSolver):
         for p, number in puzzle.texts.items():
             sg.solver.add(sg.cell_is(p, number))
 
-        for region in puzzle.get_regions(sg.lattice.points):
+        for region in puzzle.get_regions(sg.lattice):
             # Each region must have numbers from 1 to n in an orthogonally connected path
             sg.solver.add(Or([sg.cell_is(p, 1) for p in region]))
             for p in region:

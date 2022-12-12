@@ -65,7 +65,7 @@ class Hashiwokakero(AbstractSolver):
                 p, q = number_positions[edge.x], number_positions[edge.y]
                 if p.y == q.y:
                     for x in range(min(p.x, q.x), max(p.x, q.x)):
-                        solution.horizontal_lines[Point(p.y, x)] = 30 if solved_grid[edge] == 2 else 3
+                        solution.lines[Point(p.y, x + 1), Directions.W] = 30 if solved_grid[edge] == 2 else 3
                 elif p.x == q.x:
                     for y in range(min(p.y, q.y), max(p.y, q.y)):
-                        solution.vertical_lines[Point(y, p.x)] = 30 if solved_grid[edge] == 2 else 3
+                        solution.lines[Point(y + 1, p.x), Directions.N] = 30 if solved_grid[edge] == 2 else 3

@@ -9,15 +9,14 @@ class Kropki(AbstractSolver):
             grilops.make_number_range_symbol_set(1, puzzle.width))
 
         for p in sg.grid:
-            for v, borders in (Directions.W, puzzle.vertical_borders), (Directions.N, puzzle.horizontal_borders):
-                q = p.translate(v)
-                if q in sg.grid:
-                    white_condition = Or(sg.grid[p] == sg.grid[q] + 1, sg.grid[p] + 1 == sg.grid[q])
-                    black_condition = Or(sg.grid[p] == sg.grid[q] * 2, sg.grid[p] * 2 == sg.grid[q])
-                    if p in borders:
-                        sg.solver.add(black_condition if borders[p].is_black() else white_condition)
-                    else:
-                        sg.solver.add(Not(Or(white_condition, black_condition)))
+            for n in sg.edge_sharing_neighbors(p):
+                q = n.location
+                white_condition = Or(sg.grid[p] == sg.grid[q] + 1, sg.grid[p] + 1 == sg.grid[q])
+                black_condition = Or(sg.grid[p] == sg.grid[q] * 2, sg.grid[p] * 2 == sg.grid[q])
+                if (p, n.direction) in puzzle.borders:
+                    sg.solver.add(black_condition if puzzle.borders[p, n.direction].is_black() else white_condition)
+                else:
+                    sg.solver.add(Not(Or(white_condition, black_condition)))
 
         distinct_rows_and_columns(sg)
 

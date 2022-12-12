@@ -6,7 +6,7 @@ class SimpleLoop(AbstractSolver):
     def configure(self, puzzle, init_symbol_grid):
         lattice = grilops.get_rectangle_lattice(puzzle.height, puzzle.width)
         symbol_set = LoopSymbolSet(lattice)
-        symbol_set.append('black')
+        symbol_set.append('BLACK')
 
         sg = init_symbol_grid(lattice, symbol_set)
         lc = LoopConstrainer(sg, single_loop=True)
