@@ -104,12 +104,12 @@ class Penpa(NamedTuple):
                         Point((p.y + (dy + 3 * dx) // 2) // 3, p.x + (-dy + dx) // 2))
             puzzle.junctions[frozenset((p, q))] = True
         for index, (text, _, _) in self.q.number.items():
-            puzzle.texts[self._from_index(index)[0]] = int(text) if text.isnumeric() else text
+            puzzle.texts[self._from_index(index)[0]] = int(text) if type(text) == str and text.isnumeric() else text
         for index, (text, _) in self.q.numberS.items():
             p, category = self._from_index(int(index) // 4)
             v = ((Directions.N, Directions.E, Directions.W, Directions.S) if category == 2
                  else (Directions.NW, Directions.NE, Directions.SW, Directions.SE))[int(index) % 4]
-            puzzle.edge_texts[p, v] = int(text) if text.isnumeric() else text
+            puzzle.edge_texts[p, v] = int(text) if type(text) == str and text.isnumeric() else text
         for index, (style, shape, _) in self.q.symbol.items():
             p, category = self._from_index(index)
             if category == 0:
