@@ -20,9 +20,7 @@ class Pentominous(AbstractSolver):
         ]
         letters = 'FILNPTUVWXYZ'
 
-        sg = init_symbol_grid(
-            grilops.get_rectangle_lattice(puzzle.height, puzzle.width),
-            grilops.make_number_range_symbol_set(0, len(shapes) - 1))
+        sg = init_symbol_grid(puzzle.get_lattice(), grilops.make_number_range_symbol_set(0, len(shapes) - 1))
         sc = ShapeConstrainer(
             sg.lattice, shapes, sg.solver, allow_rotations=True, allow_reflections=True, allow_copies=True)
 

@@ -4,14 +4,13 @@ from lib import *
 class TentaishoSpiralGalaxies(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(
-            grilops.get_rectangle_lattice(puzzle.height, puzzle.width),
-            grilops.make_number_range_symbol_set(0, puzzle.height * puzzle.width))
+        sg = init_symbol_grid(puzzle.get_lattice(), grilops.make_number_range_symbol_set(0, len(puzzle.points)))
         rc = RegionConstrainer(sg.lattice, sg.solver)
 
         centers = (
             *[(p.y, p.x) for p in puzzle.symbols],
-            *[(p.y + v.vector.dy / 2, p.x + v.vector.dx / 2) for (p, v) in puzzle.borders],
+            *[(sum(p.y for p in junction) / len(junction), sum(p.x for p in junction) / len(junction))
+              for junction in puzzle.junctions],
         )
 
         for p in sg.grid:

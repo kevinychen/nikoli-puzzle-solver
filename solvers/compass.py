@@ -4,9 +4,7 @@ from lib import *
 class Compass(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(
-            grilops.get_rectangle_lattice(puzzle.height, puzzle.width),
-            grilops.make_number_range_symbol_set(1, puzzle.height * puzzle.width))
+        sg = init_symbol_grid(puzzle.get_lattice(), grilops.make_number_range_symbol_set(1, len(puzzle.points)))
         rc = RegionConstrainer(sg.lattice, sg.solver)
 
         region_ids = []

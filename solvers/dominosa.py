@@ -6,9 +6,7 @@ class Dominosa(AbstractSolver):
     def configure(self, puzzle, init_symbol_grid):
         dominoes = [(a, b) for a in range(max(puzzle.texts.values()) + 1) for b in range(a + 1)]
 
-        sg = init_symbol_grid(
-            grilops.get_rectangle_lattice(puzzle.height, puzzle.width),
-            grilops.make_number_range_symbol_set(0, len(dominoes) - 1))
+        sg = init_symbol_grid(puzzle.get_lattice(), grilops.make_number_range_symbol_set(0, len(dominoes) - 1))
 
         # A mapping from each domino to the two points (y,x) it is in the grid.
         all_locations = [[[var() for _ in range(2)] for _ in range(2)] for _ in dominoes]

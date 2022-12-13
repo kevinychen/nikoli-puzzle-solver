@@ -4,18 +4,16 @@ from lib import *
 class Skyscrapers(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(
-            grilops.get_square_lattice(puzzle.width),
-            grilops.make_number_range_symbol_set(1, puzzle.width))
+        sg = init_symbol_grid(puzzle.get_lattice(), grilops.make_number_range_symbol_set(1, puzzle.width))
 
-        for p, v in puzzle.border_lines(Directions.E, Directions.N, Directions.S, Directions.W):
+        for p, v in puzzle.entrance_points(sg.lattice):
             if p in puzzle.texts:
                 line = sight_line(sg, p.translate(v), v)
                 sg.solver.add(Sum([And([sg.grid[q] > sg.grid[r] for r in line[:i]]) for i, q in enumerate(line)])
                               == puzzle.texts[p])
 
         for p, number in puzzle.texts.items():
-            if puzzle.in_bounds(p):
+            if p in puzzle.points:
                 sg.solver.add(sg.cell_is(p, number))
 
         distinct_rows_and_columns(sg)

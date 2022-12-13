@@ -13,7 +13,7 @@ class Battleships(AbstractSolver):
         sc = ShapeConstrainer(sg.lattice, shapes, sg.solver, allow_rotations=True)
 
         # Satisfy ship counts
-        for p, v in puzzle.border_lines(Directions.E, Directions.S):
+        for p, v in puzzle.entrance_points(sg.lattice):
             if p in puzzle.texts:
                 sg.solver.add(Sum([sg.grid[q] > 0 for q in sight_line(sg, p.translate(v), v)]) == puzzle.texts[p])
 

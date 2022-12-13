@@ -7,7 +7,7 @@ from zlib import compress, decompress
 from grilops import Point, Vector
 
 from lib._directions import Directions
-from lib._puzzle import Puzzle, Symbol
+from lib._puzzle import Board, Puzzle, Symbol
 
 
 class PenpaPart(object):
@@ -22,17 +22,21 @@ class PenpaPart(object):
             symbol: Dict[str, Tuple[int, str, int]] = None,
             **_kwargs,
     ):
+        self.arrows = []
+        self.direction = []
         self.line = line or {}
         self.lineE = lineE or {}
         self.number = number or {}
         self.numberS = numberS or {}
-        self.squareframe = {}
+        self.squareframe = []
         self.surface = surface or {}
         self.symbol = symbol or {}
+        self.thermo = []
 
 
 class Penpa(NamedTuple):
 
+    board: Board
     width: int
     height: int
     parameters: Dict[str, str]
@@ -47,11 +51,24 @@ class Penpa(NamedTuple):
     def from_url(url: str, parameters: str):
         parts = decompress(b64decode(url[len(PENPA_PREFIX):]), -15).decode().split('\n')
         header = parts[0].split(',')
-        top_space, bottom_space, left_space, right_space = loads(parts[1])
+
+        if header[0] in ('square', 'sudoku'):
+            board = Board.SQUARE
+            top_space, bottom_space, left_space, right_space = loads(parts[1])
+            width = int(header[1]) - left_space - right_space
+            height = int(header[2]) - top_space - bottom_space
+        elif header[0] == 'hex':
+            board = Board.HEXAGON
+            top_space, bottom_space, left_space, right_space = loads(parts[1]) * 4
+            width = int(header[1])
+            height = int(header[2])
+        else:
+            assert False
 
         return Penpa(
-            width=int(header[1]) - left_space - right_space,
-            height=int(header[2]) - top_space - bottom_space,
+            board=board,
+            width=width,
+            height=height,
             parameters=dict((k.strip(), v.strip()) for (k, v) in
                             [line.split(':', 1) for line in (parameters or '').split('\n') if ':' in line]),
             top_space=top_space,
@@ -64,28 +81,33 @@ class Penpa(NamedTuple):
 
     def to_puzzle(self) -> Puzzle:
         puzzle = Puzzle(
+            board=self.board,
             width=self.width,
             height=self.height,
             parameters=self.parameters,
-            top_space=self.top_space,
-            bottom_space=self.bottom_space,
-            left_space=self.left_space,
-            right_space=self.right_space,
         )
         for index, surface in self.q.surface.items():
             puzzle.shaded[self._from_index(index)[0]] = surface
         for index, _ in self.q.lineE.items():
-            p, q = map(lambda i: self._from_index(i)[0], index.split(','))
-            dy, dx = q.y - p.y, q.x - p.x
-            p, q = (Point(p.y + (dy - dx + 1) // 2, p.x + (dy + dx + 1) // 2),
-                    Point(p.y + (dy + dx + 1) // 2, p.x + (-dy + dx + 1) // 2))
-            puzzle.borders[p, next(v for v in Directions.ALL if p.translate(v) == q)] = True
-            puzzle.borders[q, next(v for v in Directions.ALL if q.translate(v) == p)] = True
+            (p, category), (q, _) = map(lambda i: self._from_index(i), index.split(','))
+            if self.board == Board.SQUARE:
+                p, q = Point(2 * p.y + 1, 2 * p.x + 1), Point(2 * q.y + 1, 2 * q.x + 1)
+                dy, dx = q.y - p.y, q.x - p.x
+                p, q = (Point((p.y + (dy - dx) // 2) // 2, (p.x + (dy + dx) // 2) // 2),
+                        Point((p.y + (dy + dx) // 2) // 2, (p.x + (-dy + dx) // 2) // 2))
+            elif self.board == Board.HEXAGON:
+                if category == 1:
+                    p, q = q, p
+                p, q = Point(3 * p.y + 1, p.x - 1), Point(3 * q.y + 2, q.x)
+                dy, dx = q.y - p.y, q.x - p.x
+                p, q = (Point((p.y + (dy - 3 * dx) // 2) // 3, p.x + (dy + dx) // 2),
+                        Point((p.y + (dy + 3 * dx) // 2) // 3, p.x + (-dy + dx) // 2))
+            puzzle.junctions[frozenset((p, q))] = True
         for index, (text, _, _) in self.q.number.items():
             puzzle.texts[self._from_index(index)[0]] = int(text) if text.isnumeric() else text
         for index, (text, _) in self.q.numberS.items():
-            p, category = self._from_index(index)
-            v = ((Directions.N, Directions.E, Directions.W, Directions.S) if category == 8
+            p, category = self._from_index(int(index) // 4)
+            v = ((Directions.N, Directions.E, Directions.W, Directions.S) if category == 2
                  else (Directions.NW, Directions.NE, Directions.SW, Directions.SE))[int(index) % 4]
             puzzle.edge_texts[p, v] = int(text) if text.isnumeric() else text
         for index, (style, shape, _) in self.q.symbol.items():
@@ -93,16 +115,12 @@ class Penpa(NamedTuple):
             if category == 0:
                 puzzle.symbols[p] = Symbol(style, shape)
             elif category == 1:
-                puzzle.borders[p.translate(Directions.SE), Directions.NW] = Symbol(style, shape)
-                puzzle.borders[p.translate(Directions.S), Directions.NE] = Symbol(style, shape)
-                puzzle.borders[p.translate(Directions.E), Directions.SW] = Symbol(style, shape)
-                puzzle.borders[p, Directions.SE] = Symbol(style, shape)
+                regions = p, p.translate(Directions.E), p.translate(Directions.S), p.translate(Directions.SE)
+                puzzle.junctions[frozenset(regions)] = Symbol(style, shape)
             elif category == 2:
-                puzzle.borders[p.translate(Directions.S), Directions.N] = Symbol(style, shape)
-                puzzle.borders[p, Directions.S] = Symbol(style, shape)
+                puzzle.junctions[frozenset((p, p.translate(Directions.S)))] = Symbol(style, shape)
             elif category == 3:
-                puzzle.borders[p.translate(Directions.E), Directions.W] = Symbol(style, shape)
-                puzzle.borders[p, Directions.E] = Symbol(style, shape)
+                puzzle.junctions[frozenset((p, p.translate(Directions.E)))] = Symbol(style, shape)
         return puzzle
 
     def to_url(self, solution: Puzzle):
@@ -113,14 +131,14 @@ class Penpa(NamedTuple):
             a.number[self._to_index(p)] = str(text), 2, '1'
         for p, symbol in solution.symbols.items():
             a.symbol[self._to_index(p)] = symbol.style, symbol.shape, 2
-        for p, v in solution.borders:
-            y, x = v.vector
-            index1 = self._to_index(p.translate(Vector((y - x - 1) // 2, (y + x - 1) // 2)), 1)
-            index2 = self._to_index(p.translate(Vector((y + x - 1) // 2, (-y + x - 1) // 2)), 1)
+        for p, q, *_ in solution.junctions:
+            dy, dx = q.y - p.y, q.x - p.x
+            index1 = self._to_index(p.translate(Vector((dy - dx - 1) // 2, (dy + dx - 1) // 2)), 1)
+            index2 = self._to_index(p.translate(Vector((dy + dx - 1) // 2, (-dy + dx - 1) // 2)), 1)
             a.lineE[f'{min(index1, index2)},{max(index1, index2)}'] = 3
-        for (p, v), line in solution.lines.items():
+        for (p, q), line in solution.lines.items():
             index1 = self._to_index(p)
-            index2 = self._to_index(p.translate(v))
+            index2 = self._to_index(q)
             a.line[f'{min(index1, index2)},{max(index1, index2)}'] = 3 if line is True else line
         self.parts[4] = reduce(
             lambda s, abbr: s.replace(abbr[0], abbr[1]),
@@ -130,20 +148,38 @@ class Penpa(NamedTuple):
 
     def _from_index(self, index):
         category, num = divmod(int(index), self._w() * self._h())
-        if category >= 8:
-            category, num = 8, (num + (category - 8) * self._w() * self._h()) // 4
-        elif category >= 4:
-            category, num = 4, (num + (category - 4) * self._w() * self._h()) // 4
-        return Point(*divmod(num, self._w())).translate(Vector(-2 - self.top_space, -2 - self.left_space)), category
+        p = Point(*divmod(num, self._w()))
+        if self.board == Board.HEXAGON:
+            # change from odd-r offset coordinates to doubled coordinates
+            p = Point(p.y, 2 * p.x + p.y % 2)
+        return p.translate(self._v().negate()), category
 
     def _to_index(self, p, category=0):
-        return self._w() * self._h() * category + self._w() * (p.y + 2 + self.top_space) + p.x + 2 + self.left_space
+        y, x = p.translate(self._v())
+        if self.board == Board.HEXAGON:
+            # change from doubled offset coordinates to odd-r coordinates
+            x //= 2
+        return self._w() * self._h() * category + self._w() * y + x
+
+    def _v(self):
+        """(0,0) in the puzzle grid is mapped to this point in the Penpa numbering system."""
+        if self.board == Board.SQUARE:
+            return Vector(2 + self.top_space, 2 + self.left_space)
+        elif self.board == Board.HEXAGON:
+            y = (self.height * 3 + 1) // 2
+            return Vector(y, self.width * 3 // 2 * 2 + y % 2)
 
     def _w(self):
-        return self.width + 4 + self.left_space + self.right_space
+        if self.board == Board.SQUARE:
+            return self.width + 4 + self.left_space + self.right_space
+        elif self.board == Board.HEXAGON:
+            return self.width * 3 + 1
 
     def _h(self):
-        return self.height + 4 + self.top_space + self.bottom_space
+        if self.board == Board.SQUARE:
+            return self.height + 4 + self.top_space + self.bottom_space
+        elif self.board == Board.HEXAGON:
+            return self.height * 3 + 1
 
 
 PENPA_PREFIX = 'm=edit&p='

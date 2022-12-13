@@ -6,8 +6,7 @@ from lib import *
 class TapaLikeLoop(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
-        lattice = RectangularLattice(
-            [Point(row, col) for row in range(-1, puzzle.height + 1) for col in range(-1, puzzle.width + 1)])
+        lattice = puzzle.get_lattice(border=True)
         symbol_set = LoopSymbolSet(lattice)
         symbol_set.append('EMPTY')
         # Corresponds to Directions.ALL: for example, the square east of a number would have a NS segment
@@ -18,7 +17,7 @@ class TapaLikeLoop(AbstractSolver):
         LoopConstrainer(sg, single_loop=True)
 
         for p in sg.grid:
-            if not puzzle.in_bounds(p):
+            if p not in puzzle.points:
                 sg.solver.add(sg.cell_is(p, symbol_set.EMPTY))
 
         for p, text in puzzle.texts.items():

@@ -7,7 +7,7 @@ class Binairo(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
         sg = init_symbol_grid(
-            grilops.get_square_lattice(puzzle.width),
+            puzzle.get_lattice(),
             grilops.make_number_range_symbol_set(0, 1))
 
         for p, symbol in puzzle.symbols.items():
@@ -15,7 +15,7 @@ class Binairo(AbstractSolver):
                 sg.solver.add(sg.cell_is(p, symbol.is_black()))
 
         # Each row and column contains the same number of whites and blacks
-        for p, v in puzzle.border_lines(Directions.E, Directions.S):
+        for p, v in puzzle.entrance_points(sg.lattice):
             sg.solver.add(Sum([sg.grid[q] for q in sight_line(sg, p.translate(v), v)]) == puzzle.width // 2)
 
         # No three-in-a-row of the same color

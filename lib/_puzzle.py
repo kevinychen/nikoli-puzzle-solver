@@ -1,9 +1,16 @@
-from typing import Dict, List, NamedTuple, Set, Tuple, Union
+from enum import Enum
+from typing import Dict, FrozenSet, List, NamedTuple, Set, Tuple, Union
 
-from grilops import Direction, Lattice, Point, SymbolGrid
+from grilops import Direction, Lattice, Point, PointyToppedHexagonalLattice, RectangularLattice, SymbolGrid
 
 from lib._directions import Directions
 from lib._union_find import UnionFind
+
+
+class Board(Enum):
+
+    SQUARE = 1,
+    HEXAGON = 2,
 
 
 class Symbol(NamedTuple):
@@ -41,75 +48,84 @@ class Puzzle(object):
 
     def __init__(
             self,
+            board: Board = None,
             width: int = -1,
             height: int = -1,
             parameters: Dict[str, str] = None,
-            top_space: int = -1,
-            bottom_space: int = -1,
-            left_space: int = -1,
-            right_space: int = -1,
             shaded: Dict[Point, bool] = None,
             texts: Dict[Point, str] = None,
             symbols: Dict[Point, Symbol] = None,
             edge_texts: Dict[Tuple[Point, Direction], str] = None,
-            borders: Dict[Tuple[Point, Direction], Union[bool, Symbol]] = None,
-            lines: Dict[Tuple[Point, Direction], Union[bool, int]] = None,
+            junctions: Dict[FrozenSet[Point], Union[bool, Symbol]] = None,
+            lines: Dict[FrozenSet[Point], Union[bool, int]] = None,
     ):
+        self.board = board
         self.width = width
         self.height = height
 
         # Arbitrary additional parameters needed to solve the puzzle
         self.parameters = parameters
 
-        self.top_space = top_space
-        self.bottom_space = bottom_space
-        self.left_space = left_space
-        self.right_space = right_space
-
         self.shaded = shaded or {}
         self.texts = texts or {}
         self.symbols = symbols or {}
 
-        # Text on an edge, for example ((y,x), NE) is the text in the top right corner of square (y, x)
+        # Text on an edge, for example ((y,x), NE) is the text in the top right corner of (y, x)
         self.edge_texts = edge_texts or {}
 
-        # For example, ((y,x), N) means the point (y,x) has a top border.
-        # In the original puzzle, both directions will be given, but only one needs to be specified in the solution.
-        # As a special case, an object at a corner of a square grid is represented using a diagonal direction.
-        # For example, ((y,x), NE) means a symbol on the top right of (y,x). All four directions will be given.
-        self.borders = borders or {}
+        # Any point between two regions of the grid. For example, a key of 2 regions corresponds to the edge between the
+        # regions, and can be either a bordering line (if the value is True) or a symbol on that edge.
+        # A key of more than 2 regions is a vertex, e.g. each corner of a square grid is a junction of 4 regions.
+        self.junctions = junctions or {}
 
-        # Contains ((y,x), dir) if there is a line going through borders[(y,x), dir]
+        # Each key is 2 regions, representing a line between the center of those 2 regions in the grid.
         self.lines = lines or {}
 
-    def border_lines(self, *directions: Direction) -> List[Tuple[Point, Direction]]:
-        border_lines = [
-            *[(Point(i, -1), Directions.E) for i in range(self.height)],
-            *[(Point(i, self.width), Directions.W) for i in range(self.height)],
-            *[(Point(-1, i), Directions.S) for i in range(self.width)],
-            *[(Point(self.height, i), Directions.N) for i in range(self.width)],
-        ]
-        return [line for line in border_lines if line[1] in directions]
+        if board == Board.SQUARE:
+            self.points = set([Point(y, x) for y in range(height) for x in range(width)])
+        elif board == Board.HEXAGON:
+            self.points = set([Point(y, x) for y in range(-width + 1, width) for x in range(-2 * width + 2, 2 * width)
+                               if abs(y) + abs(x) < 2 * width and (y + x) % 2 == 0])
+
+    def entrance_points(self, lattice: Lattice) -> Set[Tuple[Point, Direction]]:
+        """Returns all tuples (p, v) where p is a point right outside the grid, and v is the direction to the grid."""
+        points = set()
+        for v in lattice.edge_sharing_directions():
+            for p in self.points:
+                while p in self.points:
+                    p = p.translate(v)
+                points.add((p, lattice.opposite_direction(v)))
+        return points
+
+    def get_lattice(self, border: bool = False) -> Lattice:
+        if self.board == Board.SQUARE:
+            factory = RectangularLattice
+        elif self.board == Board.HEXAGON:
+            factory = PointyToppedHexagonalLattice
+        else:
+            assert False
+
+        lattice = factory(list(self.points))
+        if border:
+            lattice = factory(list(set([q for p in self.points for q in lattice.vertex_sharing_points(p)])))
+        return lattice
 
     def get_regions(self, lattice: Lattice) -> Set[Tuple[Point]]:
         uf = UnionFind()
         for p in lattice.points:
-            for v in lattice.edge_sharing_directions():
-                if p.translate(v) in lattice.points and (p, v) not in self.borders:
-                    uf.union(p, p.translate(v))
+            for q in lattice.edge_sharing_points(p):
+                if q in lattice.points and frozenset((p, q)) not in self.junctions:
+                    uf.union(p, q)
         return set([tuple(q for q in lattice.points if uf.find(q) == p) for p in lattice.points if uf.find(p) == p])
-
-    def in_bounds(self, p: Point) -> bool:
-        return 0 <= p.y < self.height and 0 <= p.x < self.width
 
     def set_loop(self, sg: SymbolGrid, solved_grid: Dict[Point, int]):
         for p in sg.grid:
             for v in sg.lattice.edge_sharing_directions():
                 if solved_grid[p] in sg.symbol_set.symbols_for_direction(v):
-                    self.lines[p, v] = True
+                    self.lines[frozenset((p, p.translate(v)))] = True
 
     def set_regions(self, sg: SymbolGrid, solved_grid: Dict[Point, int]):
         for p in sg.grid:
-            for v in sg.lattice.edge_sharing_directions():
-                if solved_grid[p] != solved_grid.get(p.translate(v)):
-                    self.borders[p, v] = True
+            for q in sg.lattice.edge_sharing_points(p):
+                if solved_grid[p] != solved_grid.get(q):
+                    self.junctions[frozenset((p, q))] = True

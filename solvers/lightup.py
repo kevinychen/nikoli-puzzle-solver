@@ -4,9 +4,7 @@ from lib import *
 class LightUpAkari(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(
-            grilops.get_rectangle_lattice(puzzle.height, puzzle.width),
-            grilops.make_number_range_symbol_set(0, 1))
+        sg = init_symbol_grid(puzzle.get_lattice(), grilops.make_number_range_symbol_set(0, 1))
 
         for p, number in puzzle.texts.items():
             sg.solver.add(Sum([n.symbol for n in sg.edge_sharing_neighbors(p)]) == number)

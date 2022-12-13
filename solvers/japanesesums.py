@@ -8,16 +8,16 @@ class JapaneseSums(AbstractSolver):
 
         sg = init_symbol_grid(
             RectangularLattice(
-                [Point(row, col) for row in range(-puzzle.top_space, puzzle.height + 1)
-                 for col in range(-puzzle.left_space, puzzle.width + 1)]),
+                [Point(row, col) for row in range(-puzzle.height, puzzle.height + 1)
+                 for col in range(-puzzle.width, puzzle.width + 1)]),
             grilops.make_number_range_symbol_set(0, maximum))
 
         for p in sg.grid:
-            if not puzzle.in_bounds(p):
+            if p not in puzzle.points:
                 sg.solver.add(sg.cell_is(p, 0))
 
         lines = []
-        for p, v in puzzle.border_lines(Directions.E, Directions.S):
+        for p, v in puzzle.entrance_points(sg.lattice):
             lines.append((
                 [puzzle.texts[q] for q in sight_line(sg, p, v.vector.negate(), lambda q: q in puzzle.texts)][::-1],
                 sight_line(sg, p, v)))
@@ -48,12 +48,12 @@ class JapaneseSums(AbstractSolver):
 
         # Each number appears in each row and in each column exactly once
         for i in range(1, maximum + 1):
-            for p, v in puzzle.border_lines(Directions.E, Directions.S):
+            for p, v in puzzle.entrance_points(sg.lattice):
                 sg.solver.add(Sum([sg.cell_is(q, i) for q in sight_line(sg, p.translate(v), v)]) <= 1)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         for p in sg.grid:
             if solved_grid[p] > 0:
                 solution.texts[p] = solved_grid[p]
-            elif puzzle.in_bounds(p):
+            elif p in puzzle.points:
                 solution.shaded[p] = True

@@ -13,9 +13,7 @@ class Heteromino(AbstractSolver):
             Shape([Vector(0, 1), Vector(1, 0), Vector(1, 1)]),
         ]
 
-        sg = init_symbol_grid(
-            grilops.get_rectangle_lattice(puzzle.height, puzzle.width),
-            grilops.make_number_range_symbol_set(-1, len(shapes) - 1))
+        sg = init_symbol_grid(puzzle.get_lattice(), grilops.make_number_range_symbol_set(-1, len(shapes) - 1))
         sc = ShapeConstrainer(sg.lattice, shapes, sg.solver, allow_copies=True)
 
         for p in sg.grid:

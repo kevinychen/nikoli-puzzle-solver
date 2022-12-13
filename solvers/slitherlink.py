@@ -4,14 +4,11 @@ from lib import *
 class Slitherlink(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(
-            RectangularLattice(
-                [Point(row, col) for row in range(-1, puzzle.height + 1) for col in range(-1, puzzle.width + 1)]),
-            grilops.make_number_range_symbol_set(0, 1))
+        sg = init_symbol_grid(puzzle.get_lattice(border=True), grilops.make_number_range_symbol_set(0, 1))
         rc = RegionConstrainer(sg.lattice, sg.solver)
 
         for p in sg.grid:
-            if not puzzle.in_bounds(p):
+            if p not in puzzle.points:
                 sg.solver.add(sg.cell_is(p, 0))
 
         for p, number in puzzle.texts.items():

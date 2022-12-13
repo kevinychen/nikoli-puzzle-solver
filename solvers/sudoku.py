@@ -4,7 +4,7 @@ from lib import *
 class Sudoku(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(grilops.get_square_lattice(9), grilops.make_number_range_symbol_set(1, 9))
+        sg = init_symbol_grid(puzzle.get_lattice(), grilops.make_number_range_symbol_set(1, 9))
 
         for p, number in puzzle.texts.items():
             sg.solver.add(sg.cell_is(p, number))

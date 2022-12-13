@@ -4,9 +4,7 @@ from lib import *
 class MeanderingNumbers(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(
-            grilops.get_rectangle_lattice(puzzle.height, puzzle.width),
-            grilops.make_number_range_symbol_set(0, puzzle.height * puzzle.width))
+        sg = init_symbol_grid(puzzle.get_lattice(), grilops.make_number_range_symbol_set(0, len(puzzle.points)))
 
         for p, number in puzzle.texts.items():
             sg.solver.add(sg.cell_is(p, number))

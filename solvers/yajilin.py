@@ -4,7 +4,7 @@ from lib import *
 class Yajilin(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
-        lattice = grilops.get_rectangle_lattice(puzzle.height, puzzle.width)
+        lattice = puzzle.get_lattice()
         symbol_set = LoopSymbolSet(lattice)
         symbol_set.append('BLACK')
         symbol_set.append('WALL')

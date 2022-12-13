@@ -63,9 +63,10 @@ class Hashiwokakero(AbstractSolver):
         for edge in sg.grid:
             if solved_grid[edge] != 0:
                 p, q = number_positions[edge.x], number_positions[edge.y]
+                shape = 30 if solved_grid[edge] == 2 else 3
                 if p.y == q.y:
                     for x in range(min(p.x, q.x), max(p.x, q.x)):
-                        solution.lines[Point(p.y, x + 1), Directions.W] = 30 if solved_grid[edge] == 2 else 3
+                        solution.lines[frozenset((Point(p.y, x), Point(p.y, x + 1)))] = shape
                 elif p.x == q.x:
                     for y in range(min(p.y, q.y), max(p.y, q.y)):
-                        solution.lines[Point(y + 1, p.x), Directions.N] = 30 if solved_grid[edge] == 2 else 3
+                        solution.lines[frozenset((Point(y, p.x), Point(y + 1, p.x)))] = shape

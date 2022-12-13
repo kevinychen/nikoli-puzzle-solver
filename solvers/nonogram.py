@@ -6,16 +6,16 @@ class Nonogram(AbstractSolver):
     def configure(self, puzzle, init_symbol_grid):
         sg = init_symbol_grid(
             RectangularLattice(
-                [Point(row, col) for row in range(-puzzle.top_space, puzzle.height + 1)
-                 for col in range(-puzzle.left_space, puzzle.width + 1)]),
+                [Point(row, col) for row in range(-puzzle.height, puzzle.height + 1)
+                 for col in range(-puzzle.width, puzzle.width + 1)]),
             grilops.make_number_range_symbol_set(0, 1))
 
         for p in sg.grid:
-            if not puzzle.in_bounds(p):
+            if p not in puzzle.points:
                 sg.solver.add(sg.cell_is(p, 0))
 
         lines = []
-        for p, v in puzzle.border_lines(Directions.E, Directions.S):
+        for p, v in puzzle.entrance_points(sg.lattice):
             lines.append((
                 [puzzle.texts[q] for q in sight_line(sg, p, v.vector.negate(), lambda q: q in puzzle.texts)][::-1],
                 sight_line(sg, p, v)))
@@ -24,6 +24,8 @@ class Nonogram(AbstractSolver):
         # blocks seen so far. Then anytime we end a block, we check if the block is the right size and increment
         # num_blocks[i] if so. Otherwise, we keep num_blocks[i] as the same value.
         for block_sizes, line in lines:
+            if not block_sizes:
+                continue
             num_blocks = [var() for _ in line]
             for i in range(1, len(line)):
                 choices = [And(

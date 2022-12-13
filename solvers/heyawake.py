@@ -4,15 +4,13 @@ from lib import *
 class Heyawake(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(
-            grilops.get_rectangle_lattice(puzzle.height, puzzle.width),
-            grilops.make_number_range_symbol_set(0, 1))
+        sg = init_symbol_grid(puzzle.get_lattice(), grilops.make_number_range_symbol_set(0, 1))
         rc = RegionConstrainer(sg.lattice, sg.solver)
 
         regions = dict([(p, i) for i, region in enumerate(puzzle.get_regions(sg.lattice)) for p in region])
 
         # No "word", i.e. line of white squares visiting at least three regions
-        for v in Directions.E, Directions.S:
+        for v in sg.lattice.edge_sharing_directions():
             for p in sg.grid:
                 word = []
                 while p in sg.grid:

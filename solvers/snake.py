@@ -4,12 +4,10 @@ from lib import *
 class Snake(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(
-            grilops.get_rectangle_lattice(puzzle.height, puzzle.width),
-            grilops.make_number_range_symbol_set(0, 1))
+        sg = init_symbol_grid(puzzle.get_lattice(), grilops.make_number_range_symbol_set(0, 1))
 
         # Satisfy snake square counts
-        for p, v in puzzle.border_lines(Directions.E, Directions.S):
+        for p, v in puzzle.entrance_points(sg.lattice):
             if p in puzzle.texts:
                 sg.solver.add(Sum([sg.grid[q] for q in sight_line(sg, p.translate(v), v)]) == puzzle.texts[p])
 
