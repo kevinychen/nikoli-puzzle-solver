@@ -151,8 +151,8 @@ class Solution(AbstractPuzzle):
                 if solved_grid[p] in sg.symbol_set.symbols_for_direction(v):
                     self.lines[frozenset((p, p.translate(v)))] = True
 
-    def set_regions(self, sg: SymbolGrid, solved_grid: Dict[Point, int]):
-        for p in sg.grid:
-            for q in sg.lattice.edge_sharing_points(p):
+    def set_regions(self, puzzle: Puzzle, solved_grid: Dict[Point, int]):
+        for p in puzzle.points:
+            for q in puzzle.lattice_type.edge_sharing_points(p):
                 if solved_grid[p] != solved_grid.get(q):
                     self.junctions[frozenset((p, q))] = True

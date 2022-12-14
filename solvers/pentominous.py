@@ -26,4 +26,4 @@ class Pentominous(AbstractSolver):
                 sc.shape_instance_grid[p] != sc.shape_instance_grid[q], sc.shape_type_grid[p] != sc.shape_type_grid[q]))
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
-        solution.set_regions(sg, solved_grid)
+        solution.set_regions(puzzle, solved_grid)

@@ -29,4 +29,4 @@ class Compass(AbstractSolver):
             sg.solver.add(sg.cell_is_one_of(p, region_ids))
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
-        solution.set_regions(sg, solved_grid)
+        solution.set_regions(puzzle, solved_grid)

@@ -19,4 +19,4 @@ class Fillomino(AbstractSolver):
                 rc.region_id_grid[p] != rc.region_id_grid[q], rc.region_size_grid[p] != rc.region_size_grid[q]))
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
-        solution.set_regions(sg, solved_grid)
+        solution.set_regions(puzzle, solved_grid)

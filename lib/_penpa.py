@@ -96,11 +96,20 @@ class Penpa(NamedTuple):
         for index, _ in self.q.lineE.items():
             (p, category), (q, _) = map(lambda i: self._from_index(i), index.split(','))
             if self.lattice_type == LatticeTypes.SQUARE:
+                # An edge is labeled by its two endpoints. Each endpoint vertex is labeled by the coordinate of the
+                # square with it as its bottom right corner. So it is at (y+.5,x+.5), but we double the coordinates so
+                # that we work in integers. We then rotate the difference vector about one of its endpoints by ±45º
+                # (with a scale factor of 1/√2, or 1/2 since we're in doubled space) to get the squares on both sides.
                 p, q = Point(2 * p.y + 1, 2 * p.x + 1), Point(2 * q.y + 1, 2 * q.x + 1)
                 dy, dx = q.y - p.y, q.x - p.x
                 p, q = (Point((p.y + (dy - dx) // 2) // 2, (p.x + (dy + dx) // 2) // 2),
                         Point((p.y + (dy + dx) // 2) // 2, (p.x + (-dy + dx) // 2) // 2))
             elif self.lattice_type == LatticeTypes.HEXAGON:
+                # For the hexagonal grid, each vertex is labeled by the hexagon that has it as either its bottom corner
+                # or bottom left corner. So they are at (y+1/3,x-1) and (y+2/3,x) in doubled coordinates, and this time
+                # we triple the coordinates to work in integers. Each edge connects one vertex of each category, and
+                # if the vertex with the second category is given first, we swap them first for convenience. Everything
+                # else is the same, just with a different rotation angle and scale factor.
                 if category == 1:
                     p, q = q, p
                 p, q = Point(3 * p.y + 1, p.x - 1), Point(3 * q.y + 2, q.x)
@@ -138,8 +147,21 @@ class Penpa(NamedTuple):
             a.symbol[self._to_index(p)] = symbol.style, symbol.shape, 2
         for p, q, *_ in solution.junctions:
             dy, dx = q.y - p.y, q.x - p.x
-            index1 = self._to_index(p.translate(Vector((dy - dx - 1) // 2, (dy + dx - 1) // 2)), 1)
-            index2 = self._to_index(p.translate(Vector((dy + dx - 1) // 2, (-dy + dx - 1) // 2)), 1)
+            # Do the reverse of the transformations of lineE done in to_puzzle.
+            if self.lattice_type == LatticeTypes.SQUARE:
+                p, q = (Point(2 * p.y + dy - dx, 2 * p.x + dy + dx),
+                        Point(2 * p.y + dy + dx, 2 * p.x - dy + dx))
+                index1, index2 = (self._to_index(Point(p.y // 2, p.x // 2), 1),
+                                  self._to_index(Point(q.y // 2, q.x // 2), 1))
+            elif self.lattice_type == LatticeTypes.HEXAGON:
+                p, q = (Point(3 * p.y + (3 * dy - dx) // 2, p.x + (dy + dx) // 2),
+                        Point(3 * p.y + (3 * dy + dx) // 2, p.x + (-dy + dx) // 2))
+                if p.y % 3 != 1:
+                    p, q = q, p
+                index1, index2 = (self._to_index(Point(p.y // 3, p.x + 1), 2),
+                                  self._to_index(Point(q.y // 3, q.x), 1))
+            else:
+                assert False
             a.lineE[f'{min(index1, index2)},{max(index1, index2)}'] = 3
         for (p, q), line in solution.lines.items():
             index1 = self._to_index(p)

@@ -15,4 +15,4 @@ class Shikaku(AbstractSolver):
             sg.solver.add(rc.region_size_grid[p] == number)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
-        solution.set_regions(sg, solved_grid)
+        solution.set_regions(puzzle, solved_grid)

@@ -18,4 +18,4 @@ class Slitherlink(AbstractSolver):
             continuous_region(sg, rc, lambda q: sg.cell_is(q, i))
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
-        solution.set_regions(sg, solved_grid)
+        solution.set_regions(puzzle, solved_grid)

@@ -31,4 +31,4 @@ class TentaishoSpiralGalaxies(AbstractSolver):
             sg.solver.add(rc.parent_grid[Point(int(y), int(x))] == R)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
-        solution.set_regions(sg, solved_grid)
+        solution.set_regions(puzzle, solved_grid)

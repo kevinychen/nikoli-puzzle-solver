@@ -30,4 +30,4 @@ class Dominosa(AbstractSolver):
             sg.solver.add(Or([sg.grid[p] == domino_index.symbol for domino_index in sg.edge_sharing_neighbors(p)]))
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
-        solution.set_regions(sg, solved_grid)
+        solution.set_regions(puzzle, solved_grid)
