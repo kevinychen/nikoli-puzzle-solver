@@ -4,7 +4,7 @@ from lib import *
 class Slitherlink(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(puzzle.get_lattice(border=True), grilops.make_number_range_symbol_set(0, 1))
+        sg = init_symbol_grid(puzzle.lattice(border=True), grilops.make_number_range_symbol_set(0, 1))
         rc = RegionConstrainer(sg.lattice, sg.solver)
 
         for p in sg.grid:

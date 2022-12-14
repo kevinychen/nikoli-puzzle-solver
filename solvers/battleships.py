@@ -7,20 +7,18 @@ class Battleships(AbstractSolver):
         lengths = [int(c) for c in puzzle.parameters['lengths']]
         shapes = [Shape([Vector(i, 0) for i in range(length)]) for length in lengths]
 
-        sg = init_symbol_grid(
-            grilops.get_rectangle_lattice(puzzle.height, puzzle.width),
-            grilops.make_number_range_symbol_set(0, 6))
+        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 6))
         sc = ShapeConstrainer(sg.lattice, shapes, sg.solver, allow_rotations=True)
 
         # Satisfy ship counts
-        for p, v in puzzle.entrance_points(sg.lattice):
+        for p, v in puzzle.entrance_points():
             if p in puzzle.texts:
                 sg.solver.add(Sum([sg.grid[q] > 0 for q in sight_line(sg, p.translate(v), v)]) == puzzle.texts[p])
 
         # Satisfy given ship parts/water
         for p, symbol in puzzle.symbols.items():
             if symbol.shape.startswith('battleship_'):
-                sg.solver.add(sg.cell_is(p, symbol.style % 7))
+                sg.solver.add(sg.cell_is(p, 0 if symbol.style == 7 else symbol.style))
 
         # Restrictions for each ship part
         for p in sg.grid:
@@ -37,11 +35,9 @@ class Battleships(AbstractSolver):
                     sg.grid.get(p.translate(v.vector.negate()), 0) > 0, sg.grid.get(p.translate(v), 0) == 0)))
 
         # No two ships may be adjacent
-        for p in sg.grid:
-            for ship, shape_instance in \
-                    zip(sg.vertex_sharing_neighbors(p), sg.lattice.vertex_sharing_neighbors(sc.shape_instance_grid, p)):
-                sg.solver.add(
-                    Implies(And(sg.grid[p] > 0, ship.symbol > 0), sc.shape_instance_grid[p] == shape_instance.symbol))
+        for p, q in puzzle.edges(include_diagonal=True):
+            sg.solver.add(
+                Implies(sc.shape_instance_grid[p] != sc.shape_instance_grid[q], Or(sg.grid[p] == 0, sg.grid[q] == 0)))
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         for p in sg.grid:

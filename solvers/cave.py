@@ -4,7 +4,7 @@ from lib import *
 class Cave(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(puzzle.get_lattice(border=True), grilops.make_number_range_symbol_set(0, 1))
+        sg = init_symbol_grid(puzzle.lattice(border=True), grilops.make_number_range_symbol_set(0, 1))
         rc = RegionConstrainer(sg.lattice, sg.solver)
 
         for p in sg.grid:
@@ -24,5 +24,5 @@ class Cave(AbstractSolver):
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         for p in sg.grid:
-            if solved_grid[p] == 1 and p in puzzle.points:
+            if p in puzzle.points and solved_grid[p] == 1:
                 solution.shaded[p] = True

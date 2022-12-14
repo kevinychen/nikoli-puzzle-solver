@@ -15,7 +15,7 @@ class Nonogram(AbstractSolver):
                 sg.solver.add(sg.cell_is(p, 0))
 
         lines = []
-        for p, v in puzzle.entrance_points(sg.lattice):
+        for p, v in puzzle.entrance_points():
             lines.append((
                 [puzzle.texts[q] for q in sight_line(sg, p, v.vector.negate(), lambda q: q in puzzle.texts)][::-1],
                 sight_line(sg, p, v)))

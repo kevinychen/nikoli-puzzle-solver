@@ -6,31 +6,28 @@ from lib import *
 class Binairo(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(
-            puzzle.get_lattice(),
-            grilops.make_number_range_symbol_set(0, 1))
+        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
 
         for p, symbol in puzzle.symbols.items():
             if symbol.is_circle():
                 sg.solver.add(sg.cell_is(p, symbol.is_black()))
 
         # Each row and column contains the same number of whites and blacks
-        for p, v in puzzle.entrance_points(sg.lattice):
+        for p, v in puzzle.entrance_points():
             sg.solver.add(Sum([sg.grid[q] for q in sight_line(sg, p.translate(v), v)]) == puzzle.width // 2)
 
         # No three-in-a-row of the same color
         for p in sg.grid:
-            for v in Directions.E, Directions.S:
+            for v in sg.lattice.edge_sharing_directions():
                 q = p.translate(v)
                 r = q.translate(v)
                 if r in sg.grid:
                     sg.solver.add(Or(sg.grid[p] != sg.grid[q], sg.grid[p] != sg.grid[r]))
 
         # All rows and columns are unique
-        for row1, row2 in combinations(range(puzzle.width), 2):
-            sg.solver.add(Or([sg.grid[Point(row1, col)] != sg.grid[Point(row2, col)] for col in range(puzzle.width)]))
-        for col1, col2 in combinations(range(puzzle.width), 2):
-            sg.solver.add(Or([sg.grid[Point(row, col1)] != sg.grid[Point(row, col2)] for row in range(puzzle.width)]))
+        for i1, i2 in combinations(range(puzzle.width), 2):
+            sg.solver.add(Or([sg.grid[Point(i1, j)] != sg.grid[Point(i2, j)] for j in range(puzzle.width)]))
+            sg.solver.add(Or([sg.grid[Point(j, i1)] != sg.grid[Point(j, i2)] for j in range(puzzle.width)]))
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         for p in sg.grid:

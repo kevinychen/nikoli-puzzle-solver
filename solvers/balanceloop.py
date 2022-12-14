@@ -6,15 +6,15 @@ from lib import *
 class BalanceLoop(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
-        lattice = puzzle.get_lattice()
+        lattice = puzzle.lattice()
         symbol_set = LoopSymbolSet(lattice)
         symbol_set.append('EMPTY')
         straight_lines = symbol_set.NS, symbol_set.EW
+        circles = [p for p in puzzle.symbols if puzzle.symbols[p].is_circle()]
 
         sg = init_symbol_grid(lattice, symbol_set)
         lc = LoopConstrainer(sg, single_loop=True)
 
-        circles = [p for p in puzzle.symbols if puzzle.symbols[p].is_circle()]
         for p in circles:
             # Each circle must have two "arms". Try all possibilities of lengths of these arms, subject to constraints.
             choices = []

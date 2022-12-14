@@ -4,7 +4,7 @@ from typing import Optional
 from grilops import SymbolGrid
 from ruamel.yaml import YAML
 
-from lib import GlobalTimeoutLock, Penpa, Puzzle
+from lib import GlobalTimeoutLock, Penpa, Solution
 from solvers.abstract_solver import AbstractSolver
 
 yaml = YAML()
@@ -40,13 +40,13 @@ def solve(puzzle_type: str, url: str, parameters: str, different_from: Optional[
             if sg.solver.reason_unknown() == "timeout":
                 raise TimeoutError(408)
             return None
-        solution = Puzzle()
+        solution = Solution()
         solver.set_solved(original, sg, sg.solved_grid(), solution)
         solution = penpa.to_url(solution)
         if solution != different_from:
             return solution
         if sg.is_unique():
             return None
-        solution = Puzzle()
+        solution = Solution()
         solver.set_solved(original, sg, sg.solved_grid(), solution)
         return penpa.to_url(solution)

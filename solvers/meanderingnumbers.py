@@ -4,12 +4,12 @@ from lib import *
 class MeanderingNumbers(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(puzzle.get_lattice(), grilops.make_number_range_symbol_set(0, len(puzzle.points)))
+        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, len(puzzle.points)))
 
         for p, number in puzzle.texts.items():
             sg.solver.add(sg.cell_is(p, number))
 
-        for region in puzzle.get_regions(sg.lattice):
+        for region in puzzle.regions():
             # Each region must have numbers from 1 to n in an orthogonally connected path
             sg.solver.add(Or([sg.cell_is(p, 1) for p in region]))
             for p in region:

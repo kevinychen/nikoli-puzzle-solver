@@ -6,16 +6,13 @@ class Dominosa(AbstractSolver):
     def configure(self, puzzle, init_symbol_grid):
         dominoes = [(a, b) for a in range(max(puzzle.texts.values()) + 1) for b in range(a + 1)]
 
-        sg = init_symbol_grid(puzzle.get_lattice(), grilops.make_number_range_symbol_set(0, len(dominoes) - 1))
+        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, len(dominoes) - 1))
 
         # A mapping from each domino to the two points (y,x) it is in the grid.
         all_locations = [[[var() for _ in range(2)] for _ in range(2)] for _ in dominoes]
         for locations in all_locations:
             for y, x in locations:
-                sg.solver.add(y >= 0)
-                sg.solver.add(y < puzzle.height)
-                sg.solver.add(x >= 0)
-                sg.solver.add(x < puzzle.width)
+                sg.solver.add(And(y >= 0, y < puzzle.height, x >= 0, x < puzzle.width))
 
         # The mapping from grid to domino and domino to grid are consistent.
         for p in sg.grid:

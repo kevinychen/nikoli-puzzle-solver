@@ -9,7 +9,7 @@ class Shakashaka(AbstractSolver):
         diagonal_symbols = (symbol_set.NW, symbol_set.SW, symbol_set.SE, symbol_set.NE)
         dirs = (Directions.S, Directions.E, Directions.N, Directions.W)
 
-        sg = init_symbol_grid(puzzle.get_lattice(border=True), symbol_set)
+        sg = init_symbol_grid(puzzle.lattice(border=True), symbol_set)
 
         # In every 2x2 box, if there are 3 empty squares, the 4th is either empty
         # or contains a triangle in the corresponding direction as its position in the box

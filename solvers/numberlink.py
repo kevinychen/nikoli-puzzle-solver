@@ -4,7 +4,7 @@ from lib import *
 class Numberlink(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(puzzle.get_lattice(), grilops.make_number_range_symbol_set(0, len(puzzle.texts) // 2))
+        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, len(puzzle.texts) // 2))
 
         for p in sg.grid:
             num_neighbors = Sum([n.symbol == sg.grid[p] for n in sg.edge_sharing_neighbors(p)])

@@ -3,7 +3,7 @@ from typing import Callable, Dict
 
 from grilops import Lattice, Point, SymbolGrid, SymbolSet
 
-from lib import Puzzle
+from lib import Puzzle, Solution
 
 
 class AbstractSolver(ABC):
@@ -34,7 +34,7 @@ class AbstractSolver(ABC):
             puzzle: Puzzle,
             sg: SymbolGrid,
             solved_grid: Dict[Point, int],
-            solution: Puzzle):
+            solution: Solution):
         """
         Given the result of the constraint problem, updates the solution accordingly.
 

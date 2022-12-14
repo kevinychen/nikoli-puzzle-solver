@@ -17,7 +17,7 @@ class JapaneseSums(AbstractSolver):
                 sg.solver.add(sg.cell_is(p, 0))
 
         lines = []
-        for p, v in puzzle.entrance_points(sg.lattice):
+        for p, v in puzzle.entrance_points():
             lines.append((
                 [puzzle.texts[q] for q in sight_line(sg, p, v.vector.negate(), lambda q: q in puzzle.texts)][::-1],
                 sight_line(sg, p, v)))
@@ -48,7 +48,7 @@ class JapaneseSums(AbstractSolver):
 
         # Each number appears in each row and in each column exactly once
         for i in range(1, maximum + 1):
-            for p, v in puzzle.entrance_points(sg.lattice):
+            for p, v in puzzle.entrance_points():
                 sg.solver.add(Sum([sg.cell_is(q, i) for q in sight_line(sg, p.translate(v), v)]) <= 1)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):

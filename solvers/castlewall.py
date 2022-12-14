@@ -4,7 +4,7 @@ from lib import *
 class CastleWall(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
-        lattice = puzzle.get_lattice()
+        lattice = puzzle.lattice()
         symbol_set = LoopSymbolSet(lattice)
         symbol_set.append('EMPTY')
 
@@ -12,7 +12,7 @@ class CastleWall(AbstractSolver):
         lc = LoopConstrainer(sg, single_loop=True)
 
         # find the region where the loop should be (not any of the small white regions with numbers)
-        region = next(region for region in puzzle.get_regions(sg.lattice)
+        region = next(region for region in puzzle.regions()
                       if all(p in puzzle.shaded or p not in puzzle.texts for p in region))
 
         for p in sg.grid:

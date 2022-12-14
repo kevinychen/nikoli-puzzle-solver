@@ -1,5 +1,6 @@
 from base64 import b64decode, b64encode
 from functools import reduce
+from itertools import accumulate
 from json import dumps, loads
 from typing import Dict, List, NamedTuple, Tuple
 from zlib import compress, decompress
@@ -7,10 +8,11 @@ from zlib import compress, decompress
 from grilops import Point, Vector
 
 from lib._directions import Directions
-from lib._puzzle import Board, Puzzle, Symbol
+from lib._lattice_type import LatticeType, LatticeTypes
+from lib._puzzle import Puzzle, Solution, Symbol
 
 
-class PenpaPart(object):
+class PenpaPart:
 
     def __init__(
             self,
@@ -36,9 +38,10 @@ class PenpaPart(object):
 
 class Penpa(NamedTuple):
 
-    board: Board
+    lattice_type: LatticeType
     width: int
     height: int
+    points: List[int]
     parameters: Dict[str, str]
     top_space: int
     bottom_space: int
@@ -53,12 +56,12 @@ class Penpa(NamedTuple):
         header = parts[0].split(',')
 
         if header[0] in ('square', 'sudoku'):
-            board = Board.SQUARE
+            lattice_type = LatticeTypes.SQUARE
             top_space, bottom_space, left_space, right_space = loads(parts[1])
             width = int(header[1]) - left_space - right_space
             height = int(header[2]) - top_space - bottom_space
         elif header[0] == 'hex':
-            board = Board.HEXAGON
+            lattice_type = LatticeTypes.HEXAGON
             top_space, bottom_space, left_space, right_space = loads(parts[1]) * 4
             width = int(header[1])
             height = int(header[2])
@@ -66,9 +69,10 @@ class Penpa(NamedTuple):
             assert False
 
         return Penpa(
-            board=board,
+            lattice_type=lattice_type,
             width=width,
             height=height,
+            points=list(accumulate(loads(parts[5]))),
             parameters=dict((k.strip(), v.strip()) for (k, v) in
                             [line.split(':', 1) for line in (parameters or '').split('\n') if ':' in line]),
             top_space=top_space,
@@ -81,21 +85,22 @@ class Penpa(NamedTuple):
 
     def to_puzzle(self) -> Puzzle:
         puzzle = Puzzle(
-            board=self.board,
+            lattice_type=self.lattice_type,
             width=self.width,
             height=self.height,
+            points=set([self._from_index(index)[0] for index in self.points]),
             parameters=self.parameters,
         )
         for index, surface in self.q.surface.items():
             puzzle.shaded[self._from_index(index)[0]] = surface
         for index, _ in self.q.lineE.items():
             (p, category), (q, _) = map(lambda i: self._from_index(i), index.split(','))
-            if self.board == Board.SQUARE:
+            if self.lattice_type == LatticeTypes.SQUARE:
                 p, q = Point(2 * p.y + 1, 2 * p.x + 1), Point(2 * q.y + 1, 2 * q.x + 1)
                 dy, dx = q.y - p.y, q.x - p.x
                 p, q = (Point((p.y + (dy - dx) // 2) // 2, (p.x + (dy + dx) // 2) // 2),
                         Point((p.y + (dy + dx) // 2) // 2, (p.x + (-dy + dx) // 2) // 2))
-            elif self.board == Board.HEXAGON:
+            elif self.lattice_type == LatticeTypes.HEXAGON:
                 if category == 1:
                     p, q = q, p
                 p, q = Point(3 * p.y + 1, p.x - 1), Point(3 * q.y + 2, q.x)
@@ -123,7 +128,7 @@ class Penpa(NamedTuple):
                 puzzle.junctions[frozenset((p, p.translate(Directions.E)))] = Symbol(style, shape)
         return puzzle
 
-    def to_url(self, solution: Puzzle):
+    def to_url(self, solution: Solution):
         a = PenpaPart()
         for p in solution.shaded:
             a.surface[self._to_index(p)] = 1
@@ -149,36 +154,36 @@ class Penpa(NamedTuple):
     def _from_index(self, index):
         category, num = divmod(int(index), self._w() * self._h())
         p = Point(*divmod(num, self._w()))
-        if self.board == Board.HEXAGON:
+        if self.lattice_type == LatticeTypes.HEXAGON:
             # change from odd-r offset coordinates to doubled coordinates
             p = Point(p.y, 2 * p.x + p.y % 2)
         return p.translate(self._v().negate()), category
 
     def _to_index(self, p, category=0):
         y, x = p.translate(self._v())
-        if self.board == Board.HEXAGON:
+        if self.lattice_type == LatticeTypes.HEXAGON:
             # change from doubled offset coordinates to odd-r coordinates
             x //= 2
         return self._w() * self._h() * category + self._w() * y + x
 
     def _v(self):
         """(0,0) in the puzzle grid is mapped to this point in the Penpa numbering system."""
-        if self.board == Board.SQUARE:
+        if self.lattice_type == LatticeTypes.SQUARE:
             return Vector(2 + self.top_space, 2 + self.left_space)
-        elif self.board == Board.HEXAGON:
+        elif self.lattice_type == LatticeTypes.HEXAGON:
             y = (self.height * 3 + 1) // 2
             return Vector(y, self.width * 3 // 2 * 2 + y % 2)
 
     def _w(self):
-        if self.board == Board.SQUARE:
+        if self.lattice_type == LatticeTypes.SQUARE:
             return self.width + 4 + self.left_space + self.right_space
-        elif self.board == Board.HEXAGON:
+        elif self.lattice_type == LatticeTypes.HEXAGON:
             return self.width * 3 + 1
 
     def _h(self):
-        if self.board == Board.SQUARE:
+        if self.lattice_type == LatticeTypes.SQUARE:
             return self.height + 4 + self.top_space + self.bottom_space
-        elif self.board == Board.HEXAGON:
+        elif self.lattice_type == LatticeTypes.HEXAGON:
             return self.height * 3 + 1
 
 

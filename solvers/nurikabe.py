@@ -4,7 +4,7 @@ from lib import *
 class Nurikabe(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(puzzle.get_lattice(), grilops.make_number_range_symbol_set(0, 1))
+        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
         rc = RegionConstrainer(sg.lattice, sg.solver)
 
         for p in sg.grid:
@@ -19,13 +19,10 @@ class Nurikabe(AbstractSolver):
                 sg.solver.add(Implies(sg.cell_is(p, 0), rc.parent_grid[p] != R))
 
         # No two regions with the same color may be adjacent
-        for p in sg.grid:
-            for color, region_id in zip(
-                    sg.lattice.edge_sharing_neighbors(sg.grid, p),
-                    sg.lattice.edge_sharing_neighbors(rc.region_id_grid, p)):
-                sg.solver.add(Implies(sg.grid[p] == color.symbol, rc.region_id_grid[p] == region_id.symbol))
+        for p, q in puzzle.edges():
+            sg.solver.add(Implies(rc.region_id_grid[p] != rc.region_id_grid[q], sg.grid[p] != sg.grid[q]))
 
-        continuous_region(sg, rc, lambda q: sg.cell_is(q, 1))
+        continuous_region(sg, rc, lambda r: sg.cell_is(r, 1))
         no2x2(sg, 1)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):

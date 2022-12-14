@@ -1,16 +1,13 @@
-from enum import Enum
-from typing import Dict, FrozenSet, List, NamedTuple, Set, Tuple, Union
+from abc import ABC
+from collections import defaultdict
+from typing import Callable, Dict, FrozenSet, List, NamedTuple, Set, Tuple, Union
 
-from grilops import Direction, Lattice, Point, PointyToppedHexagonalLattice, RectangularLattice, SymbolGrid
+from grilops import Direction, Lattice, Point, SymbolGrid, Vector
+from grilops.shapes import Shape
 
 from lib._directions import Directions
+from lib._lattice_type import LatticeType
 from lib._union_find import UnionFind
-
-
-class Board(Enum):
-
-    SQUARE = 1,
-    HEXAGON = 2,
 
 
 class Symbol(NamedTuple):
@@ -44,79 +41,109 @@ class Symbols:
     TENT = Symbol(2, 'tents')
 
 
-class Puzzle(object):
+class AbstractPuzzle(ABC):
 
-    def __init__(
-            self,
-            board: Board = None,
-            width: int = -1,
-            height: int = -1,
-            parameters: Dict[str, str] = None,
-            shaded: Dict[Point, bool] = None,
-            texts: Dict[Point, str] = None,
-            symbols: Dict[Point, Symbol] = None,
-            edge_texts: Dict[Tuple[Point, Direction], str] = None,
-            junctions: Dict[FrozenSet[Point], Union[bool, Symbol]] = None,
-            lines: Dict[FrozenSet[Point], Union[bool, int]] = None,
-    ):
-        self.board = board
-        self.width = width
-        self.height = height
-
-        # Arbitrary additional parameters needed to solve the puzzle
-        self.parameters = parameters
-
-        self.shaded = shaded or {}
-        self.texts = texts or {}
-        self.symbols = symbols or {}
+    def __init__(self):
+        self.shaded: Dict[Point, Union[bool, int]] = {}
+        self.texts: Dict[Point, Union[int, str]] = {}
+        self.symbols: Dict[Point, Symbol] = {}
 
         # Text on an edge, for example ((y,x), NE) is the text in the top right corner of (y, x)
-        self.edge_texts = edge_texts or {}
+        self.edge_texts: Dict[Tuple[Point, Directions], str] = {}
 
         # Any point between two regions of the grid. For example, a key of 2 regions corresponds to the edge between the
         # regions, and can be either a bordering line (if the value is True) or a symbol on that edge.
         # A key of more than 2 regions is a vertex, e.g. each corner of a square grid is a junction of 4 regions.
-        self.junctions = junctions or {}
+        self.junctions: Dict[FrozenSet[Point], Union[bool, Symbol]] = {}
 
         # Each key is 2 regions, representing a line between the center of those 2 regions in the grid.
-        self.lines = lines or {}
+        self.lines: Dict[FrozenSet[Point], Union[bool, int]] = {}
 
-        if board == Board.SQUARE:
-            self.points = set([Point(y, x) for y in range(height) for x in range(width)])
-        elif board == Board.HEXAGON:
-            self.points = set([Point(y, x) for y in range(-width + 1, width) for x in range(-2 * width + 2, 2 * width)
-                               if abs(y) + abs(x) < 2 * width and (y + x) % 2 == 0])
 
-    def entrance_points(self, lattice: Lattice) -> Set[Tuple[Point, Direction]]:
+class Puzzle(AbstractPuzzle):
+
+    def __init__(
+            self,
+            lattice_type: LatticeType,
+            width: int,
+            height: int,
+            points: Set[Point],
+            parameters: Dict[str, str],
+    ):
+        super().__init__()
+
+        self.lattice_type = lattice_type
+        self.width = width
+        self.height = height
+        self.points = points
+
+        # Arbitrary additional parameters needed to solve the puzzle
+        self.parameters = parameters
+
+    def edges(self, include_diagonal=False) -> List[Tuple[Point, Point]]:
+        f: Callable[[Point], List[Point]] =\
+            self.lattice_type.vertex_sharing_points if include_diagonal else self.lattice_type.edge_sharing_points
+        return [(p, q) for p in self.points for q in f(p) if q in self.points]
+
+    def entrance_points(self) -> Set[Tuple[Point, Direction]]:
         """Returns all tuples (p, v) where p is a point right outside the grid, and v is the direction to the grid."""
         points = set()
-        for v in lattice.edge_sharing_directions():
+        for v in self.lattice_type.edge_sharing_directions():
             for p in self.points:
                 while p in self.points:
                     p = p.translate(v)
-                points.add((p, lattice.opposite_direction(v)))
+                points.add((p, self.lattice_type.opposite_direction(v)))
         return points
 
-    def get_lattice(self, border: bool = False) -> Lattice:
-        if self.board == Board.SQUARE:
-            factory = RectangularLattice
-        elif self.board == Board.HEXAGON:
-            factory = PointyToppedHexagonalLattice
-        else:
-            assert False
-
-        lattice = factory(list(self.points))
+    def lattice(self, border: bool = False) -> Lattice:
+        points = self.points
         if border:
-            lattice = factory(list(set([q for p in self.points for q in lattice.vertex_sharing_points(p)])))
-        return lattice
+            points = list(set([q for p in points for q in self.lattice_type.vertex_sharing_points(p)]))
+        return self.lattice_type.factory(points)
 
-    def get_regions(self, lattice: Lattice) -> Set[Tuple[Point]]:
+    def polyominoes(self, size: int, include_rotations_and_reflections=False) -> List[Shape]:
+        transforms = self.lattice_type.transformation_functions(
+            allow_rotations=not include_rotations_and_reflections,
+            allow_reflections=not include_rotations_and_reflections)
+        polyominoes = set()
+        polyomino = [Point(0, 0)]
+
+        def apply(transform):
+            transformed = [transform(Vector(p.y, p.x)) for p in polyomino]
+            return tuple(p.translate(min(transformed).negate()) for p in sorted(transformed))
+
+        def recurse():
+            if len(polyomino) == size:
+                polyominoes.add(frozenset([apply(transform) for transform in transforms]))
+                return
+
+            for p in polyomino:
+                for q in self.lattice_type.edge_sharing_points(p):
+                    if q not in polyomino:
+                        polyomino.append(q)
+                        recurse()
+                        polyomino.pop()
+
+        recurse()
+        return list(map(Shape, sorted([min(family) for family in polyominoes])))
+
+    def regions(self) -> Set[Tuple[Point, ...]]:
         uf = UnionFind()
-        for p in lattice.points:
-            for q in lattice.edge_sharing_points(p):
-                if q in lattice.points and frozenset((p, q)) not in self.junctions:
-                    uf.union(p, q)
-        return set([tuple(q for q in lattice.points if uf.find(q) == p) for p in lattice.points if uf.find(p) == p])
+        for p, q in self.edges():
+            if frozenset((p, q)) not in self.junctions:
+                uf.union(p, q)
+        return set([tuple(q for q in self.points if uf.find(q) == p) for p in self.points if uf.find(p) == p])
+
+    def vertices(self) -> Set[FrozenSet[Point]]:
+        edges = self.edges(include_diagonal=True)
+        neighbors = defaultdict(set)
+        for p, q in edges:
+            neighbors[p].add(q)
+        return set([frozenset(neighbors[p].intersection(neighbors[q], neighbors[r]).union((p, q, r)))
+                    for p, q in edges for r in neighbors[p].intersection(neighbors[q])])
+
+
+class Solution(AbstractPuzzle):
 
     def set_loop(self, sg: SymbolGrid, solved_grid: Dict[Point, int]):
         for p in sg.grid:

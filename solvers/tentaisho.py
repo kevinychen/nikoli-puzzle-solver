@@ -4,7 +4,7 @@ from lib import *
 class TentaishoSpiralGalaxies(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(puzzle.get_lattice(), grilops.make_number_range_symbol_set(0, len(puzzle.points)))
+        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, len(puzzle.points)))
         rc = RegionConstrainer(sg.lattice, sg.solver)
 
         centers = (
@@ -20,7 +20,7 @@ class TentaishoSpiralGalaxies(AbstractSolver):
             choices = []
             for y, x in centers:
                 opposite = Point(2 * y - p.y, 2 * x - p.x)
-                if opposite in sg.lattice.points:
+                if opposite in sg.grid:
                     choices.append(And(
                         sg.cell_is(p, sg.lattice.point_to_index(Point(int(y), int(x)))),
                         sg.grid[p] == sg.grid[opposite]))
