@@ -15,13 +15,7 @@ class Symbol(NamedTuple):
     style: Union[int, List[int]]
     shape: str
 
-    def is_black(self):
-        return self.style == 2
-
-    def is_circle(self):
-        return self.shape.startswith('circle_')
-
-    def to_arrows(self) -> List[Direction]:
+    def get_arrows(self) -> List[Direction]:
         if self.shape.startswith('arrow_fouredge_'):
             directions = (Directions.E, Directions.S, Directions.W, Directions.N,
                           Directions.W, Directions.N, Directions.E, Directions.S)
@@ -30,6 +24,13 @@ class Symbol(NamedTuple):
         else:
             assert False
         return [v for v, flag in zip(directions, self.style) if flag]
+
+    def is_black(self):
+        return self.style == 2
+
+    def is_circle(self):
+        return self.shape.startswith('circle_')
+
 
 
 class Symbols:

@@ -15,7 +15,7 @@ class Yajilin(AbstractSolver):
         for p in sg.grid:
             if p in puzzle.texts and p in puzzle.symbols:
                 sg.solver.add(sg.cell_is(p, symbol_set.WALL))
-                v, = puzzle.symbols[p].to_arrows()
+                v, = puzzle.symbols[p].get_arrows()
                 sg.solver.add(Sum([sg.cell_is(q, symbol_set.BLACK) for q in sight_line(sg, p, v)]) == puzzle.texts[p])
             elif p in puzzle.shaded:
                 sg.solver.add(sg.cell_is(p, symbol_set.WALL))

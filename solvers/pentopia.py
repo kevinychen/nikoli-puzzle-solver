@@ -18,7 +18,7 @@ class Pentopia(AbstractSolver):
             sg.solver.add(sg.grid[p] == 0)
 
             # Arrows point to the closest pieces
-            arrows = symbol.to_arrows()
+            arrows = symbol.get_arrows()
             if arrows:
                 lines = [(v, sight_line(sg, p.translate(v), v)) for v in sg.lattice.edge_sharing_directions()]
                 choices = []
