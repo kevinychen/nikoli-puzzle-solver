@@ -13,7 +13,7 @@ class Hitori(AbstractSolver):
         # Each number appears in each row and in each column at most once
         for i in range(1, puzzle.width + 1):
             for p, v in puzzle.entrance_points():
-                sg.solver.add(Sum([sg.cell_is(q, i) for q in sight_line(sg, p.translate(v), v)]) <= 1)
+                sg.solver.add(Sum([sg.grid[q] == i for q in sight_line(sg, p.translate(v), v)]) <= 1)
 
         continuous_region(sg, rc, lambda q: sg.grid[q] != 0)
         no_adjacent_symbols(sg, 0)

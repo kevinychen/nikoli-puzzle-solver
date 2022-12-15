@@ -14,7 +14,7 @@ class Aquarium(AbstractSolver):
         # Each region must have all water at the same level
         for region in puzzle.regions():
             sg.solver.add(Or(
-                [And([sg.cell_is(p, p.y >= height) for p in region]) for height in range(puzzle.height + 1)]))
+                [And([sg.grid[p] == (p.y >= height) for p in region]) for height in range(puzzle.height + 1)]))
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         for p in sg.grid:

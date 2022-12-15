@@ -8,7 +8,7 @@ class Kakuro(AbstractSolver):
 
         line_totals = []
         for p in puzzle.symbols:
-            sg.solver.add(sg.cell_is(p, 1))
+            sg.solver.add(sg.grid[p] == 1)
             # The number for a horizontal row going east is actually written on the northeast of the square
             for text_dir, line_dir in (Directions.NE, Directions.E), (Directions.SW, Directions.S):
                 if (p, text_dir) in puzzle.edge_texts:

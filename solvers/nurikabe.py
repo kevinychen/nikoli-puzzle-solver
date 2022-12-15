@@ -10,18 +10,18 @@ class Nurikabe(AbstractSolver):
         for p in sg.grid:
             if p in puzzle.texts:
                 # All numbers correspond to a different region with the given size, rooted at the number
-                sg.solver.add(sg.cell_is(p, 0))
+                sg.solver.add(sg.grid[p] == 0)
                 sg.solver.add(rc.region_size_grid[p] == puzzle.texts[p])
                 sg.solver.add(rc.parent_grid[p] == R)
             else:
                 # No islands without a number
-                sg.solver.add(Implies(sg.cell_is(p, 0), rc.parent_grid[p] != R))
+                sg.solver.add(Implies(sg.grid[p] == 0, rc.parent_grid[p] != R))
 
         # No two regions with the same color may be adjacent
         for p, q in puzzle.edges():
             sg.solver.add(Implies(rc.region_id_grid[p] != rc.region_id_grid[q], sg.grid[p] != sg.grid[q]))
 
-        continuous_region(sg, rc, lambda r: sg.cell_is(r, 1))
+        continuous_region(sg, rc, lambda r: sg.grid[r] == 1)
         no2x2(sg, 1)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):

@@ -18,12 +18,12 @@ class Dominosa(AbstractSolver):
         for p in sg.grid:
             for domino_index, (domino, locations) in enumerate(zip(dominoes, all_locations)):
                 sg.solver.add(
-                    Implies(sg.cell_is(p, domino_index), Or([And(y == p.y, x == p.x) for y, x in locations])))
+                    Implies(sg.grid[p] == domino_index, Or([And(y == p.y, x == p.x) for y, x in locations])))
                 for number, (y, x) in zip(domino, locations):
                     sg.solver.add(Implies(
                         And(y == p.y, x == p.x),
                         # Only allow a mapping from domino to grid if the corresponding grid number is correct
-                        sg.cell_is(p, domino_index) if puzzle.texts.get(p) == number else False))
+                        sg.grid[p] == domino_index if puzzle.texts.get(p) == number else False))
 
         # The two squares of each domino are adjacent
         for p in sg.grid:

@@ -20,11 +20,11 @@ class Heyawake(AbstractSolver):
                 while p in sg.grid:
                     word.append(p)
                     if len(set(regions[q] for q in word)) >= 3:
-                        sg.solver.add(Or([sg.cell_is(q, 1) for q in word]))
+                        sg.solver.add(Or([sg.grid[q] == 1 for q in word]))
                         break
                     p = p.translate(v)
 
-        continuous_region(sg, rc, lambda q: sg.cell_is(q, 0))
+        continuous_region(sg, rc, lambda q: sg.grid[q] == 0)
         no_adjacent_symbols(sg, 1)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):

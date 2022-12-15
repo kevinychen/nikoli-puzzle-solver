@@ -9,10 +9,10 @@ class YinYang(AbstractSolver):
 
         for p, symbol in puzzle.symbols.items():
             if symbol.is_circle():
-                sg.solver.add(sg.cell_is(p, symbol.is_black()))
+                sg.solver.add(sg.grid[p] == symbol.is_black())
 
         for i in range(2):
-            continuous_region(sg, rc, lambda q: sg.cell_is(q, i))
+            continuous_region(sg, rc, lambda q: sg.grid[q] == i)
             no2x2(sg, i)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):

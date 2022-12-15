@@ -10,7 +10,7 @@ class Binairo(AbstractSolver):
 
         for p, symbol in puzzle.symbols.items():
             if symbol.is_circle():
-                sg.solver.add(sg.cell_is(p, symbol.is_black()))
+                sg.solver.add(sg.grid[p] == symbol.is_black())
 
         # Each row and column contains the same number of whites and blacks
         for p, v in puzzle.entrance_points():

@@ -22,7 +22,7 @@ class TentaishoSpiralGalaxies(AbstractSolver):
                 opposite = Point(2 * y - p.y, 2 * x - p.x)
                 if opposite in sg.grid:
                     choices.append(And(
-                        sg.cell_is(p, sg.lattice.point_to_index(Point(int(y), int(x)))),
+                        sg.grid[p] == sg.lattice.point_to_index(Point(int(y), int(x))),
                         sg.grid[p] == sg.grid[opposite]))
             sg.solver.add(Or(choices))
 

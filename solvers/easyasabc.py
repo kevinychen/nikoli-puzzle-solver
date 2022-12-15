@@ -19,12 +19,12 @@ class EasyAsABC(AbstractSolver):
         # Each given letter is correct
         for p, text in puzzle.texts.items():
             if p in puzzle.points:
-                sg.solver.add(sg.cell_is(p, letters.index(text)))
+                sg.solver.add(sg.grid[p] == letters.index(text))
 
         # Each letter appears in each row and in each column exactly once
         for i in range(1, len(letters) + 1):
             for p, v in puzzle.entrance_points():
-                sg.solver.add(Sum([sg.cell_is(q, i) for q in sight_line(sg, p.translate(v), v)]) == 1)
+                sg.solver.add(Sum([sg.grid[q] == i for q in sight_line(sg, p.translate(v), v)]) == 1)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         letters = puzzle.parameters['letters']

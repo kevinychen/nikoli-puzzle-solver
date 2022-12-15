@@ -18,7 +18,7 @@ class Pentominous(AbstractSolver):
             # Must be right shape if letter is given
             for i, letter in enumerate(letters):
                 if puzzle.texts.get(p) == letter:
-                    sg.solver.add(sg.cell_is(p, i))
+                    sg.solver.add(sg.grid[p] == i)
 
         # No two adjacent regions may be the same shape
         for p, q in puzzle.edges():

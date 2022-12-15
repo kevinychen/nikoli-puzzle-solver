@@ -11,21 +11,21 @@ class Tapa(AbstractSolver):
 
         for p in sg.grid:
             if p not in puzzle.points:
-                sg.solver.add(sg.cell_is(p, 0))
+                sg.solver.add(sg.grid[p] == 0)
 
         for p, text in puzzle.texts.items():
             # A square with numbers must be white
-            sg.solver.add(sg.cell_is(p, 0))
+            sg.solver.add(sg.grid[p] == 0)
 
             # A square with numbers must have a valid coloring of its neighbors
             block_sizes = [int(c) for c in str(text)]
             choices = []
             for neighbor_colors in self._valid_neighbor_colors(block_sizes):
                 choices.append(
-                    And([sg.cell_is(p.translate(v), neighbor_colors[i]) for i, v in enumerate(Directions.ALL)]))
+                    And([sg.grid[p.translate(v)] == neighbor_colors[i] for i, v in enumerate(Directions.ALL)]))
             sg.solver.add(Or(choices))
 
-        continuous_region(sg, rc, lambda q: sg.cell_is(q, 1))
+        continuous_region(sg, rc, lambda q: sg.grid[q] == 1)
         no2x2(sg, 1)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):

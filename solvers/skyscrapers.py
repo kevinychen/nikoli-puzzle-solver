@@ -14,7 +14,7 @@ class Skyscrapers(AbstractSolver):
 
         for p, number in puzzle.texts.items():
             if p in puzzle.points:
-                sg.solver.add(sg.cell_is(p, number))
+                sg.solver.add(sg.grid[p] == number)
 
         distinct_rows_and_columns(sg)
 

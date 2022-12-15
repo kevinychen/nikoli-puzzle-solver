@@ -11,13 +11,13 @@ class LightUpAkari(AbstractSolver):
 
         for p in sg.grid:
             if p in puzzle.shaded:
-                sg.solver.add(sg.cell_is(p, 0))
+                sg.solver.add(sg.grid[p] == 0)
             else:
                 lines = []
                 for n in sg.edge_sharing_neighbors(p):
                     lines.extend(sight_line(sg, n.location, n.direction, lambda q: q not in puzzle.shaded))
-                sg.solver.add(Implies(sg.cell_is(p, 1), And([sg.cell_is(q, 0) for q in lines])))
-                sg.solver.add(Implies(sg.cell_is(p, 0), Or([sg.cell_is(q, 1) for q in lines])))
+                sg.solver.add(Implies(sg.grid[p] == 1, And([sg.grid[q] == 0 for q in lines])))
+                sg.solver.add(Implies(sg.grid[p] == 0, Or([sg.grid[q] == 1 for q in lines])))
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         for p in sg.grid:

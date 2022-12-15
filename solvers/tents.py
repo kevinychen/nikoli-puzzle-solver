@@ -12,14 +12,14 @@ class Tents(AbstractSolver):
             is_tree = p in puzzle.symbols and puzzle.symbols[p] == Symbols.TREE
             if is_tree:
                 sg.solver.add(rc.parent_grid[p] == R)
-                sg.solver.add(sg.cell_is(p, 0))
+                sg.solver.add(sg.grid[p] == 0)
             else:
-                sg.solver.add(sg.cell_is(p, 0) == (rc.region_id_grid[p] == -1))
+                sg.solver.add((sg.grid[p] == 0) == (rc.region_id_grid[p] == -1))
 
         # Satisfy tent counts
         for p, v in puzzle.entrance_points():
             if p in puzzle.texts:
-                sg.solver.add(Sum([sg.cell_is(q, 1) for q in sight_line(sg, p.translate(v), v)]) == puzzle.texts[p])
+                sg.solver.add(Sum([sg.grid[q] == 1 for q in sight_line(sg, p.translate(v), v)]) == puzzle.texts[p])
 
         no_adjacent_symbols(sg, 1, no_diagonal=True)
 

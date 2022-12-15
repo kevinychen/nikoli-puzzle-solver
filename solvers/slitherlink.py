@@ -9,13 +9,13 @@ class Slitherlink(AbstractSolver):
 
         for p in sg.grid:
             if p not in puzzle.points:
-                sg.solver.add(sg.cell_is(p, 0))
+                sg.solver.add(sg.grid[p] == 0)
 
         for p, number in puzzle.texts.items():
             sg.solver.add(Sum([sg.grid[p] != n.symbol for n in sg.edge_sharing_neighbors(p)]) == number)
 
         for i in range(2):
-            continuous_region(sg, rc, lambda q: sg.cell_is(q, i))
+            continuous_region(sg, rc, lambda q: sg.grid[q] == i)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         solution.set_regions(puzzle, solved_grid)

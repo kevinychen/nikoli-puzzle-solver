@@ -19,33 +19,33 @@ class Shakashaka(AbstractSolver):
                 for (i, p) in enumerate(box):
                     corresponding_direction = [symbol_set.NW, symbol_set.NE, symbol_set.SW, symbol_set.SE][i]
                     sg.solver.add(Implies(
-                        And([sg.cell_is(q, symbol_set.EMPTY) for q in box if q != p]),
-                        Or(sg.cell_is(p, symbol_set.EMPTY), sg.cell_is(p, corresponding_direction))))
+                        And([sg.grid[q] == symbol_set.EMPTY for q in box if q != p]),
+                        Or(sg.grid[p] == symbol_set.EMPTY, sg.grid[p] == corresponding_direction)))
 
         for p in sg.grid:
             if p not in puzzle.points:
-                sg.solver.add(sg.cell_is(p, symbol_set.WALL))
+                sg.solver.add(sg.grid[p] == symbol_set.WALL)
             elif p in puzzle.shaded:
-                sg.solver.add(sg.cell_is(p, symbol_set.WALL))
+                sg.solver.add(sg.grid[p] == symbol_set.WALL)
                 if p in puzzle.texts:
                     sg.solver.add(
                         Sum([sg.cell_is_one_of(q, diagonal_symbols) for q in sg.lattice.edge_sharing_points(p)])
                         == puzzle.texts[p])
             else:
-                sg.solver.add(Not(sg.cell_is(p, symbol_set.WALL)))
+                sg.solver.add(sg.grid[p] != symbol_set.WALL)
 
                 # An SW must have either a SE to its east, or a blank to its east and an SW to its southeast.
                 # Also, it must either have an empty or NE to its northeast.
                 # Similar logic applies for the other directions.
-                choices = [sg.cell_is(p, symbol_set.EMPTY)]
+                choices = [sg.grid[p] == symbol_set.EMPTY]
                 for i in range(4):
                     choices.append(And(
-                        sg.cell_is(p, diagonal_symbols[i]),
+                        sg.grid[p] == diagonal_symbols[i],
                         Or(
-                            sg.cell_is(p.translate(dirs[i]), diagonal_symbols[(i + 1) % 4]),
+                            sg.grid[p.translate(dirs[i])] == diagonal_symbols[(i + 1) % 4],
                             And(
-                                sg.cell_is(p.translate(dirs[i]), symbol_set.EMPTY),
-                                sg.cell_is(p.translate(dirs[i]).translate(dirs[(i + 3) % 4]), diagonal_symbols[i]))
+                                sg.grid[p.translate(dirs[i])] == symbol_set.EMPTY,
+                                sg.grid[p.translate(dirs[i]).translate(dirs[(i + 3) % 4])] == diagonal_symbols[i])
                         ),
                         sg.cell_is_one_of(
                             p.translate(dirs[i]).translate(dirs[(i + 1) % 4]),

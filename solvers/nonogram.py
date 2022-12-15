@@ -12,7 +12,7 @@ class Nonogram(AbstractSolver):
 
         for p in sg.grid:
             if p not in puzzle.points:
-                sg.solver.add(sg.cell_is(p, 0))
+                sg.solver.add(sg.grid[p] == 0)
 
         lines = []
         for p, v in puzzle.entrance_points():
@@ -30,14 +30,14 @@ class Nonogram(AbstractSolver):
             for i in range(1, len(line)):
                 choices = [And(
                     num_blocks[i] == num_blocks[i - 1],
-                    Or(sg.cell_is(line[i - 1], 0), sg.cell_is(line[i], 1)))]
+                    Or(sg.grid[line[i - 1]] == 0, sg.grid[line[i]] == 1))]
                 for block_num, block_size in enumerate(block_sizes):
                     if block_size < i:
                         choices.append(And(num_blocks[i] == block_num + 1,
                                            num_blocks[i - block_size] == block_num,
-                                           sg.cell_is(line[i], 0),
-                                           *[sg.cell_is(line[i - j - 1], 1) for j in range(block_size)],
-                                           sg.cell_is(line[i - block_size - 1], 0)))
+                                           sg.grid[line[i]] == 0,
+                                           *[sg.grid[line[i - j - 1]] == 1 for j in range(block_size)],
+                                           sg.grid[line[i - block_size - 1]] == 0))
                 sg.solver.add(Or(choices))
             sg.solver.add(num_blocks[0] == 0)
             sg.solver.add(num_blocks[-1] == len(block_sizes))

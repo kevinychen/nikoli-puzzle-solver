@@ -7,7 +7,7 @@ class Minesweeper(AbstractSolver):
         sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
 
         for p, number in puzzle.texts.items():
-            sg.solver.add(sg.cell_is(p, 0))
+            sg.solver.add(sg.grid[p] == 0)
             sg.solver.add(Sum([is_mine.symbol for is_mine in sg.vertex_sharing_neighbors(p)]) == number)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):

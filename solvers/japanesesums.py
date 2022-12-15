@@ -14,7 +14,7 @@ class JapaneseSums(AbstractSolver):
 
         for p in sg.grid:
             if p not in puzzle.points:
-                sg.solver.add(sg.cell_is(p, 0))
+                sg.solver.add(sg.grid[p] == 0)
 
         lines = []
         for p, v in puzzle.entrance_points():
@@ -32,16 +32,16 @@ class JapaneseSums(AbstractSolver):
             for i in range(1, len(line)):
                 choices = [And(
                     num_blocks[i] == num_blocks[i - 1],
-                    Or(sg.cell_is(line[i - 1], 0), Not(sg.cell_is(line[i], 0))))]
+                    Or(sg.grid[line[i - 1]] == 0, Not(sg.grid[line[i]] == 0)))]
                 for block_num, block_sum in enumerate(block_sums):
                     for block_size in range(1, i):
                         squares = [sg.grid[line[i - j - 1]] for j in range(block_size)]
                         choices.append(And(num_blocks[i] == block_num + 1,
                                            num_blocks[i - block_size] == block_num,
-                                           sg.cell_is(line[i], 0),
+                                           sg.grid[line[i]] == 0,
                                            *[square != 0 for square in squares],
                                            True if block_sum == '?' else Sum(squares) == block_sum,
-                                           sg.cell_is(line[i - block_size - 1], 0)))
+                                           sg.grid[line[i - block_size - 1]] == 0))
                 sg.solver.add(Or(choices))
             sg.solver.add(num_blocks[0] == 0)
             sg.solver.add(num_blocks[-1] == len(block_sums))
@@ -49,7 +49,7 @@ class JapaneseSums(AbstractSolver):
         # Each number appears in each row and in each column exactly once
         for i in range(1, maximum + 1):
             for p, v in puzzle.entrance_points():
-                sg.solver.add(Sum([sg.cell_is(q, i) for q in sight_line(sg, p.translate(v), v)]) <= 1)
+                sg.solver.add(Sum([sg.grid[q] == i for q in sight_line(sg, p.translate(v), v)]) <= 1)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         for p in sg.grid:
