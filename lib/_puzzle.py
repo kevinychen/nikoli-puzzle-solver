@@ -49,7 +49,7 @@ class AbstractPuzzle(ABC):
         self.symbols: Dict[Point, Symbol] = {}
 
         # Text on an edge, for example ((y,x), NE) is the text in the top right corner of (y, x)
-        self.edge_texts: Dict[Tuple[Point, Directions], str] = {}
+        self.edge_texts: Dict[Tuple[Point, Direction], str] = {}
 
         # Any point between two regions of the grid. For example, a key of 2 regions corresponds to the edge between the
         # regions, and can be either a bordering line (if the value is True) or a symbol on that edge.

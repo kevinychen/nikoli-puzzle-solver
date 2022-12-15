@@ -11,7 +11,7 @@ class Tents(AbstractSolver):
         for p in sg.grid:
             is_tree = p in puzzle.symbols and puzzle.symbols[p] == Symbols.TREE
             if is_tree:
-                sg.solver.add(rc.region_id_grid[p] == sg.lattice.point_to_index(p))
+                sg.solver.add(rc.parent_grid[p] == R)
                 sg.solver.add(sg.cell_is(p, 0))
             else:
                 sg.solver.add(sg.cell_is(p, 0) == (rc.region_id_grid[p] == -1))

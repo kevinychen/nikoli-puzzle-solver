@@ -7,11 +7,11 @@ class Fillomino(AbstractSolver):
         sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(1, len(puzzle.points)))
         rc = RegionConstrainer(sg.lattice, sg.solver)
 
-        for p, number in puzzle.texts.items():
-            sg.solver.add(sg.grid[p] == number)
-
         for p in sg.grid:
             sg.solver.add(sg.grid[p] == rc.region_size_grid[p])
+
+        for p, number in puzzle.texts.items():
+            sg.solver.add(sg.grid[p] == number)
 
         # Adjacent regions cannot have the same size
         for p, q in puzzle.edges():

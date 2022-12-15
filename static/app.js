@@ -79,6 +79,9 @@ window.onload = function () {
                             localFoundSolution = exp();
                         }
                     }
+                }).catch(e => {
+                    alert('Unexpected error: ' + e);
+                }).finally(() => {
                     solveButton.textContent = exp() === localFoundSolution ? 'Find another solution' : 'Solve';
                     solveButton.disabled = false;
                 });

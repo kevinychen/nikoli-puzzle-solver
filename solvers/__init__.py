@@ -35,7 +35,7 @@ def solve(puzzle_type: str, url: str, parameters: str, different_from: Optional[
         original = penpa.to_puzzle()
         solver.configure(original, init_symbol_grid)
         assert sg is not None, "init_symbol_grid not called by solver"
-        sg.solver.set("timeout", 30000)
+        sg.solver.set("timeout", 300000)
         if not sg.solve():
             if sg.solver.reason_unknown() == "timeout":
                 raise TimeoutError(408)

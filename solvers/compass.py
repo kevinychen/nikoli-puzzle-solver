@@ -14,15 +14,10 @@ class Compass(AbstractSolver):
             sg.solver.add(rc.region_id_grid[p] == region_id)
             region_ids.append(region_id)
 
-            # Counts are correct
-            if v == Directions.E:
-                sg.solver.add(Sum([sg.grid[p] == sg.grid[q] for q in sg.grid if q.x > p.x]) == number)
-            if v == Directions.N:
-                sg.solver.add(Sum([sg.grid[p] == sg.grid[q] for q in sg.grid if q.y < p.y]) == number)
-            if v == Directions.W:
-                sg.solver.add(Sum([sg.grid[p] == sg.grid[q] for q in sg.grid if q.x < p.x]) == number)
-            if v == Directions.S:
-                sg.solver.add(Sum([sg.grid[p] == sg.grid[q] for q in sg.grid if q.y > p.y]) == number)
+            # Counts are correct (a box affects the count if the dot product of the displacement vectors is positive)
+            dy, dx = v.vector
+            sg.solver.add(
+                Sum([sg.grid[p] == sg.grid[q] for q in sg.grid if (q.y - p.y) * dy + (q.x - p.x) * dx > 0]) == number)
 
         for p in sg.grid:
             sg.solver.add(sg.grid[p] == rc.region_id_grid[p])
