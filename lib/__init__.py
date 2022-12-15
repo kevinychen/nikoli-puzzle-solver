@@ -10,6 +10,6 @@ from grilops.geometry import Point, RectangularLattice, Vector
 from grilops.loops import I, L, LoopConstrainer, LoopSymbolSet, O
 from grilops.regions import R, RegionConstrainer
 from grilops.shapes import Shape, ShapeConstrainer
-from z3 import And, Distinct, Implies, Int, Not, Or, Sum
+from z3 import And, Distinct, Implies, Int, Not, Or, Product, Sum
 
 from solvers.abstract_solver import AbstractSolver

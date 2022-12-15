@@ -4,10 +4,10 @@ from lib import *
 class Heyawake(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
+        regions = dict([(p, i) for i, region in enumerate(puzzle.regions()) for p in region])
+
         sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
         rc = RegionConstrainer(sg.lattice, sg.solver)
-
-        regions = dict([(p, i) for i, region in enumerate(puzzle.regions()) for p in region])
 
         # Number of black squares in each region is correct
         for p, number in puzzle.texts.items():
