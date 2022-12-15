@@ -12,8 +12,11 @@ class YinYang(AbstractSolver):
                 sg.solver.add(sg.grid[p] == symbol.is_black())
 
         for i in range(2):
+            # No 2x2 block of squares
+            for vertex in puzzle.vertices():
+                sg.solver.add(Or([sg.grid[p] == i for p in vertex]))
+
             continuous_region(sg, rc, lambda q: sg.grid[q] == i)
-            no2x2(sg, i)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         for p in sg.grid:

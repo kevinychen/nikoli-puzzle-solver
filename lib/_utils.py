@@ -32,13 +32,6 @@ def no_adjacent_symbols(sg: SymbolGrid, symbol: int, no_diagonal: bool = False):
             sg.solver.add(Not(And(sg.cell_is(p, symbol), n.symbol == symbol)))
 
 
-def no2x2(sg: SymbolGrid, symbol: int):
-    for p in sg.grid:
-        box = [p, Point(p.y + 1, p.x), Point(p.y, p.x + 1), Point(p.y + 1, p.x + 1)]
-        if all([p in sg.grid for p in box]):
-            sg.solver.add(Not(And([sg.cell_is(p, symbol) for p in box])))
-
-
 def sight_line(
         sg: SymbolGrid,
         p: Point,

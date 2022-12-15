@@ -21,8 +21,11 @@ class Nurikabe(AbstractSolver):
         for p, q in puzzle.edges():
             sg.solver.add(Implies(rc.region_id_grid[p] != rc.region_id_grid[q], sg.grid[p] != sg.grid[q]))
 
+        # No 2x2 block of shaded squares
+        for vertex in puzzle.vertices():
+            sg.solver.add(Or([sg.grid[p] == 0 for p in vertex]))
+
         continuous_region(sg, rc, lambda r: sg.grid[r] == 1)
-        no2x2(sg, 1)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         for p in sg.grid:
