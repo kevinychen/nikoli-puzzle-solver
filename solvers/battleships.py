@@ -37,7 +37,7 @@ class Battleships(AbstractSolver):
         # No two ships may be adjacent
         for p, q in puzzle.edges(include_diagonal=True):
             sg.solver.add(
-                Implies(sc.shape_instance_grid[p] != sc.shape_instance_grid[q], Or(sg.grid[p] == 0, sg.grid[q] == 0)))
+                Implies(And(sg.grid[p] > 0, sg.grid[q] > 0), sc.shape_instance_grid[p] == sc.shape_instance_grid[q]))
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         for p in sg.grid:

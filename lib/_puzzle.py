@@ -21,11 +21,15 @@ class Symbol(NamedTuple):
     def is_circle(self):
         return self.shape.startswith('circle_')
 
-    def to_arrow(self) -> Direction:
-        directions = (Directions.E, Directions.S, Directions.W, Directions.N,
-                      Directions.W, Directions.N, Directions.E, Directions.S)
-        assert self.shape.startswith('arrow_fouredge_')
-        return dict(zip(self.style, directions))[1]
+    def to_arrows(self) -> List[Direction]:
+        if self.shape.startswith('arrow_fouredge_'):
+            directions = (Directions.E, Directions.S, Directions.W, Directions.N,
+                          Directions.W, Directions.N, Directions.E, Directions.S)
+        elif self.shape == 'arrow_cross':
+            directions = Directions.W, Directions.N, Directions.E, Directions.S
+        else:
+            assert False
+        return [v for v, flag in zip(directions, self.style) if flag]
 
 
 class Symbols:

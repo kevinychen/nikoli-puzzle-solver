@@ -17,7 +17,7 @@ class CastleWall(AbstractSolver):
 
         for p in sg.grid:
             if p in puzzle.texts and p in puzzle.symbols:
-                v = puzzle.symbols[p].to_arrow()
+                v, = puzzle.symbols[p].to_arrows()
                 sg.solver.add(
                     Sum([sg.cell_is_one_of(q, symbol_set.symbols_for_direction(v)) for q in sight_line(sg, p, v)])
                     == puzzle.texts[p])
