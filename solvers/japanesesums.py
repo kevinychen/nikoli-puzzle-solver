@@ -6,11 +6,7 @@ class JapaneseSums(AbstractSolver):
     def configure(self, puzzle, init_symbol_grid):
         maximum = int(puzzle.parameters['maximum'])
 
-        sg = init_symbol_grid(
-            RectangularLattice(
-                [Point(row, col) for row in range(-puzzle.height, puzzle.height + 1)
-                 for col in range(-puzzle.width, puzzle.width + 1)]),
-            grilops.make_number_range_symbol_set(0, maximum))
+        sg = init_symbol_grid(puzzle.lattice(border=True), grilops.make_number_range_symbol_set(0, maximum))
 
         for p in sg.grid:
             if p not in puzzle.points:

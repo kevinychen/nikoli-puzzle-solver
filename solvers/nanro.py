@@ -12,10 +12,6 @@ class Nanro(AbstractSolver):
         for p, number in puzzle.texts.items():
             sg.solver.add(sg.grid[p] == number)
 
-        # No 2x2 block of unshaded squares
-        for vertex in puzzle.vertices():
-            sg.solver.add(Or([sg.grid[p] == 0 for p in vertex]))
-
         # At least one unshaded square in each region
         for region in puzzle.regions():
             sg.solver.add(Or([sg.grid[q] > 0 for q in region]))
@@ -31,6 +27,7 @@ class Nanro(AbstractSolver):
                 sg.solver.add(Or(sg.grid[p] == 0, sg.grid[q] == 0, sg.grid[p] != sg.grid[q]))
 
         continuous_region(sg, rc, lambda r: sg.grid[r] > 0)
+        no2x2(sg, lambda r: sg.grid[r] > 0)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         for p in sg.grid:

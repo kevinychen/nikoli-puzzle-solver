@@ -15,7 +15,8 @@ class LightUpAkari(AbstractSolver):
             else:
                 lines = []
                 for n in sg.edge_sharing_neighbors(p):
-                    lines.extend(sight_line(sg, n.location, n.direction, lambda q: q not in puzzle.shaded))
+                    lines.extend(
+                        sight_line(sg, n.location, n.direction, lambda q: q in sg.grid and q not in puzzle.shaded))
                 sg.solver.add(Implies(sg.grid[p] == 1, And([sg.grid[q] == 0 for q in lines])))
                 sg.solver.add(Implies(sg.grid[p] == 0, Or([sg.grid[q] == 1 for q in lines])))
 

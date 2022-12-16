@@ -1,4 +1,5 @@
 from itertools import groupby, product
+from math import atan2
 
 from lib import *
 
@@ -6,6 +7,8 @@ from lib import *
 class Tapa(AbstractSolver):
 
     def configure(self, puzzle, init_symbol_grid):
+        directions = sorted(puzzle.lattice_type.vertex_sharing_directions(), key=lambda v: atan2(*v.vector))
+
         sg = init_symbol_grid(puzzle.lattice(border=True), grilops.make_number_range_symbol_set(0, 1))
         rc = RegionConstrainer(sg.lattice, sg.solver)
 
@@ -20,16 +23,12 @@ class Tapa(AbstractSolver):
             # A square with numbers must have a valid coloring of its neighbors
             block_sizes = [int(c) for c in str(text)]
             choices = []
-            for neighbor_colors in self._valid_neighbor_colors(block_sizes):
-                choices.append(
-                    And([sg.grid[p.translate(v)] == neighbor_colors[i] for i, v in enumerate(Directions.ALL)]))
+            for neighbor_colors in self._valid_neighbor_colors(block_sizes, len(directions)):
+                choices.append(And([sg.grid[p.translate(v)] == neighbor_colors[i] for i, v in enumerate(directions)]))
             sg.solver.add(Or(choices))
 
-        # No 2x2 block of shaded squares
-        for vertex in puzzle.vertices():
-            sg.solver.add(Or([sg.grid[p] == 0 for p in vertex]))
-
         continuous_region(sg, rc, lambda q: sg.grid[q] == 1)
+        no2x2(sg, lambda q: sg.grid[q] == 1)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         for p in sg.grid:
@@ -37,14 +36,14 @@ class Tapa(AbstractSolver):
                 solution.shaded[p] = True
 
     @staticmethod
-    def _valid_neighbor_colors(desired_block_sizes):
-        # Get all 8-tuples of valid colorings of a square's 8 neighbors.
-        if desired_block_sizes == [8]:
-            return [[1] * 8]
+    def _valid_neighbor_colors(desired_block_sizes, num_neighbors):
+        # Get all tuples of valid colorings of a region's neighbors.
+        if desired_block_sizes == [num_neighbors]:
+            return [[1] * num_neighbors]
         valid_neighbor_colors = set()
-        for colors in product(*[[0, 1]] * 7 + [[0]]):
+        for colors in product(*[[0, 1]] * (num_neighbors - 1) + [[0]]):
             block_sizes = [len(list(g)) for k, g in groupby(colors) if k == 1]
             if sorted(block_sizes) == sorted(desired_block_sizes):
-                for rotation in range(8):
+                for rotation in range(num_neighbors):
                     valid_neighbor_colors.add(colors[rotation:] + colors[:rotation])
         return valid_neighbor_colors

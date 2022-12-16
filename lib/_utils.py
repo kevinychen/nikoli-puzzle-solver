@@ -32,13 +32,27 @@ def no_adjacent_symbols(sg: SymbolGrid, symbol: int, no_diagonal: bool = False):
             sg.solver.add(Not(And(sg.cell_is(p, symbol), n.symbol == symbol)))
 
 
+def no2x2(sg: SymbolGrid, of: Callable[[Point], BoolRef]):
+    # The generalization to non-square grids is: not all regions that touch a vertex can be marked.
+    neighbors = defaultdict(set)
+    for p in sg.grid:
+        for q in sg.lattice.vertex_sharing_points(p):
+            if q in sg.grid:
+                neighbors[p].add(q)
+    for p in sg.grid:
+        for q in neighbors[p]:
+            for r in neighbors[p].intersection(neighbors[q]):
+                sg.solver.add(Not(And(
+                    [of(p) for p in neighbors[p].intersection(neighbors[q], neighbors[r]).union((p, q, r))])))
+
+
 def sight_line(
         sg: SymbolGrid,
         p: Point,
         direction: Union[Direction, Vector],
-        good: Callable[[Point], bool] = lambda _: True) -> List[Point]:
+        good: Callable[[Point], bool] = None) -> List[Point]:
     line = []
-    while p in sg.grid and good(p):
+    while (p in sg.grid) if good is None else good(p):
         line.append(p)
         p = p.translate(direction)
     return line

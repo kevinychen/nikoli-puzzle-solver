@@ -32,7 +32,6 @@ class Symbol(NamedTuple):
         return self.shape.startswith('circle_')
 
 
-
 class Symbols:
 
     WATER = Symbol(7, 'battleship_B')

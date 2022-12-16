@@ -11,5 +11,3 @@ class Directions:
     SW = Direction("SW", Vector(1, -1))
     S = Direction("S", Vector(1, 0))
     SE = Direction("SE", Vector(1, 1))
-
-    ALL = E, NE, N, NW, W, SW, S, SE
