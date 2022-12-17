@@ -11,18 +11,21 @@ yaml = YAML()
 
 # Dynamically import all py files in this directory
 # https://stackoverflow.com/a/6246478
-for py in [f[:-3] for f in listdir(path.dirname(__file__)) if f.endswith('.py') and f != '__init__.py']:
-    __import__('.'.join([__name__, py]), fromlist=[py])
+for py in [f[:-3] for f in listdir(path.dirname(__file__)) if f.endswith(".py") and f != "__init__.py"]:
+    __import__(".".join([__name__, py]), fromlist=[py])
 
 
 def puzzle_list():
-    with open(path.join(path.dirname(__file__), '../supported_puzzles.yml')) as fh:
+    with open(path.join(path.dirname(__file__), "../supported_puzzles.yml")) as fh:
         return yaml.load(fh)
 
 
 def solve(puzzle_type: str, url: str, parameters: str, different_from: Optional[str] = None):
-    solver = next(subclass for subclass in AbstractSolver.__subclasses__()
-                  if subclass.__name__ == ''.join(c for c in puzzle_type if c.isalpha()))()
+    solver = next(
+        subclass
+        for subclass in AbstractSolver.__subclasses__()
+        if subclass.__name__ == "".join(c for c in puzzle_type if c.isalpha())
+    )()
     penpa = Penpa.from_url(url, parameters)
     sg: Optional[SymbolGrid] = None
 

@@ -2,9 +2,8 @@ from lib import *
 
 
 class EasyAsABC(AbstractSolver):
-
     def configure(self, puzzle, init_symbol_grid):
-        letters = puzzle.parameters['letters']
+        letters = puzzle.parameters["letters"]
 
         sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, len(letters)))
 
@@ -12,9 +11,14 @@ class EasyAsABC(AbstractSolver):
         for p, v in puzzle.entrance_points():
             if p in puzzle.texts:
                 line = sight_line(sg, p.translate(v), v)
-                sg.solver.add(Or([
-                    And(sg.grid[q] == letters.index(puzzle.texts[p]) + 1, *[sg.grid[r] == 0 for r in line[:i]])
-                    for i, q in enumerate(line)]))
+                sg.solver.add(
+                    Or(
+                        [
+                            And(sg.grid[q] == letters.index(puzzle.texts[p]) + 1, *[sg.grid[r] == 0 for r in line[:i]])
+                            for i, q in enumerate(line)
+                        ]
+                    )
+                )
 
         # Each given letter is correct
         for p, text in puzzle.texts.items():
@@ -27,7 +31,7 @@ class EasyAsABC(AbstractSolver):
                 sg.solver.add(Sum([sg.grid[q] == i for q in sight_line(sg, p.translate(v), v)]) == 1)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
-        letters = puzzle.parameters['letters']
+        letters = puzzle.parameters["letters"]
 
         for p in sg.grid:
             if p not in puzzle.texts:

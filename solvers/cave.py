@@ -2,7 +2,6 @@ from lib import *
 
 
 class Cave(AbstractSolver):
-
     def configure(self, puzzle, init_symbol_grid):
         sg = init_symbol_grid(puzzle.lattice(border=True), grilops.make_number_range_symbol_set(0, 1))
         rc = RegionConstrainer(sg.lattice, sg.solver)
@@ -16,7 +15,7 @@ class Cave(AbstractSolver):
             for direction in sg.lattice.edge_sharing_directions():
                 line = sight_line(sg, p, direction)
                 for i in range(1, len(line)):
-                    all_is_visible.append(And([sg.grid[q] == 0 for q in line[:i+1]]))
+                    all_is_visible.append(And([sg.grid[q] == 0 for q in line[: i + 1]]))
             sg.solver.add(Sum(all_is_visible) == number)
 
         for i in range(2):

@@ -2,7 +2,6 @@ from lib import *
 
 
 class Snake(AbstractSolver):
-
     def configure(self, puzzle, init_symbol_grid):
         sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
 
@@ -24,9 +23,12 @@ class Snake(AbstractSolver):
             # Snake can't touch itself diagonally
             for n in sg.vertex_sharing_neighbors(p):
                 if n not in sg.edge_sharing_neighbors(p):
-                    sg.solver.add(Implies(
-                        And(sg.grid[p] == 1, n.symbol == 1),
-                        Or(sg.grid[Point(p.y, n.location.x)] == 1, sg.grid[Point(n.location.y, p.x)] == 1)))
+                    sg.solver.add(
+                        Implies(
+                            And(sg.grid[p] == 1, n.symbol == 1),
+                            Or(sg.grid[Point(p.y, n.location.x)] == 1, sg.grid[Point(n.location.y, p.x)] == 1),
+                        )
+                    )
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         for p in sg.grid:

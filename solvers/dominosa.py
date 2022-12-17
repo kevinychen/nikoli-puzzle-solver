@@ -2,7 +2,6 @@ from lib import *
 
 
 class Dominosa(AbstractSolver):
-
     def configure(self, puzzle, init_symbol_grid):
         dominoes = [(a, b) for a in range(max(puzzle.texts.values()) + 1) for b in range(a + 1)]
 
@@ -17,13 +16,15 @@ class Dominosa(AbstractSolver):
         # The mapping from grid to domino and domino to grid are consistent.
         for p in sg.grid:
             for domino_index, (domino, locations) in enumerate(zip(dominoes, all_locations)):
-                sg.solver.add(
-                    Implies(sg.grid[p] == domino_index, Or([And(y == p.y, x == p.x) for y, x in locations])))
+                sg.solver.add(Implies(sg.grid[p] == domino_index, Or([And(y == p.y, x == p.x) for y, x in locations])))
                 for number, (y, x) in zip(domino, locations):
-                    sg.solver.add(Implies(
-                        And(y == p.y, x == p.x),
-                        # Only allow a mapping from domino to grid if the corresponding grid number is correct
-                        sg.grid[p] == domino_index if puzzle.texts.get(p) == number else False))
+                    sg.solver.add(
+                        Implies(
+                            And(y == p.y, x == p.x),
+                            # Only allow a mapping from domino to grid if the corresponding grid number is correct
+                            sg.grid[p] == domino_index if puzzle.texts.get(p) == number else False,
+                        )
+                    )
 
         # The two squares of each domino are adjacent
         for p in sg.grid:

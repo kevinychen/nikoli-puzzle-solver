@@ -2,15 +2,16 @@ from lib import *
 
 
 class TentaishoSpiralGalaxies(AbstractSolver):
-
     def configure(self, puzzle, init_symbol_grid):
         sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, len(puzzle.points)))
         rc = RegionConstrainer(sg.lattice, sg.solver)
 
         centers = (
             *[(p.y, p.x) for p in puzzle.symbols],
-            *[(sum(p.y for p in junction) / len(junction), sum(p.x for p in junction) / len(junction))
-              for junction in puzzle.junctions],
+            *[
+                (sum(p.y for p in junction) / len(junction), sum(p.x for p in junction) / len(junction))
+                for junction in puzzle.junctions
+            ],
         )
 
         for p in sg.grid:
@@ -21,9 +22,12 @@ class TentaishoSpiralGalaxies(AbstractSolver):
             for y, x in centers:
                 opposite = Point(2 * y - p.y, 2 * x - p.x)
                 if opposite in sg.grid:
-                    choices.append(And(
-                        sg.grid[p] == sg.lattice.point_to_index(Point(int(y), int(x))),
-                        sg.grid[p] == sg.grid[opposite]))
+                    choices.append(
+                        And(
+                            sg.grid[p] == sg.lattice.point_to_index(Point(int(y), int(x))),
+                            sg.grid[p] == sg.grid[opposite],
+                        )
+                    )
             sg.solver.add(Or(choices))
 
         # All galaxies have at least one square, rooted at the center (or closest square to the center)

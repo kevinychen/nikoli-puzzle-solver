@@ -13,16 +13,15 @@ from lib._puzzle import Puzzle, Solution, Symbol
 
 
 class PenpaPart:
-
     def __init__(
-            self,
-            line: Dict[str, int] = None,
-            lineE: Dict[str, int] = None,
-            number: Dict[str, Tuple[str, int, str]] = None,
-            numberS: Dict[str, Tuple[str, int]] = None,
-            surface: Dict[str, int] = None,
-            symbol: Dict[str, Tuple[int, str, int]] = None,
-            **_kwargs,
+        self,
+        line: Dict[str, int] = None,
+        lineE: Dict[str, int] = None,
+        number: Dict[str, Tuple[str, int, str]] = None,
+        numberS: Dict[str, Tuple[str, int]] = None,
+        surface: Dict[str, int] = None,
+        symbol: Dict[str, Tuple[int, str, int]] = None,
+        **_kwargs,
     ):
         self.arrows = []
         self.direction = []
@@ -52,15 +51,15 @@ class Penpa(NamedTuple):
 
     @staticmethod
     def from_url(url: str, parameters: str):
-        parts = decompress(b64decode(url[len(PENPA_PREFIX):]), -15).decode().split('\n')
-        header = parts[0].split(',')
+        parts = decompress(b64decode(url[len(PENPA_PREFIX) :]), -15).decode().split("\n")
+        header = parts[0].split(",")
 
-        if header[0] in ('square', 'sudoku'):
+        if header[0] in ("square", "sudoku"):
             lattice_type = LatticeTypes.SQUARE
             top_space, bottom_space, left_space, right_space = loads(parts[1])
             width = int(header[1]) - left_space - right_space
             height = int(header[2]) - top_space - bottom_space
-        elif header[0] == 'hex':
+        elif header[0] == "hex":
             lattice_type = LatticeTypes.HEXAGON
             top_space, bottom_space, left_space, right_space = loads(parts[1]) * 4
             width = int(header[1])
@@ -73,14 +72,16 @@ class Penpa(NamedTuple):
             width=width,
             height=height,
             points=list(accumulate(loads(parts[5]))),
-            parameters=dict((k.strip(), v.strip()) for (k, v) in
-                            [line.split(':', 1) for line in (parameters or '').split('\n') if ':' in line]),
+            parameters=dict(
+                (k.strip(), v.strip())
+                for (k, v) in [line.split(":", 1) for line in (parameters or "").split("\n") if ":" in line]
+            ),
             top_space=top_space,
             bottom_space=bottom_space,
             left_space=left_space,
             right_space=right_space,
             q=PenpaPart(**loads(reduce(lambda s, abbr: s.replace(abbr[1], abbr[0]), PENPA_ABBREVIATIONS, parts[3]))),
-            parts=parts
+            parts=parts,
         )
 
     def to_puzzle(self) -> Puzzle:
@@ -94,7 +95,7 @@ class Penpa(NamedTuple):
         for index, surface in self.q.surface.items():
             puzzle.shaded[self._from_index(index)[0]] = surface
         for index, _ in self.q.lineE.items():
-            (p, category), (q, _) = map(lambda i: self._from_index(i), index.split(','))
+            (p, category), (q, _) = map(lambda i: self._from_index(i), index.split(","))
             if self.lattice_type == LatticeTypes.SQUARE:
                 # An edge is labeled by its two endpoints. Each endpoint vertex is labeled by the coordinate of the
                 # square with it as its bottom right corner. So it is at (y+.5,x+.5), but we double the coordinates so
@@ -102,8 +103,10 @@ class Penpa(NamedTuple):
                 # (with a scale factor of 1/√2, or 1/2 since we're in doubled space) to get the squares on both sides.
                 p, q = Point(2 * p.y + 1, 2 * p.x + 1), Point(2 * q.y + 1, 2 * q.x + 1)
                 dy, dx = q.y - p.y, q.x - p.x
-                p, q = (Point((p.y + (dy - dx) // 2) // 2, (p.x + (dy + dx) // 2) // 2),
-                        Point((p.y + (dy + dx) // 2) // 2, (p.x + (-dy + dx) // 2) // 2))
+                p, q = (
+                    Point((p.y + (dy - dx) // 2) // 2, (p.x + (dy + dx) // 2) // 2),
+                    Point((p.y + (dy + dx) // 2) // 2, (p.x + (-dy + dx) // 2) // 2),
+                )
             elif self.lattice_type == LatticeTypes.HEXAGON:
                 # For the hexagonal grid, each vertex is labeled by the hexagon that has it as either its bottom corner
                 # or bottom left corner. So they are at (y+1/3,x-1) and (y+2/3,x) in doubled coordinates, and this time
@@ -114,15 +117,20 @@ class Penpa(NamedTuple):
                     p, q = q, p
                 p, q = Point(3 * p.y + 1, p.x - 1), Point(3 * q.y + 2, q.x)
                 dy, dx = q.y - p.y, q.x - p.x
-                p, q = (Point((p.y + (dy - 3 * dx) // 2) // 3, p.x + (dy + dx) // 2),
-                        Point((p.y + (dy + 3 * dx) // 2) // 3, p.x + (-dy + dx) // 2))
+                p, q = (
+                    Point((p.y + (dy - 3 * dx) // 2) // 3, p.x + (dy + dx) // 2),
+                    Point((p.y + (dy + 3 * dx) // 2) // 3, p.x + (-dy + dx) // 2),
+                )
             puzzle.junctions[frozenset((p, q))] = True
         for index, (text, _, _) in self.q.number.items():
             puzzle.texts[self._from_index(index)[0]] = int(text) if type(text) == str and text.isnumeric() else text
         for index, (text, _) in self.q.numberS.items():
             p, category = self._from_index(int(index) // 4)
-            v = ((Directions.N, Directions.E, Directions.W, Directions.S) if category == 2
-                 else (Directions.NW, Directions.NE, Directions.SW, Directions.SE))[int(index) % 4]
+            v = (
+                (Directions.N, Directions.E, Directions.W, Directions.S)
+                if category == 2
+                else (Directions.NW, Directions.NE, Directions.SW, Directions.SE)
+            )[int(index) % 4]
             puzzle.edge_texts[p, v] = int(text) if type(text) == str and text.isnumeric() else text
         for index, (style, shape, _) in self.q.symbol.items():
             p, category = self._from_index(index)
@@ -142,36 +150,35 @@ class Penpa(NamedTuple):
         for p in solution.shaded:
             a.surface[self._to_index(p)] = 1
         for p, text in solution.texts.items():
-            a.number[self._to_index(p)] = str(text), 2, '1'
+            a.number[self._to_index(p)] = str(text), 2, "1"
         for p, symbol in solution.symbols.items():
             a.symbol[self._to_index(p)] = symbol.style, symbol.shape, 2
         for p, q, *_ in solution.junctions:
             dy, dx = q.y - p.y, q.x - p.x
             # Do the reverse of the transformations of lineE done in to_puzzle.
             if self.lattice_type == LatticeTypes.SQUARE:
-                p, q = (Point(2 * p.y + dy - dx, 2 * p.x + dy + dx),
-                        Point(2 * p.y + dy + dx, 2 * p.x - dy + dx))
-                index1, index2 = (self._to_index(Point(p.y // 2, p.x // 2), 1),
-                                  self._to_index(Point(q.y // 2, q.x // 2), 1))
+                p, q = (Point(2 * p.y + dy - dx, 2 * p.x + dy + dx), Point(2 * p.y + dy + dx, 2 * p.x - dy + dx))
+                index1, index2 = (
+                    self._to_index(Point(p.y // 2, p.x // 2), 1),
+                    self._to_index(Point(q.y // 2, q.x // 2), 1),
+                )
             elif self.lattice_type == LatticeTypes.HEXAGON:
-                p, q = (Point(3 * p.y + (3 * dy - dx) // 2, p.x + (dy + dx) // 2),
-                        Point(3 * p.y + (3 * dy + dx) // 2, p.x + (-dy + dx) // 2))
+                p, q = (
+                    Point(3 * p.y + (3 * dy - dx) // 2, p.x + (dy + dx) // 2),
+                    Point(3 * p.y + (3 * dy + dx) // 2, p.x + (-dy + dx) // 2),
+                )
                 if p.y % 3 != 1:
                     p, q = q, p
-                index1, index2 = (self._to_index(Point(p.y // 3, p.x + 1), 2),
-                                  self._to_index(Point(q.y // 3, q.x), 1))
+                index1, index2 = (self._to_index(Point(p.y // 3, p.x + 1), 2), self._to_index(Point(q.y // 3, q.x), 1))
             else:
                 assert False
-            a.lineE[f'{min(index1, index2)},{max(index1, index2)}'] = 3
+            a.lineE[f"{min(index1, index2)},{max(index1, index2)}"] = 3
         for (p, q), line in solution.lines.items():
             index1 = self._to_index(p)
             index2 = self._to_index(q)
-            a.line[f'{min(index1, index2)},{max(index1, index2)}'] = 3 if line is True else line
-        self.parts[4] = reduce(
-            lambda s, abbr: s.replace(abbr[0], abbr[1]),
-            PENPA_ABBREVIATIONS,
-            dumps(a.__dict__))
-        return PENPA_PREFIX + b64encode(compress('\n'.join(self.parts).encode())[2:-4]).decode()
+            a.line[f"{min(index1, index2)},{max(index1, index2)}"] = 3 if line is True else line
+        self.parts[4] = reduce(lambda s, abbr: s.replace(abbr[0], abbr[1]), PENPA_ABBREVIATIONS, dumps(a.__dict__))
+        return PENPA_PREFIX + b64encode(compress("\n".join(self.parts).encode())[2:-4]).decode()
 
     def _from_index(self, index):
         category, num = divmod(int(index), self._w() * self._h())
@@ -209,37 +216,37 @@ class Penpa(NamedTuple):
             return self.height * 3 + 1
 
 
-PENPA_PREFIX = 'm=edit&p='
+PENPA_PREFIX = "m=edit&p="
 # Copied from https://github.com/swaroopg92/penpa-edit/blob/v3.0.3/docs/js/class_p.js#L131-L162
 PENPA_ABBREVIATIONS = [
-    ["\"qa\"", "z9"],
-    ["\"pu_q\"", "zQ"],
-    ["\"pu_a\"", "zA"],
-    ["\"grid\"", "zG"],
-    ["\"edit_mode\"", "zM"],
-    ["\"surface\"", "zS"],
-    ["\"line\"", "zL"],
-    ["\"lineE\"", "zE"],
-    ["\"wall\"", "zW"],
-    ["\"cage\"", "zC"],
-    ["\"number\"", "zN"],
-    ["\"symbol\"", "zY"],
-    ["\"special\"", "zP"],
-    ["\"board\"", "zB"],
-    ["\"command_redo\"", "zR"],
-    ["\"command_undo\"", "zU"],
-    ["\"command_replay\"", "z8"],
-    ["\"numberS\"", "z1"],
-    ["\"freeline\"", "zF"],
-    ["\"freelineE\"", "z2"],
-    ["\"thermo\"", "zT"],
-    ["\"arrows\"", "z3"],
-    ["\"direction\"", "zD"],
-    ["\"squareframe\"", "z0"],
-    ["\"polygon\"", "z5"],
-    ["\"deletelineE\"", "z4"],
-    ["\"killercages\"", "z6"],
-    ["\"nobulbthermo\"", "z7"],
-    ["\"__a\"", "z_"],
+    ['"qa"', "z9"],
+    ['"pu_q"', "zQ"],
+    ['"pu_a"', "zA"],
+    ['"grid"', "zG"],
+    ['"edit_mode"', "zM"],
+    ['"surface"', "zS"],
+    ['"line"', "zL"],
+    ['"lineE"', "zE"],
+    ['"wall"', "zW"],
+    ['"cage"', "zC"],
+    ['"number"', "zN"],
+    ['"symbol"', "zY"],
+    ['"special"', "zP"],
+    ['"board"', "zB"],
+    ['"command_redo"', "zR"],
+    ['"command_undo"', "zU"],
+    ['"command_replay"', "z8"],
+    ['"numberS"', "z1"],
+    ['"freeline"', "zF"],
+    ['"freelineE"', "z2"],
+    ['"thermo"', "zT"],
+    ['"arrows"', "z3"],
+    ['"direction"', "zD"],
+    ['"squareframe"', "z0"],
+    ['"polygon"', "z5"],
+    ['"deletelineE"', "z4"],
+    ['"killercages"', "z6"],
+    ['"nobulbthermo"', "z7"],
+    ['"__a"', "z_"],
     ["null", "zO"],
 ]

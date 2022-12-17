@@ -2,9 +2,8 @@ from lib import *
 
 
 class StarBattle(AbstractSolver):
-
     def configure(self, puzzle, init_symbol_grid):
-        num_stars = puzzle.parameters['stars']
+        num_stars = puzzle.parameters["stars"]
 
         sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
 

@@ -2,13 +2,17 @@ from lib import *
 
 
 class LITS(AbstractSolver):
-
     def configure(self, puzzle, init_symbol_grid):
         sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
         rc = RegionConstrainer(sg.lattice, sg.solver)
         sc = ShapeConstrainer(
-            sg.lattice, puzzle.polyominoes(4), sg.solver,
-            allow_rotations=True, allow_reflections=True, allow_copies=True)
+            sg.lattice,
+            puzzle.polyominoes(4),
+            sg.solver,
+            allow_rotations=True,
+            allow_reflections=True,
+            allow_copies=True,
+        )
 
         # Each region has one piece
         for i, region in enumerate(puzzle.regions()):
@@ -21,8 +25,12 @@ class LITS(AbstractSolver):
 
         # No two pieces with the same shape may be adjacent
         for p, q in puzzle.edges():
-            sg.solver.add(Implies(
-                sc.shape_instance_grid[p] != sc.shape_instance_grid[q], sc.shape_type_grid[p] != sc.shape_type_grid[q]))
+            sg.solver.add(
+                Implies(
+                    sc.shape_instance_grid[p] != sc.shape_instance_grid[q],
+                    sc.shape_type_grid[p] != sc.shape_type_grid[q],
+                )
+            )
 
         continuous_region(sg, rc, lambda r: sg.grid[r] == 1)
         no2x2(sg, lambda r: sg.grid[r] == 1)

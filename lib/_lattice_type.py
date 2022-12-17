@@ -30,9 +30,7 @@ class LatticeType:
         return self.factory([]).vertex_sharing_points(point)
 
     def transformation_functions(
-            self,
-            allow_rotations: bool,
-            allow_reflections: bool
+        self, allow_rotations: bool, allow_reflections: bool
     ) -> List[Callable[[Vector], Vector]]:
         return self.factory([]).transformation_functions(allow_rotations, allow_reflections)
 

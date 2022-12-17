@@ -2,7 +2,6 @@ from lib import *
 
 
 class Nanro(AbstractSolver):
-
     def configure(self, puzzle, init_symbol_grid):
         regions = dict([(p, i) for i, region in enumerate(puzzle.regions()) for p in region])
 
@@ -18,8 +17,11 @@ class Nanro(AbstractSolver):
 
         # All unshaded squares have a number equal to the total number of unshaded squares in that region
         for p in sg.grid:
-            sg.solver.add(Implies(
-                sg.grid[p] > 0, sg.grid[p] == Sum([sg.grid[q] > 0 for q in sg.grid if regions[p] == regions[q]])))
+            sg.solver.add(
+                Implies(
+                    sg.grid[p] > 0, sg.grid[p] == Sum([sg.grid[q] > 0 for q in sg.grid if regions[p] == regions[q]])
+                )
+            )
 
         # No two regions with the same number of white squares may be adjacent
         for p, q in puzzle.edges():

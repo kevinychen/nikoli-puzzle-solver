@@ -7,12 +7,11 @@ from lib import Puzzle, Solution
 
 
 class AbstractSolver(ABC):
-
     @abstractmethod
     def configure(
-            self,
-            puzzle: Puzzle,
-            init_symbol_grid: Callable[[Lattice, SymbolSet], SymbolGrid],
+        self,
+        puzzle: Puzzle,
+        init_symbol_grid: Callable[[Lattice, SymbolSet], SymbolGrid],
     ):
         """
         Given the puzzle data, constructs a set of constraints for solving the puzzle.
@@ -29,12 +28,7 @@ class AbstractSolver(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def set_solved(
-            self,
-            puzzle: Puzzle,
-            sg: SymbolGrid,
-            solved_grid: Dict[Point, int],
-            solution: Solution):
+    def set_solved(self, puzzle: Puzzle, sg: SymbolGrid, solved_grid: Dict[Point, int], solution: Solution):
         """
         Given the result of the constraint problem, updates the solution accordingly.
 

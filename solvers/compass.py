@@ -2,7 +2,6 @@ from lib import *
 
 
 class Compass(AbstractSolver):
-
     def configure(self, puzzle, init_symbol_grid):
         sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(1, len(puzzle.points)))
         rc = RegionConstrainer(sg.lattice, sg.solver)
@@ -17,7 +16,8 @@ class Compass(AbstractSolver):
             # Counts are correct (a box affects the count if the dot product of the displacement vectors is positive)
             dy, dx = v.vector
             sg.solver.add(
-                Sum([sg.grid[p] == sg.grid[q] for q in sg.grid if (q.y - p.y) * dy + (q.x - p.x) * dx > 0]) == number)
+                Sum([sg.grid[p] == sg.grid[q] for q in sg.grid if (q.y - p.y) * dy + (q.x - p.x) * dx > 0]) == number
+            )
 
         for p in sg.grid:
             sg.solver.add(sg.grid[p] == rc.region_id_grid[p])

@@ -9,6 +9,6 @@ from solvers import puzzle_list, solve
 
 puzzles = puzzle_list()
 for p in puzzles:
-    p['answer'] = solve(p['type'], p['sample'], p.get('parameters'))
-with open(path.join(path.dirname(__file__), '../supported_puzzles.yml'), 'w') as fh:
+    p["answer"] = solve(p["type"], p["sample"], p.get("parameters"))
+with open(path.join(path.dirname(__file__), "../supported_puzzles.yml"), "w") as fh:
     YAML().dump(puzzles, fh)

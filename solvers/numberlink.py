@@ -2,7 +2,6 @@ from lib import *
 
 
 class Numberlink(AbstractSolver):
-
     def configure(self, puzzle, init_symbol_grid):
         sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, len(puzzle.texts) // 2))
 

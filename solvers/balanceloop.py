@@ -4,11 +4,10 @@ from lib import *
 
 
 class BalanceLoop(AbstractSolver):
-
     def configure(self, puzzle, init_symbol_grid):
         lattice = puzzle.lattice()
         symbol_set = LoopSymbolSet(lattice)
-        symbol_set.append('EMPTY')
+        symbol_set.append("EMPTY")
         straight_lines = symbol_set.NS, symbol_set.EW
         circles = [p for p in puzzle.symbols if puzzle.symbols[p].is_circle()]
 
@@ -28,13 +27,17 @@ class BalanceLoop(AbstractSolver):
                             continue
                         if p in puzzle.texts and len1 + len2 != puzzle.texts[p]:
                             continue
-                        choices.append(And(
-                            sg.cell_is_one_of(
-                                p, [i for i, s in symbol_set.symbols.items() if s.name == dir1.name + dir2.name]),
-                            *[sg.cell_is_one_of(q, straight_lines) for q in line1[1:len1]],
-                            Not(sg.cell_is_one_of(line1[len1], straight_lines)),
-                            *[sg.cell_is_one_of(q, straight_lines) for q in line2[1:len2]],
-                            Not(sg.cell_is_one_of(line2[len2], straight_lines))))
+                        choices.append(
+                            And(
+                                sg.cell_is_one_of(
+                                    p, [i for i, s in symbol_set.symbols.items() if s.name == dir1.name + dir2.name]
+                                ),
+                                *[sg.cell_is_one_of(q, straight_lines) for q in line1[1:len1]],
+                                Not(sg.cell_is_one_of(line1[len1], straight_lines)),
+                                *[sg.cell_is_one_of(q, straight_lines) for q in line2[1:len2]],
+                                Not(sg.cell_is_one_of(line2[len2], straight_lines))
+                            )
+                        )
             sg.solver.add(Or(choices))
 
         # Optimization: loop starts at one of the circles

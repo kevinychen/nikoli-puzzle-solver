@@ -4,13 +4,12 @@ from lib import *
 
 
 class Hashiwokakero(AbstractSolver):
-
     def configure(self, puzzle, init_symbol_grid):
         number_positions = list(puzzle.texts.keys())
 
         sg = init_symbol_grid(
-            grilops.get_square_lattice(len(number_positions)),
-            grilops.make_number_range_symbol_set(0, 2))
+            grilops.get_square_lattice(len(number_positions)), grilops.make_number_range_symbol_set(0, 2)
+        )
 
         # Neighbor graph is symmetric and has no self-edges
         for edge in sg.grid:
@@ -49,13 +48,22 @@ class Hashiwokakero(AbstractSolver):
             sg.solver.add(graph[edge] >= 0)
             sg.solver.add(graph[edge] < len(number_positions))
             sg.solver.add(graph[edge] == graph[Point(edge.x, edge.y)])
-            sg.solver.add(Or(
-                sg.grid[edge] == 0,
-                graph[edge] == 0,
-                *[And(graph[edge] > graph[other_edge], sg.grid[other_edge] != 0)
-                  for other_edge in edges if other_edge.x == edge.x],
-                *[And(graph[edge] > graph[other_edge], sg.grid[other_edge] != 0)
-                  for other_edge in edges if other_edge.y == edge.y]))
+            sg.solver.add(
+                Or(
+                    sg.grid[edge] == 0,
+                    graph[edge] == 0,
+                    *[
+                        And(graph[edge] > graph[other_edge], sg.grid[other_edge] != 0)
+                        for other_edge in edges
+                        if other_edge.x == edge.x
+                    ],
+                    *[
+                        And(graph[edge] > graph[other_edge], sg.grid[other_edge] != 0)
+                        for other_edge in edges
+                        if other_edge.y == edge.y
+                    ]
+                )
+            )
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         number_positions = list(puzzle.texts.keys())

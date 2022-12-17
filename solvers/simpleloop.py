@@ -2,11 +2,10 @@ from lib import *
 
 
 class SimpleLoop(AbstractSolver):
-
     def configure(self, puzzle, init_symbol_grid):
         lattice = puzzle.lattice()
         symbol_set = LoopSymbolSet(lattice)
-        symbol_set.append('BLACK')
+        symbol_set.append("BLACK")
 
         sg = init_symbol_grid(lattice, symbol_set)
         lc = LoopConstrainer(sg, single_loop=True)

@@ -5,11 +5,10 @@ from lib import *
 
 
 class TapaLikeLoop(AbstractSolver):
-
     def configure(self, puzzle, init_symbol_grid):
         lattice = puzzle.lattice(border=True)
         symbol_set = LoopSymbolSet(lattice)
-        symbol_set.append('EMPTY')
+        symbol_set.append("EMPTY")
 
         # Directions are in angle order. If a ring/donut is drawn around a region, then the "donut part" for a direction
         # is the loop shape at the region in that direction. For example, the square east of a number clue would have a
@@ -18,11 +17,17 @@ class TapaLikeLoop(AbstractSolver):
         donut_parts = []
         for v in directions:
             v = lattice.opposite_direction(v)
-            donut_parts.append(symbol_set.symbol_for_direction_pair(*[
-                min(lattice.edge_sharing_directions(),
-                    key=lambda w: ((directions.index(w) - directions.index(v)) * sign - 1) % len(directions))
-                for sign in (-1, 1)
-            ]))
+            donut_parts.append(
+                symbol_set.symbol_for_direction_pair(
+                    *[
+                        min(
+                            lattice.edge_sharing_directions(),
+                            key=lambda w: ((directions.index(w) - directions.index(v)) * sign - 1) % len(directions),
+                        )
+                        for sign in (-1, 1)
+                    ]
+                )
+            )
 
         sg = init_symbol_grid(lattice, symbol_set)
         LoopConstrainer(sg, single_loop=True)

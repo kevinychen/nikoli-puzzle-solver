@@ -2,7 +2,6 @@ from lib import *
 
 
 class Heyawake(AbstractSolver):
-
     def configure(self, puzzle, init_symbol_grid):
         regions = dict([(p, i) for i, region in enumerate(puzzle.regions()) for p in region])
 

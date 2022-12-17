@@ -16,14 +16,31 @@ class Symbol(NamedTuple):
     shape: str
 
     def get_arrows(self) -> List[Direction]:
-        if self.shape.startswith('arrow_fouredge_'):
-            directions = (Directions.E, Directions.S, Directions.W, Directions.N,
-                          Directions.W, Directions.N, Directions.E, Directions.S)
-        elif self.shape == 'arrow_cross':
+        if self.shape.startswith("arrow_fouredge_"):
+            directions = (
+                Directions.E,
+                Directions.S,
+                Directions.W,
+                Directions.N,
+                Directions.W,
+                Directions.N,
+                Directions.E,
+                Directions.S,
+            )
+        elif self.shape == "arrow_cross":
             directions = Directions.W, Directions.N, Directions.E, Directions.S
-        elif self.shape == 'arrow_S' or self.shape.startswith('arrow_N_'):
-            directions = (None, Directions.W, Directions.SW, Directions.N, Directions.NE,
-                          Directions.E, Directions.SE, Directions.S, Directions.SW)
+        elif self.shape == "arrow_S" or self.shape.startswith("arrow_N_"):
+            directions = (
+                None,
+                Directions.W,
+                Directions.SW,
+                Directions.N,
+                Directions.NE,
+                Directions.E,
+                Directions.SE,
+                Directions.S,
+                Directions.SW,
+            )
         else:
             assert False
         if type(self.style) == int:
@@ -35,24 +52,23 @@ class Symbol(NamedTuple):
         return self.style == 2
 
     def is_circle(self):
-        return self.shape.startswith('circle_')
+        return self.shape.startswith("circle_")
 
 
 class Symbols:
 
-    WATER = Symbol(7, 'battleship_B')
-    BLACK_CIRCLE = Symbol(2, 'circle_L')
-    WHITE_CIRCLE = Symbol(8, 'circle_L')
-    X = Symbol(0, 'star')
-    STAR = Symbol(2, 'star')
-    LIGHT_BULB = Symbol(3, 'sun_moon')
-    BOMB = Symbol(4, 'sun_moon')
-    TREE = Symbol(1, 'tents')
-    TENT = Symbol(2, 'tents')
+    WATER = Symbol(7, "battleship_B")
+    BLACK_CIRCLE = Symbol(2, "circle_L")
+    WHITE_CIRCLE = Symbol(8, "circle_L")
+    X = Symbol(0, "star")
+    STAR = Symbol(2, "star")
+    LIGHT_BULB = Symbol(3, "sun_moon")
+    BOMB = Symbol(4, "sun_moon")
+    TREE = Symbol(1, "tents")
+    TENT = Symbol(2, "tents")
 
 
 class AbstractPuzzle(ABC):
-
     def __init__(self):
         self.shaded: Dict[Point, Union[bool, int]] = {}
         self.texts: Dict[Point, Union[int, str]] = {}
@@ -71,14 +87,13 @@ class AbstractPuzzle(ABC):
 
 
 class Puzzle(AbstractPuzzle):
-
     def __init__(
-            self,
-            lattice_type: LatticeType,
-            width: int,
-            height: int,
-            points: Set[Point],
-            parameters: Dict[str, str],
+        self,
+        lattice_type: LatticeType,
+        width: int,
+        height: int,
+        points: Set[Point],
+        parameters: Dict[str, str],
     ):
         super().__init__()
 
@@ -91,8 +106,9 @@ class Puzzle(AbstractPuzzle):
         self.parameters = parameters
 
     def edges(self, include_diagonal=False) -> List[Tuple[Point, Point]]:
-        f: Callable[[Point], List[Point]] =\
+        f: Callable[[Point], List[Point]] = (
             self.lattice_type.vertex_sharing_points if include_diagonal else self.lattice_type.edge_sharing_points
+        )
         return [(p, q) for p in self.points for q in f(p) if q in self.points]
 
     def entrance_points(self) -> Set[Tuple[Point, Direction]]:
@@ -114,7 +130,8 @@ class Puzzle(AbstractPuzzle):
     def polyominoes(self, size: int, include_rotations_and_reflections=False) -> List[Shape]:
         transforms = self.lattice_type.transformation_functions(
             allow_rotations=not include_rotations_and_reflections,
-            allow_reflections=not include_rotations_and_reflections)
+            allow_reflections=not include_rotations_and_reflections,
+        )
         polyominoes = set()
         polyomino = [Point(0, 0)]
 
@@ -146,7 +163,6 @@ class Puzzle(AbstractPuzzle):
 
 
 class Solution(AbstractPuzzle):
-
     def set_loop(self, sg: SymbolGrid, solved_grid: Dict[Point, int]):
         for p in sg.grid:
             for v in sg.lattice.edge_sharing_directions():

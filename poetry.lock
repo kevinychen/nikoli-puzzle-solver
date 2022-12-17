@@ -13,6 +13,29 @@ tests = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)"
 tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "mypy (>=0.900,!=0.940)", "pytest-mypy-plugins", "cloudpickle"]
 
 [[package]]
+name = "black"
+version = "22.12.0"
+description = "The uncompromising code formatter."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+click = ">=8.0.0"
+mypy-extensions = ">=0.4.3"
+pathspec = ">=0.9.0"
+platformdirs = ">=2"
+tomli = {version = ">=1.1.0", markers = "python_full_version < \"3.11.0a7\""}
+typed-ast = {version = ">=1.4.2", markers = "python_version < \"3.8\" and implementation_name == \"cpython\""}
+typing-extensions = {version = ">=3.10.0.0", markers = "python_version < \"3.10\""}
+
+[package.extras]
+colorama = ["colorama (>=0.4.3)"]
+d = ["aiohttp (>=3.7.4)"]
+jupyter = ["ipython (>=7.8.0)", "tokenize-rt (>=3.2.0)"]
+uvloop = ["uvloop (>=0.15.2)"]
+
+[[package]]
 name = "click"
 version = "8.1.3"
 description = "Composable command line interface toolkit"
@@ -129,12 +152,40 @@ optional = false
 python-versions = ">=3.7"
 
 [[package]]
+name = "mypy-extensions"
+version = "0.4.3"
+description = "Experimental type system extensions for programs checked with the mypy typechecker."
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "packaging"
 version = "22.0"
 description = "Core utilities for Python packages"
 category = "main"
 optional = false
 python-versions = ">=3.7"
+
+[[package]]
+name = "pathspec"
+version = "0.10.3"
+description = "Utility library for gitignore style pattern matching of file paths."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[[package]]
+name = "platformdirs"
+version = "2.6.0"
+description = "A small Python package for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.extras]
+docs = ["furo (>=2022.9.29)", "proselint (>=0.13)", "sphinx-autodoc-typehints (>=1.19.4)", "sphinx (>=5.3)"]
+test = ["appdirs (==1.4.4)", "pytest-cov (>=4)", "pytest-mock (>=3.10)", "pytest (>=7.2)"]
 
 [[package]]
 name = "pluggy"
@@ -204,6 +255,14 @@ optional = false
 python-versions = ">=3.7"
 
 [[package]]
+name = "typed-ast"
+version = "1.5.4"
+description = "a fork of Python 2 and 3 ast modules with type comment support"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[[package]]
 name = "typing-extensions"
 version = "4.4.0"
 description = "Backported and Experimental Type Hints for Python 3.7+"
@@ -248,10 +307,11 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "flake8 (<5)", "pytest-co
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "f4679a7cc1c398b52282b4419e59b8316dd7e65226741b3aa703241de3760eb1"
+content-hash = "850a53f42ae268bed946d05c9bd625fe4d7423d2f7db19c4064c5011fd604720"
 
 [metadata.files]
 attrs = []
+black = []
 click = []
 colorama = []
 exceptiongroup = []
@@ -265,12 +325,16 @@ iniconfig = []
 itsdangerous = []
 jinja2 = []
 markupsafe = []
+mypy-extensions = []
 packaging = []
+pathspec = []
+platformdirs = []
 pluggy = []
 pytest = []
 "ruamel.yaml" = []
 "ruamel.yaml.clib" = []
 tomli = []
+typed-ast = []
 typing-extensions = []
 werkzeug = []
 z3-solver = []

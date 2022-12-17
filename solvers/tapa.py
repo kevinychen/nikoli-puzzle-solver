@@ -5,7 +5,6 @@ from lib import *
 
 
 class Tapa(AbstractSolver):
-
     def configure(self, puzzle, init_symbol_grid):
         directions = sorted(puzzle.lattice_type.vertex_sharing_directions(), key=lambda v: atan2(*v.vector))
 

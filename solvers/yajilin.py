@@ -2,12 +2,11 @@ from lib import *
 
 
 class Yajilin(AbstractSolver):
-
     def configure(self, puzzle, init_symbol_grid):
         lattice = puzzle.lattice()
         symbol_set = LoopSymbolSet(lattice)
-        symbol_set.append('BLACK')
-        symbol_set.append('WALL')
+        symbol_set.append("BLACK")
+        symbol_set.append("WALL")
 
         sg = init_symbol_grid(lattice, symbol_set)
         LoopConstrainer(sg, single_loop=True)
@@ -15,7 +14,7 @@ class Yajilin(AbstractSolver):
         for p in sg.grid:
             if p in puzzle.texts and p in puzzle.symbols:
                 sg.solver.add(sg.cell_is(p, symbol_set.WALL))
-                v, = puzzle.symbols[p].get_arrows()
+                (v,) = puzzle.symbols[p].get_arrows()
                 sg.solver.add(Sum([sg.cell_is(q, symbol_set.BLACK) for q in sight_line(sg, p, v)]) == puzzle.texts[p])
             elif p in puzzle.shaded:
                 sg.solver.add(sg.cell_is(p, symbol_set.WALL))

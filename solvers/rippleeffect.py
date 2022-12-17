@@ -2,7 +2,6 @@ from lib import *
 
 
 class RippleEffect(AbstractSolver):
-
     def configure(self, puzzle, init_symbol_grid):
         regions = puzzle.regions()
 
@@ -17,10 +16,18 @@ class RippleEffect(AbstractSolver):
                 choices = []
                 for i in range(1, len(region) + 1):
                     # if a square has number i, then none of the squares within distance i in any direction are i
-                    choices.append(And([
-                        sg.grid[p] == i,
-                        *[sg.grid[q] != i for v in sg.lattice.edge_sharing_directions()
-                          for q in sight_line(sg, p.translate(v), v)[:i]]]))
+                    choices.append(
+                        And(
+                            [
+                                sg.grid[p] == i,
+                                *[
+                                    sg.grid[q] != i
+                                    for v in sg.lattice.edge_sharing_directions()
+                                    for q in sight_line(sg, p.translate(v), v)[:i]
+                                ],
+                            ]
+                        )
+                    )
                 sg.solver.add(Or(choices))
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
