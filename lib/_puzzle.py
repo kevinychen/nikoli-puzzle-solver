@@ -41,6 +41,18 @@ class Symbol(NamedTuple):
                 Directions.S,
                 Directions.SW,
             )
+        elif self.shape == "inequality":
+            directions = (
+                None,
+                Directions.W,
+                Directions.N,
+                Directions.E,
+                Directions.S,
+                Directions.W,
+                Directions.N,
+                Directions.E,
+                Directions.S,
+            )
         else:
             assert False
         if type(self.style) == int:
@@ -88,12 +100,7 @@ class AbstractPuzzle(ABC):
 
 class Puzzle(AbstractPuzzle):
     def __init__(
-        self,
-        lattice_type: LatticeType,
-        width: int,
-        height: int,
-        points: Set[Point],
-        parameters: Dict[str, str],
+        self, lattice_type: LatticeType, width: int, height: int, points: Set[Point], parameters: Dict[str, str]
     ):
         super().__init__()
 
