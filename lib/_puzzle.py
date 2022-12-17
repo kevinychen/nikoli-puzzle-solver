@@ -21,9 +21,15 @@ class Symbol(NamedTuple):
                           Directions.W, Directions.N, Directions.E, Directions.S)
         elif self.shape == 'arrow_cross':
             directions = Directions.W, Directions.N, Directions.E, Directions.S
+        elif self.shape == 'arrow_S' or self.shape.startswith('arrow_N_'):
+            directions = (None, Directions.W, Directions.SW, Directions.N, Directions.NE,
+                          Directions.E, Directions.SE, Directions.S, Directions.SW)
         else:
             assert False
-        return [v for v, flag in zip(directions, self.style) if flag]
+        if type(self.style) == int:
+            return [directions[self.style]]
+        else:
+            return [v for v, flag in zip(directions, self.style) if flag]
 
     def is_black(self):
         return self.style == 2
@@ -137,14 +143,6 @@ class Puzzle(AbstractPuzzle):
             if frozenset((p, q)) not in self.junctions:
                 uf.union(p, q)
         return set([tuple(q for q in self.points if uf.find(q) == p) for p in self.points if uf.find(p) == p])
-
-    def vertices(self) -> Set[FrozenSet[Point]]:
-        edges = self.edges(include_diagonal=True)
-        neighbors = defaultdict(set)
-        for p, q in edges:
-            neighbors[p].add(q)
-        return set([frozenset(neighbors[p].intersection(neighbors[q], neighbors[r]).union((p, q, r)))
-                    for p, q in edges for r in neighbors[p].intersection(neighbors[q])])
 
 
 class Solution(AbstractPuzzle):

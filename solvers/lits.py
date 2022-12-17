@@ -24,11 +24,8 @@ class LITS(AbstractSolver):
             sg.solver.add(Implies(
                 sc.shape_instance_grid[p] != sc.shape_instance_grid[q], sc.shape_type_grid[p] != sc.shape_type_grid[q]))
 
-        # No 2x2 black square (or for the hex version, no black triangle)
-        for vertex in puzzle.vertices():
-            sg.solver.add(Or([sg.grid[p] == 0 for p in vertex]))
-
         continuous_region(sg, rc, lambda r: sg.grid[r] == 1)
+        no2x2(sg, lambda r: sg.grid[r] == 1)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         for p in sg.grid:
