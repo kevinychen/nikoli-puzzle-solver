@@ -40,7 +40,7 @@ Then go to http://localhost:5000.
 
 ### Adding a solver
 
-- Implement a new subclass of [AbstractSolver](solvers/abstract_solver.py) in the [solvers](solvers/) directory.
+- Implement a new subclass of [AbstractSolver](solvers/abstract_solver.py) in the [solvers](solvers) directory.
 - Update [supported\_puzzles.yml](supported_puzzles.yml) with the puzzle type, and a sample puzzle and its solution.
     - You can construct the sample puzzle in Penpa, and click "Share" -> "Editing URL" to get the encoded puzzle.
     - The name of the subclass of AbstractSolver must be the same as the puzzle type string, with non-alpha letters removed.

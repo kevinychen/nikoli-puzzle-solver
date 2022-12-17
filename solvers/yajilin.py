@@ -13,13 +13,13 @@ class Yajilin(AbstractSolver):
 
         for p in sg.grid:
             if p in puzzle.texts and p in puzzle.symbols:
-                sg.solver.add(sg.cell_is(p, symbol_set.WALL))
+                sg.solver.add(sg.grid[p] == symbol_set.WALL)
                 (v,) = puzzle.symbols[p].get_arrows()
-                sg.solver.add(Sum([sg.cell_is(q, symbol_set.BLACK) for q in sight_line(sg, p, v)]) == puzzle.texts[p])
+                sg.solver.add(Sum([sg.grid[q] == symbol_set.BLACK for q in sight_line(sg, p, v)]) == puzzle.texts[p])
             elif p in puzzle.shaded:
-                sg.solver.add(sg.cell_is(p, symbol_set.WALL))
+                sg.solver.add(sg.grid[p] == symbol_set.WALL)
             else:
-                sg.solver.add(Not(sg.cell_is(p, symbol_set.WALL)))
+                sg.solver.add(sg.grid[p] != symbol_set.WALL)
 
             no_adjacent_symbols(sg, symbol_set.BLACK)
 

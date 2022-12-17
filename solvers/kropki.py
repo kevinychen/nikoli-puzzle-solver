@@ -16,7 +16,9 @@ class Kropki(AbstractSolver):
             else:
                 sg.solver.add(white_condition)
 
-        distinct_rows_and_columns(sg)
+        # Rows and columns are distinct
+        for p, v in puzzle.entrance_points():
+            sg.solver.add(Distinct([sg.grid[q] for q in sight_line(sg, p.translate(v), v)]))
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         for p in sg.grid:

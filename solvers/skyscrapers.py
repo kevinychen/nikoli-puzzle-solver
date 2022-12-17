@@ -6,6 +6,7 @@ class Skyscrapers(AbstractSolver):
         sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(1, puzzle.width))
 
         for p, v in puzzle.entrance_points():
+            sg.solver.add(Distinct([sg.grid[q] for q in sight_line(sg, p.translate(v), v)]))
             if p in puzzle.texts:
                 line = sight_line(sg, p.translate(v), v)
                 sg.solver.add(
@@ -16,8 +17,6 @@ class Skyscrapers(AbstractSolver):
         for p, number in puzzle.texts.items():
             if p in puzzle.points:
                 sg.solver.add(sg.grid[p] == number)
-
-        distinct_rows_and_columns(sg)
 
     def set_solved(self, puzzle, sg, solved_grid, solution):
         for p in sg.grid:
