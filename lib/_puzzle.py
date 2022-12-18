@@ -71,6 +71,8 @@ class Symbols:
     WATER = Symbol(7, "battleship_B")
     BLACK_CIRCLE = Symbol(2, "circle_L")
     WHITE_CIRCLE = Symbol(8, "circle_L")
+    PLUS_SIGN = Symbol(2, "math")
+    MINUS_SIGN = Symbol(3, "math")
     X = Symbol(0, "star")
     STAR = Symbol(2, "star")
     LIGHT_BULB = Symbol(3, "sun_moon")
