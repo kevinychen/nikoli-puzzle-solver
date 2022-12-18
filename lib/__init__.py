@@ -1,9 +1,17 @@
 from lib._directions import Directions
 from lib._global_timeout_lock import GlobalTimeoutLock
+from lib._paths import PathConstrainer, PathSymbolSet
 from lib._penpa import Penpa
 from lib._puzzle import Puzzle, Solution, Symbol, Symbols
 from lib._union_find import UnionFind
-from lib._utils import continuous_region, no_adjacent_symbols, no2x2, sight_line, var
+from lib._utils import (
+    continuous_region,
+    no_adjacent_symbols,
+    no2x2,
+    sight_line,
+    straight_edge_sharing_direction_pairs,
+    var,
+)
 
 
 import grilops

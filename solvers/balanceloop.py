@@ -8,15 +8,12 @@ class BalanceLoop(AbstractSolver):
         lattice = puzzle.lattice()
         symbol_set = LoopSymbolSet(lattice)
         symbol_set.append("EMPTY")
-        straight_lines = [
-            symbol_set.symbol_for_direction_pair(*v)
-            for v in puzzle.lattice_type.straight_edge_sharing_direction_pairs()
-        ]
-        circles = [p for p in puzzle.symbols if puzzle.symbols[p].is_circle()]
 
         sg = SymbolGrid(lattice, symbol_set)
         lc = LoopConstrainer(sg, single_loop=True)
 
+        straight_lines = [symbol_set.symbol_for_direction_pair(*v) for v in straight_edge_sharing_direction_pairs(sg)]
+        circles = [p for p in puzzle.symbols if puzzle.symbols[p].is_circle()]
         for p in circles:
             # Each circle must have two "arms". Try all possibilities of lengths of these arms, subject to constraints.
             choices = []

@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Callable, List, Union
+from typing import Callable, List, Tuple, Union
 from uuid import uuid4
 
 from grilops import SymbolGrid
@@ -43,6 +43,12 @@ def sight_line(
         line.append(p)
         p = p.translate(direction)
     return line
+
+
+def straight_edge_sharing_direction_pairs(sg: SymbolGrid) -> List[Tuple[Direction, ...]]:
+    return sorted(
+        set([tuple(sorted((v, sg.lattice.opposite_direction(v)))) for v in sg.lattice.edge_sharing_directions()])
+    )
 
 
 def var():
