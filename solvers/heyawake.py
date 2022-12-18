@@ -10,7 +10,7 @@ class Heyawake(AbstractSolver):
 
         # Number of black squares in each region is correct
         for p, number in puzzle.texts.items():
-            sg.solver.add(Sum([sg.grid[q] for q in sg.lattice.points if regions[q] == regions[p]]) == number)
+            sg.solver.add(Sum([sg.grid[q] for q in sg.grid if regions[p] == regions[q]]) == number)
 
         # No "word", i.e. line of white squares visiting at least three regions
         for v in sg.lattice.edge_sharing_directions():
