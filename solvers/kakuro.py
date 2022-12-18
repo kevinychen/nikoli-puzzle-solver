@@ -2,8 +2,8 @@ from lib import *
 
 
 class Kakuro(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(1, 9))
+    def run(self, puzzle, solve):
+        sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(1, 9))
 
         line_totals = []
         for p in puzzle.symbols:
@@ -21,7 +21,7 @@ class Kakuro(AbstractSolver):
             sg.solver.add(Sum([sg.grid[p] for p in line]) == total)
             sg.solver.add(Distinct([sg.grid[p] for p in line]))
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         for p in sg.grid:
             if p not in puzzle.symbols:
                 solution.texts[p] = solved_grid[p]

@@ -7,6 +7,7 @@ from lib._utils import continuous_region, no_adjacent_symbols, no2x2, sight_line
 
 
 import grilops
+from grilops import SymbolGrid
 from grilops.geometry import Point, Vector
 from grilops.loops import I, L, LoopConstrainer, LoopSymbolSet, O
 from grilops.regions import R, RegionConstrainer

@@ -2,8 +2,8 @@ from lib import *
 
 
 class LightUpAkari(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
+    def run(self, puzzle, solve):
+        sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
 
         for p, number in puzzle.texts.items():
             sg.solver.add(Sum([n.symbol for n in sg.edge_sharing_neighbors(p)]) == number)
@@ -20,7 +20,7 @@ class LightUpAkari(AbstractSolver):
                 sg.solver.add(Implies(sg.grid[p] == 1, And([sg.grid[q] == 0 for q in lines])))
                 sg.solver.add(Implies(sg.grid[p] == 0, Or([sg.grid[q] == 1 for q in lines])))
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         for p in sg.grid:
             if solved_grid[p] == 1:
                 solution.symbols[p] = Symbols.LIGHT_BULB

@@ -1,4 +1,4 @@
-from typing import Callable, List
+from typing import Callable, List, Tuple
 
 from grilops import Direction, Lattice
 from grilops import Point, PointyToppedHexagonalLattice, RectangularLattice, Vector
@@ -33,6 +33,9 @@ class LatticeType:
         self, allow_rotations: bool, allow_reflections: bool
     ) -> List[Callable[[Vector], Vector]]:
         return self.factory([]).transformation_functions(allow_rotations, allow_reflections)
+
+    def straight_edge_sharing_direction_pairs(self) -> List[Tuple[Direction, ...]]:
+        return sorted(set([tuple(sorted((v, self.opposite_direction(v)))) for v in self.edge_sharing_directions()]))
 
 
 class LatticeTypes:

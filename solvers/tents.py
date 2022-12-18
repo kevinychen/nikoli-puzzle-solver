@@ -2,8 +2,8 @@ from lib import *
 
 
 class Tents(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
+    def run(self, puzzle, solve):
+        sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
         rc = RegionConstrainer(sg.lattice, sg.solver, complete=False, min_region_size=2, max_region_size=2)
 
         # Each tree and its tent is a region of size 2; everything else must be EMPTY
@@ -22,7 +22,7 @@ class Tents(AbstractSolver):
 
         no_adjacent_symbols(sg, 1, no_diagonal=True)
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         for p in sg.grid:
             if solved_grid[p] == 1:
                 solution.symbols[p] = Symbols.TENT

@@ -4,8 +4,8 @@ from lib import *
 
 
 class Binairo(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
+    def run(self, puzzle, solve):
+        sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
 
         for p, symbol in puzzle.symbols.items():
             if symbol.is_circle():
@@ -28,7 +28,7 @@ class Binairo(AbstractSolver):
             sg.solver.add(Or([sg.grid[Point(i1, j)] != sg.grid[Point(i2, j)] for j in range(puzzle.width)]))
             sg.solver.add(Or([sg.grid[Point(j, i1)] != sg.grid[Point(j, i2)] for j in range(puzzle.width)]))
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         for p in sg.grid:
             if p not in puzzle.symbols:
                 solution.symbols[p] = Symbols.BLACK_CIRCLE if solved_grid[p] else Symbols.WHITE_CIRCLE

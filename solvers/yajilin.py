@@ -2,13 +2,13 @@ from lib import *
 
 
 class Yajilin(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
+    def run(self, puzzle, solve):
         lattice = puzzle.lattice()
         symbol_set = LoopSymbolSet(lattice)
         symbol_set.append("BLACK")
         symbol_set.append("WALL")
 
-        sg = init_symbol_grid(lattice, symbol_set)
+        sg = SymbolGrid(lattice, symbol_set)
         LoopConstrainer(sg, single_loop=True)
 
         for p in sg.grid:
@@ -23,7 +23,7 @@ class Yajilin(AbstractSolver):
 
             no_adjacent_symbols(sg, symbol_set.BLACK)
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         solution.set_loop(sg, solved_grid)
         for p in sg.grid:
             if solved_grid[p] == sg.symbol_set.BLACK:

@@ -13,8 +13,8 @@ window.onload = function () {
     const parameters = document.getElementById('parameters');
     const solveButton = document.getElementById('solve');
 
-    let foundSolution = null;
-    let localFoundSolution = null;
+    let foundGrid = null;
+    let foundUrl = null;
 
     fetch('/api/list').then(response => {
         response.json().then(body => {
@@ -59,7 +59,7 @@ window.onload = function () {
                         'type': puzzles[typeSelect.value].type,
                         'url': exp(),
                         'parameters': parameters.value,
-                        'different_from': foundSolution,
+                        'different_from': foundGrid,
                     }),
                     headers: { 'Content-type': 'application/json' },
                 }).then(async response => {
@@ -72,17 +72,17 @@ window.onload = function () {
                     } else {
                         body = await response.json();
                         if (body.url === null) {
-                            alert(foundSolution ? 'No other solution found.' : 'No solution found.');
-                        } else {
-                            foundSolution = body.url;
-                            iframe.contentWindow.load(foundSolution);
-                            localFoundSolution = exp();
+                            alert(foundGrid ? 'No other solution found.' : 'No solution found.');
+                            return;
                         }
+                        iframe.contentWindow.load(body.url);
+                        foundGrid = body.grid;
+                        foundUrl = exp();
                     }
                 }).catch(e => {
                     alert('Unexpected error: ' + e);
                 }).finally(() => {
-                    solveButton.textContent = exp() === localFoundSolution ? 'Find another solution' : 'Solve';
+                    solveButton.textContent = exp() === foundUrl ? 'Find another solution' : 'Solve';
                     solveButton.disabled = false;
                 });
             });
@@ -92,9 +92,9 @@ window.onload = function () {
     iframe.contentWindow.document.addEventListener('click', () => iframe.contentWindow.focus());
 
     setInterval(() => {
-        if (solveButton.textContent === 'Find another solution' && exp() !== localFoundSolution) {
-            foundSolution = null;
-            localFoundSolution = null;
+        if (solveButton.textContent === 'Find another solution' && exp() !== foundUrl) {
+            foundGrid = null;
+            foundUrl = null;
             solveButton.textContent = 'Solve';
         }
     }, 1000);

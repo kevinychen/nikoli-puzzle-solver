@@ -2,10 +2,10 @@ from lib import *
 
 
 class Heteromino(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
+    def run(self, puzzle, solve):
         shapes = puzzle.polyominoes(3, include_rotations_and_reflections=True)
 
-        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(-1, len(shapes) - 1))
+        sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(-1, len(shapes) - 1))
         sc = ShapeConstrainer(sg.lattice, shapes, sg.solver, allow_copies=True)
 
         for p in sg.grid:
@@ -21,5 +21,5 @@ class Heteromino(AbstractSolver):
                 )
             )
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         solution.set_regions(puzzle, solved_grid)

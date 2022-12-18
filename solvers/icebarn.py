@@ -2,22 +2,15 @@ from lib import *
 
 
 class IceBarn(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
+    def run(self, puzzle, solve):
         # Since we support paths that cross, we need more than one grid with numbers from 1 to n. We need 2 grids for
         # the square grid case: at a non-crossing point, the numbers are the same, but at crossing points, one grid has
         # the number for when crossing horizontally, and th other grid has the number for when crossing vertically.
         # The hex grid case is analogous, but with 3 grids.
-        crossing_dir_pairs = sorted(
-            set(
-                [
-                    tuple(sorted((v, puzzle.lattice_type.opposite_direction(v))))
-                    for v in puzzle.lattice_type.edge_sharing_directions()
-                ]
-            )
-        )
+        crossing_dir_pairs = puzzle.lattice_type.straight_edge_sharing_direction_pairs()
         shifts = [lambda r, i=i: Point(r.y + (puzzle.height + 1) * i, r.x) for i in range(len(crossing_dir_pairs))]
 
-        sg = init_symbol_grid(
+        sg = SymbolGrid(
             puzzle.lattice_type.factory([shift(p) for p in puzzle.points for shift in shifts]),
             grilops.make_number_range_symbol_set(-1, len(puzzle.points) * len(shifts)),
         )
@@ -102,17 +95,7 @@ class IceBarn(AbstractSolver):
                 Or([sg.grid[shift(q)] != -1 for q in puzzle.shaded if uf.find(p) == uf.find(q) for shift in shifts])
             )
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
-        crossing_dir_pairs = sorted(
-            set(
-                [
-                    tuple(sorted((v, puzzle.lattice_type.opposite_direction(v))))
-                    for v in puzzle.lattice_type.edge_sharing_directions()
-                ]
-            )
-        )
-        shifts = [lambda r, i=i: Point(r.y + (puzzle.height + 1) * i, r.x) for i in range(len(crossing_dir_pairs))]
-
+        solved_grid, solution = solve(sg)
         for p in puzzle.points:
             for shift in shifts:
                 for n in sg.edge_sharing_neighbors(p):

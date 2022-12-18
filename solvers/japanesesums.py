@@ -2,10 +2,10 @@ from lib import *
 
 
 class JapaneseSums(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
+    def run(self, puzzle, solve):
         maximum = int(puzzle.parameters["maximum"])
 
-        sg = init_symbol_grid(puzzle.lattice(border=True), grilops.make_number_range_symbol_set(0, maximum))
+        sg = SymbolGrid(puzzle.lattice(border=True), grilops.make_number_range_symbol_set(0, maximum))
 
         for p in sg.grid:
             if p not in puzzle.points:
@@ -53,7 +53,7 @@ class JapaneseSums(AbstractSolver):
             for p, v in puzzle.entrance_points():
                 sg.solver.add(Sum([sg.grid[q] == i for q in sight_line(sg, p.translate(v), v)]) <= 1)
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         for p in sg.grid:
             if solved_grid[p] > 0:
                 solution.texts[p] = solved_grid[p]

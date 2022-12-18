@@ -2,10 +2,10 @@ from lib import *
 
 
 class EasyAsABC(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
+    def run(self, puzzle, solve):
         letters = puzzle.parameters["letters"]
 
-        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, len(letters)))
+        sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, len(letters)))
 
         # Each border letter is the first one visible on that line
         for p, v in puzzle.entrance_points():
@@ -30,9 +30,7 @@ class EasyAsABC(AbstractSolver):
             for p, v in puzzle.entrance_points():
                 sg.solver.add(Sum([sg.grid[q] == i for q in sight_line(sg, p.translate(v), v)]) == 1)
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
-        letters = puzzle.parameters["letters"]
-
+        solved_grid, solution = solve(sg)
         for p in sg.grid:
             if p not in puzzle.texts:
                 if solved_grid[p] > 0:

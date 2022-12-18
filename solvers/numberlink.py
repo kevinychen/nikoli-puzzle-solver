@@ -2,8 +2,8 @@ from lib import *
 
 
 class Numberlink(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, len(puzzle.texts) // 2))
+    def run(self, puzzle, solve):
+        sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, len(puzzle.texts) // 2))
 
         for p in sg.grid:
             num_neighbors = Sum([n.symbol == sg.grid[p] for n in sg.edge_sharing_neighbors(p)])
@@ -15,7 +15,7 @@ class Numberlink(AbstractSolver):
                 # Every other square on the chain is orthogonally connected to two others
                 sg.solver.add(Or(sg.grid[p] == 0, num_neighbors == 2))
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         for p in sg.grid:
             for n in sg.edge_sharing_neighbors(p):
                 if solved_grid[p] != 0 and solved_grid[p] == solved_grid[n.location]:

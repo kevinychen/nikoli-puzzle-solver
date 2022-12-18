@@ -2,10 +2,10 @@ from lib import *
 
 
 class RippleEffect(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
+    def run(self, puzzle, solve):
         regions = puzzle.regions()
 
-        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(1, max(map(len, regions))))
+        sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(1, max(map(len, regions))))
 
         for p, number in puzzle.texts.items():
             sg.solver.add(sg.grid[p] == number)
@@ -30,7 +30,7 @@ class RippleEffect(AbstractSolver):
                     )
                 sg.solver.add(Or(choices))
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         for p in sg.grid:
             if p not in puzzle.texts:
                 solution.texts[p] = solved_grid[p]

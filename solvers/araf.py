@@ -2,8 +2,8 @@ from lib import *
 
 
 class Araf(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, len(puzzle.points)))
+    def run(self, puzzle, solve):
+        sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, len(puzzle.points)))
         rc = RegionConstrainer(sg.lattice, sg.solver)
 
         for p in sg.grid:
@@ -29,5 +29,5 @@ class Araf(AbstractSolver):
 
         sg.solver.add(Sum([rc.parent_grid[p] == R for p in puzzle.texts]) == len(puzzle.texts) // 2)
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         solution.set_regions(puzzle, solved_grid)

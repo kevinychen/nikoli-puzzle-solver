@@ -2,10 +2,10 @@ from lib import *
 
 
 class Nanro(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
+    def run(self, puzzle, solve):
         regions = dict([(p, i) for i, region in enumerate(puzzle.regions()) for p in region])
 
-        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, len(puzzle.points) + 1))
+        sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, len(puzzle.points) + 1))
         rc = RegionConstrainer(sg.lattice, sg.solver)
 
         for p, number in puzzle.texts.items():
@@ -31,7 +31,7 @@ class Nanro(AbstractSolver):
         continuous_region(sg, rc, lambda r: sg.grid[r] > 0)
         no2x2(sg, lambda r: sg.grid[r] > 0)
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         for p in sg.grid:
             if solved_grid[p] == 0:
                 solution.shaded[p] = True

@@ -2,8 +2,8 @@ from lib import *
 
 
 class Hidato(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(1, len(puzzle.points) + 1))
+    def run(self, puzzle, solve):
+        sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(1, len(puzzle.points) + 1))
 
         for p, number in puzzle.texts.items():
             sg.solver.add(sg.grid[p] == number)
@@ -17,7 +17,7 @@ class Hidato(AbstractSolver):
                 )
             )
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         for p in sg.grid:
             if p not in puzzle.texts:
                 solution.texts[p] = solved_grid[p]

@@ -2,11 +2,11 @@ from lib import *
 
 
 class Battleships(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
+    def run(self, puzzle, solve):
         lengths = [int(c) for c in puzzle.parameters["lengths"]]
         shapes = [Shape([Vector(i, 0) for i in range(length)]) for length in lengths]
 
-        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 6))
+        sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 6))
         sc = ShapeConstrainer(sg.lattice, shapes, sg.solver, allow_rotations=True)
 
         # Satisfy ship counts
@@ -49,7 +49,7 @@ class Battleships(AbstractSolver):
                 Implies(And(sg.grid[p] > 0, sg.grid[q] > 0), sc.shape_instance_grid[p] == sc.shape_instance_grid[q])
             )
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         for p in sg.grid:
             if p not in puzzle.symbols:
                 solution.symbols[p] = Symbol(solved_grid[p], "battleship_B") if solved_grid[p] else Symbols.WATER

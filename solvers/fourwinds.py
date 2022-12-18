@@ -2,10 +2,10 @@ from lib import *
 
 
 class FourWinds(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
+    def run(self, puzzle, solve):
         directions = puzzle.lattice_type.edge_sharing_directions()
 
-        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(-1, len(directions) - 1))
+        sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(-1, len(directions) - 1))
 
         # If an arm is pointing east, then increment the length of the region on the east, or start at 1
         lengths = dict((p, var()) for p in sg.grid)
@@ -30,9 +30,7 @@ class FourWinds(AbstractSolver):
                 == number
             )
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
-        directions = puzzle.lattice_type.edge_sharing_directions()
-
+        solved_grid, solution = solve(sg)
         for p in sg.grid:
             if solved_grid[p] != -1:
                 solution.lines[

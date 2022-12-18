@@ -2,10 +2,10 @@ from lib import *
 
 
 class Dominosa(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
+    def run(self, puzzle, solve):
         dominoes = [(a, b) for a in range(max(puzzle.texts.values()) + 1) for b in range(a + 1)]
 
-        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, len(dominoes) - 1))
+        sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, len(dominoes) - 1))
 
         # A mapping from each domino to the two points (y,x) it is in the grid.
         all_locations = [[[var() for _ in range(2)] for _ in range(2)] for _ in dominoes]
@@ -30,5 +30,5 @@ class Dominosa(AbstractSolver):
         for p in sg.grid:
             sg.solver.add(Or([sg.grid[p] == domino_index.symbol for domino_index in sg.edge_sharing_neighbors(p)]))
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         solution.set_regions(puzzle, solved_grid)

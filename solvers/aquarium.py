@@ -2,8 +2,8 @@ from lib import *
 
 
 class Aquarium(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
+    def run(self, puzzle, solve):
+        sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
 
         # Satisfy water counts
         for p, v in puzzle.entrance_points():
@@ -16,7 +16,7 @@ class Aquarium(AbstractSolver):
                 Or([And([sg.grid[p] == (p.y >= height) for p in region]) for height in range(puzzle.height + 1)])
             )
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         for p in sg.grid:
             if solved_grid[p] == 1:
                 solution.shaded[p] = True

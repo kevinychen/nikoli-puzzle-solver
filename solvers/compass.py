@@ -2,8 +2,8 @@ from lib import *
 
 
 class Compass(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(1, len(puzzle.points)))
+    def run(self, puzzle, solve):
+        sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(1, len(puzzle.points)))
         rc = RegionConstrainer(sg.lattice, sg.solver)
 
         region_ids = []
@@ -23,5 +23,5 @@ class Compass(AbstractSolver):
             sg.solver.add(sg.grid[p] == rc.region_id_grid[p])
             sg.solver.add(sg.cell_is_one_of(p, region_ids))
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         solution.set_regions(puzzle, solved_grid)

@@ -1,7 +1,7 @@
 from os import listdir, path
-from typing import Optional
+from typing import Dict, List, Optional, Tuple
 
-from grilops import SymbolGrid
+from grilops import Point, SymbolGrid
 from ruamel.yaml import YAML
 
 from lib import GlobalTimeoutLock, Penpa, Solution
@@ -20,36 +20,36 @@ def puzzle_list():
         return yaml.load(fh)
 
 
-def solve(puzzle_type: str, url: str, parameters: str, different_from: Optional[str] = None):
+def solve(puzzle_type: str, url: str, parameters: str, different_from: Optional[List[Tuple[Point, int]]] = None):
     solver = next(
         subclass
         for subclass in AbstractSolver.__subclasses__()
         if subclass.__name__ == "".join(c for c in puzzle_type if c.isalpha())
     )()
     penpa = Penpa.from_url(url, parameters)
-    sg: Optional[SymbolGrid] = None
+    solved_grid: Optional[Dict[Point, int]] = None
+    solution = Solution()
 
-    def init_symbol_grid(lattice, symbol_set):
-        nonlocal sg
-        sg = SymbolGrid(lattice, symbol_set)
-        return sg
+    def _solve(sg: SymbolGrid):
+        nonlocal solved_grid, solution
 
-    with GlobalTimeoutLock(timeout=30):
-        original = penpa.to_puzzle()
-        solver.configure(original, init_symbol_grid)
-        assert sg is not None, "init_symbol_grid not called by solver"
+        if different_from:
+            for p, value in different_from:
+                sg.solver.add(sg.grid[Point(*p)] != value)
+
         sg.solver.set("timeout", 300000)
         if not sg.solve():
             if sg.solver.reason_unknown() == "timeout":
                 raise TimeoutError(408)
-            return None
-        solution = Solution()
-        solver.set_solved(original, sg, sg.solved_grid(), solution)
-        solution = penpa.to_url(solution)
-        if solution != different_from:
-            return solution
-        if sg.is_unique():
-            return None
-        solution = Solution()
-        solver.set_solved(original, sg, sg.solved_grid(), solution)
-        return penpa.to_url(solution)
+            raise RuntimeError
+
+        solved_grid = sg.solved_grid()
+        return solved_grid, solution
+
+    with GlobalTimeoutLock(timeout=30):
+        original = penpa.to_puzzle()
+        try:
+            solver.run(original, _solve)
+            return penpa.to_url(solution), list(solved_grid.items())
+        except RuntimeError:
+            return None, None

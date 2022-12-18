@@ -2,8 +2,8 @@ from lib import *
 
 
 class MeanderingNumbers(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, len(puzzle.points)))
+    def run(self, puzzle, solve):
+        sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, len(puzzle.points)))
 
         for p, number in puzzle.texts.items():
             sg.solver.add(sg.grid[p] == number)
@@ -22,7 +22,7 @@ class MeanderingNumbers(AbstractSolver):
                 # Two of the same number may not be adjacent
                 sg.solver.add(And([sg.grid[n.location] != sg.grid[p] for n in sg.vertex_sharing_neighbors(p)]))
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         for p in sg.grid:
             if p not in puzzle.texts:
                 solution.texts[p] = solved_grid[p]

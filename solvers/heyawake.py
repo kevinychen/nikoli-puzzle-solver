@@ -2,10 +2,10 @@ from lib import *
 
 
 class Heyawake(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
+    def run(self, puzzle, solve):
         regions = dict([(p, i) for i, region in enumerate(puzzle.regions()) for p in region])
 
-        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
+        sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
         rc = RegionConstrainer(sg.lattice, sg.solver)
 
         # Number of black squares in each region is correct
@@ -26,7 +26,7 @@ class Heyawake(AbstractSolver):
         continuous_region(sg, rc, lambda q: sg.grid[q] == 0)
         no_adjacent_symbols(sg, 1)
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         for p in sg.grid:
             if solved_grid[p] == 1:
                 solution.shaded[p] = True

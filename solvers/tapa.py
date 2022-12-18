@@ -5,10 +5,10 @@ from lib import *
 
 
 class Tapa(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
+    def run(self, puzzle, solve):
         directions = sorted(puzzle.lattice_type.vertex_sharing_directions(), key=lambda v: atan2(*v.vector))
 
-        sg = init_symbol_grid(puzzle.lattice(border=True), grilops.make_number_range_symbol_set(0, 1))
+        sg = SymbolGrid(puzzle.lattice(border=True), grilops.make_number_range_symbol_set(0, 1))
         rc = RegionConstrainer(sg.lattice, sg.solver)
 
         for p in sg.grid:
@@ -29,7 +29,7 @@ class Tapa(AbstractSolver):
         continuous_region(sg, rc, lambda q: sg.grid[q] == 1)
         no2x2(sg, lambda q: sg.grid[q] == 1)
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         for p in sg.grid:
             if solved_grid[p] == 1:
                 solution.shaded[p] = True

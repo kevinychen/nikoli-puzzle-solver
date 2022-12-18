@@ -2,13 +2,13 @@ from lib import *
 
 
 class Shakashaka(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
+    def run(self, puzzle, solve):
         # SW means a black triangle with an SW corner, i.e. a line going from NW to SE with the bottom left shaded.
         symbol_set = grilops.SymbolSet(["EMPTY", "NW", "SW", "SE", "NE", "WALL"])
         diagonal_symbols = (symbol_set.NW, symbol_set.SW, symbol_set.SE, symbol_set.NE)
         dirs = (Directions.S, Directions.E, Directions.N, Directions.W)
 
-        sg = init_symbol_grid(puzzle.lattice(border=True), symbol_set)
+        sg = SymbolGrid(puzzle.lattice(border=True), symbol_set)
 
         # In every 2x2 box, if there are 3 empty squares, the 4th is either empty
         # or contains a triangle in the corresponding direction as its position in the box
@@ -60,7 +60,7 @@ class Shakashaka(AbstractSolver):
                     )
                 sg.solver.add(Or(choices))
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         for p in sg.grid:
             if p not in puzzle.symbols and solved_grid[p] > 0:
                 solution.symbols[p] = Symbol(solved_grid[p], "tri")

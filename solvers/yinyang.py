@@ -2,8 +2,8 @@ from lib import *
 
 
 class YinYang(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
+    def run(self, puzzle, solve):
+        sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
         rc = RegionConstrainer(sg.lattice, sg.solver)
 
         for p, symbol in puzzle.symbols.items():
@@ -14,7 +14,7 @@ class YinYang(AbstractSolver):
             continuous_region(sg, rc, lambda q: sg.grid[q] == i)
             no2x2(sg, lambda q: sg.grid[q] == i)
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         for p in sg.grid:
             if p not in puzzle.symbols:
                 solution.symbols[p] = Symbols.BLACK_CIRCLE if solved_grid[p] else Symbols.WHITE_CIRCLE

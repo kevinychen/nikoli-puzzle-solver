@@ -5,7 +5,7 @@ from lib import *
 
 
 class TapaLikeLoop(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
+    def run(self, puzzle, solve):
         lattice = puzzle.lattice(border=True)
         symbol_set = LoopSymbolSet(lattice)
         symbol_set.append("EMPTY")
@@ -29,7 +29,7 @@ class TapaLikeLoop(AbstractSolver):
                 )
             )
 
-        sg = init_symbol_grid(lattice, symbol_set)
+        sg = SymbolGrid(lattice, symbol_set)
         LoopConstrainer(sg, single_loop=True)
 
         for p in sg.grid:
@@ -58,5 +58,5 @@ class TapaLikeLoop(AbstractSolver):
                     choices.append(And(requirements))
             sg.solver.add(Or(choices))
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         solution.set_loop(sg, solved_grid)

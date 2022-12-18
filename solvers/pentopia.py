@@ -2,10 +2,10 @@ from lib import *
 
 
 class Pentopia(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
+    def run(self, puzzle, solve):
         shapes = puzzle.polyominoes(5)
 
-        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
+        sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
         sc = ShapeConstrainer(
             sg.lattice, shapes, sg.solver, allow_rotations=True, allow_reflections=True, allow_copies=True
         )
@@ -42,7 +42,7 @@ class Pentopia(AbstractSolver):
                 Implies(And(sg.grid[p] == 1, sg.grid[q] == 1), sc.shape_instance_grid[p] == sc.shape_instance_grid[q])
             )
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         for p in sg.grid:
             if solved_grid[p] == 1:
                 solution.shaded[p] = True

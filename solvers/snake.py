@@ -2,8 +2,8 @@ from lib import *
 
 
 class Snake(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
+    def run(self, puzzle, solve):
+        sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
 
         # Satisfy snake square counts
         for p, v in puzzle.entrance_points():
@@ -30,7 +30,7 @@ class Snake(AbstractSolver):
                         )
                     )
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         for p in sg.grid:
             if solved_grid[p] == 1:
                 solution.shaded[p] = True

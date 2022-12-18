@@ -2,12 +2,12 @@ from lib import *
 
 
 class CastleWall(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
+    def run(self, puzzle, solve):
         lattice = puzzle.lattice()
         symbol_set = LoopSymbolSet(lattice)
         symbol_set.append("EMPTY")
 
-        sg = init_symbol_grid(lattice, symbol_set)
+        sg = SymbolGrid(lattice, symbol_set)
         lc = LoopConstrainer(sg, single_loop=True)
 
         # find the region where the loop should be (not any of the small white regions with numbers)
@@ -29,5 +29,5 @@ class CastleWall(AbstractSolver):
                 if puzzle.shaded[p] in (1, 4):  # black
                     sg.solver.add(lc.inside_outside_grid[p] == O)
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         solution.set_loop(sg, solved_grid)

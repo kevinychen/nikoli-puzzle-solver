@@ -2,8 +2,8 @@ from lib import *
 
 
 class Kropki(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(1, puzzle.width))
+    def run(self, puzzle, solve):
+        sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(1, puzzle.width))
 
         for p, q in puzzle.edges():
             white_condition = Or(sg.grid[p] == sg.grid[q] + 1, sg.grid[p] + 1 == sg.grid[q])
@@ -20,6 +20,6 @@ class Kropki(AbstractSolver):
         for p, v in puzzle.entrance_points():
             sg.solver.add(Distinct([sg.grid[q] for q in sight_line(sg, p.translate(v), v)]))
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         for p in sg.grid:
             solution.texts[p] = solved_grid[p]

@@ -2,11 +2,11 @@ from lib import *
 
 
 class Pentominous(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
+    def run(self, puzzle, solve):
         # Pieces in lexicographic order of their point sets (to be consistent with #get_polyominoes)
         letters = "ILYNPUVTWFZX"
 
-        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, len(letters) - 1))
+        sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, len(letters) - 1))
         sc = ShapeConstrainer(
             sg.lattice,
             puzzle.polyominoes(5),
@@ -33,5 +33,5 @@ class Pentominous(AbstractSolver):
                 )
             )
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         solution.set_regions(puzzle, solved_grid)

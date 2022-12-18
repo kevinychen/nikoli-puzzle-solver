@@ -2,10 +2,10 @@ from lib import *
 
 
 class TomTom(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
+    def run(self, puzzle, solve):
         regions = dict([(p, i) for i, region in enumerate(puzzle.regions()) for p in region])
 
-        sg = init_symbol_grid(puzzle.lattice(), grilops.make_number_range_symbol_set(1, puzzle.width))
+        sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(1, puzzle.width))
 
         for (p, _), text in puzzle.edge_texts.items():
             region = [q for q in sg.grid if regions[p] == regions[q]]
@@ -41,6 +41,6 @@ class TomTom(AbstractSolver):
         for p, v in puzzle.entrance_points():
             sg.solver.add(Distinct([sg.grid[q] for q in sight_line(sg, p.translate(v), v)]))
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         for p in sg.grid:
             solution.texts[p] = solved_grid[p]

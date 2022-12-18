@@ -4,12 +4,10 @@ from lib import *
 
 
 class Hashiwokakero(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
+    def run(self, puzzle, solve):
         number_positions = list(puzzle.texts.keys())
 
-        sg = init_symbol_grid(
-            grilops.get_square_lattice(len(number_positions)), grilops.make_number_range_symbol_set(0, 2)
-        )
+        sg = SymbolGrid(grilops.get_square_lattice(len(number_positions)), grilops.make_number_range_symbol_set(0, 2))
 
         # Neighbor graph is symmetric and has no self-edges
         for edge in sg.grid:
@@ -65,9 +63,7 @@ class Hashiwokakero(AbstractSolver):
                 )
             )
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
-        number_positions = list(puzzle.texts.keys())
-
+        solved_grid, solution = solve(sg)
         for edge in sg.grid:
             if solved_grid[edge] != 0:
                 p, q = number_positions[edge.x], number_positions[edge.y]

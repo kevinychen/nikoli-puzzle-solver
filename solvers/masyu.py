@@ -2,13 +2,13 @@ from lib import *
 
 
 class Masyu(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
+    def run(self, puzzle, solve):
         lattice = puzzle.lattice()
         symbol_set = LoopSymbolSet(lattice)
         symbol_set.append("EMPTY")
         circles = [p for p in puzzle.symbols if puzzle.symbols[p].is_circle()]
 
-        sg = init_symbol_grid(lattice, symbol_set)
+        sg = SymbolGrid(lattice, symbol_set)
         lc = LoopConstrainer(sg, single_loop=True)
 
         for p in circles:
@@ -69,5 +69,5 @@ class Masyu(AbstractSolver):
         # Optimization: loop starts at one of the circles
         sg.solver.add(lc.loop_order_grid[circles[0] or sg.lattice.points[0]] == 0)
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         solution.set_loop(sg, solved_grid)

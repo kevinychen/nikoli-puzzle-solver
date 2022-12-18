@@ -2,8 +2,8 @@ from lib import *
 
 
 class Slitherlink(AbstractSolver):
-    def configure(self, puzzle, init_symbol_grid):
-        sg = init_symbol_grid(puzzle.lattice(border=True), grilops.make_number_range_symbol_set(0, 1))
+    def run(self, puzzle, solve):
+        sg = SymbolGrid(puzzle.lattice(border=True), grilops.make_number_range_symbol_set(0, 1))
         rc = RegionConstrainer(sg.lattice, sg.solver)
 
         for p in sg.grid:
@@ -16,5 +16,5 @@ class Slitherlink(AbstractSolver):
         for i in range(2):
             continuous_region(sg, rc, lambda q: sg.grid[q] == i)
 
-    def set_solved(self, puzzle, sg, solved_grid, solution):
+        solved_grid, solution = solve(sg)
         solution.set_regions(puzzle, solved_grid)
