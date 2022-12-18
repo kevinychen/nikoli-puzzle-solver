@@ -88,16 +88,19 @@ class AbstractPuzzle(ABC):
         # Text on an edge, for example ((y,x), NE) is the text in the top right corner of (y, x)
         self.edge_texts: Dict[Tuple[Point, Direction], Union[int, str]] = {}
 
-        # Any point between two regions of the grid. For example, a key of 2 regions corresponds to the edge between the
-        # regions, and can be either a bordering line (if the value is True) or a symbol on that edge.
-        # A key of more than 2 regions is a vertex, e.g. each corner of a square grid is a junction of 4 regions.
+        # Any point between two cells of the grid. For example, a key of 2 cells corresponds to the edge between the
+        # cells, and can be either a bordering line (if the value is True) or a symbol on that edge.
+        # A key of more than 2 cells is a vertex, e.g. each corner of a square grid is a junction of 4 cells.
         self.junctions: Dict[FrozenSet[Point], Union[bool, Symbol]] = {}
 
-        # Each key is 2 regions, representing a line between the center of those 2 regions in the grid.
+        # Each key is 2 cells, representing a line between the center of those 2 cells in the grid.
         self.lines: Dict[FrozenSet[Point], Union[bool, int]] = {}
 
-        # Each cage is an area of contiguous regions surrounded by dotted lines.
+        # Each cage is a region of contiguous cells surrounded by dotted lines.
         self.cages: List[List[Point]] = []
+
+        # Each thermo represents a region of cells ordered from bulb to flat part
+        self.thermo: List[List[Point]] = []
 
 
 class Puzzle(AbstractPuzzle):

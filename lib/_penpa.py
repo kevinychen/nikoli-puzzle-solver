@@ -22,6 +22,7 @@ class PenpaPart:
         numberS: Dict[str, Tuple[str, int]] = None,
         surface: Dict[str, int] = None,
         symbol: Dict[str, Tuple[int, str, int]] = None,
+        thermo: List[List[int]] = None,
         **_kwargs,
     ):
         self.arrows = []
@@ -34,7 +35,7 @@ class PenpaPart:
         self.squareframe = []
         self.surface = surface or {}
         self.symbol = symbol or {}
-        self.thermo = []
+        self.thermo = thermo or []
 
 
 class Penpa(NamedTuple):
@@ -56,7 +57,7 @@ class Penpa(NamedTuple):
         parts = decompress(b64decode(url[len(PENPA_PREFIX) :]), -15).decode().split("\n")
         header = parts[0].split(",")
 
-        if header[0] in ("square", "sudoku"):
+        if header[0] in ("square", "sudoku", "kakuro"):
             lattice_type = LatticeTypes.SQUARE
             top_space, bottom_space, left_space, right_space = loads(parts[1])
             width = int(header[1]) - left_space - right_space
@@ -148,6 +149,9 @@ class Penpa(NamedTuple):
         for cage in self.q.killercages:
             if cage:
                 puzzle.cages.append([self._from_index(index)[0] for index in cage])
+        for thermo in self.q.thermo:
+            if thermo:
+                puzzle.thermo.append([self._from_index(index)[0] for index in thermo])
         return puzzle
 
     def to_url(self, solution: Solution):

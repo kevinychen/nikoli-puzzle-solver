@@ -19,6 +19,11 @@ class Sudoku(AbstractSolver):
             sg.solver.add(Sum([sg.grid[p] for p in cage]) == total)
             sg.solver.add(Distinct([sg.grid[p] for p in cage]))
 
+        # Handle Thermo Sudoku thermometers
+        for thermo in puzzle.thermo:
+            for p, q in zip(thermo, thermo[1:]):
+                sg.solver.add(sg.grid[p] < sg.grid[q])
+
         solved_grid, solution = solve(sg)
         for p in sg.grid:
             if p not in puzzle.texts:
