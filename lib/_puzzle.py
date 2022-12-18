@@ -75,6 +75,8 @@ class Symbols:
     MINUS_SIGN = Symbol(3, "math")
     X = Symbol(0, "star")
     STAR = Symbol(2, "star")
+    SUN = Symbol(1, "sun_moon")
+    MOON = Symbol(2, "sun_moon")
     LIGHT_BULB = Symbol(3, "sun_moon")
     BOMB = Symbol(4, "sun_moon")
     TREE = Symbol(1, "tents")

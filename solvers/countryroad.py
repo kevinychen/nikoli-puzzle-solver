@@ -18,7 +18,7 @@ class CountryRoad(AbstractSolver):
         for (p, _), number in puzzle.edge_texts.items():
             sg.solver.add(Sum([sg.grid[q] != symbol_set.EMPTY for q in sg.grid if regions[p] == regions[q]]) == number)
 
-        # Each loop is visited once
+        # Each region is visited once
         region_exits = defaultdict(list)
         for p in sg.grid:
             for n in sg.edge_sharing_neighbors(p):
