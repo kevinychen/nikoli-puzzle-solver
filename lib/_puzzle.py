@@ -96,6 +96,9 @@ class AbstractPuzzle(ABC):
         # Each key is 2 regions, representing a line between the center of those 2 regions in the grid.
         self.lines: Dict[FrozenSet[Point], Union[bool, int]] = {}
 
+        # Each cage is an area of contiguous regions surrounded by dotted lines.
+        self.cages: List[List[Point]] = []
+
 
 class Puzzle(AbstractPuzzle):
     def __init__(

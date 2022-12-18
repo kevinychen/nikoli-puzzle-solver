@@ -13,6 +13,12 @@ class Sudoku(AbstractSolver):
         for region in puzzle.regions():
             sg.solver.add(Distinct([sg.grid[p] for p in region]))
 
+        # Handle Killer Sudoku cages
+        for cage in puzzle.cages:
+            total = next(number for (p, _), number in puzzle.edge_texts.items() if p in cage)
+            sg.solver.add(Sum([sg.grid[p] for p in cage]) == total)
+            sg.solver.add(Distinct([sg.grid[p] for p in cage]))
+
         solved_grid, solution = solve(sg)
         for p in sg.grid:
             if p not in puzzle.texts:

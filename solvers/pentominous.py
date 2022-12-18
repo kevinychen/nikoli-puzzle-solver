@@ -3,7 +3,7 @@ from lib import *
 
 class Pentominous(AbstractSolver):
     def run(self, puzzle, solve):
-        # Pieces in lexicographic order of their point sets (to be consistent with #get_polyominoes)
+        # Pieces in lexicographic order of their point sets (to be consistent with returned polyomino order)
         letters = "ILYNPUVTWFZX"
 
         sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, len(letters) - 1))

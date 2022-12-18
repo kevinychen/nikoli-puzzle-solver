@@ -71,19 +71,18 @@ class IceBarn(AbstractSolver):
                     <= 1
                 )
 
-            # Follow given arrows
-            for q in sg.lattice.edge_sharing_points(p):
-                symbol = puzzle.junctions.get(frozenset((p, q)))
-                if type(symbol) is Symbol:
-                    (v,) = symbol.get_arrows()
-                    if v is not None:
-                        start, end = (p, q) if p.translate(v) == q else (q, p)
-                        if start not in puzzle.points:
-                            sg.solver.add(sg.grid[end] == 1)
-                        elif end not in puzzle.points:
-                            sg.solver.add(And([sg.grid[r] <= sg.grid[start] for r in sg.grid]))
-                        else:
-                            sg.solver.add(Or([sg.grid[shift(end)] == sg.grid[shift(start)] + 1 for shift in shifts]))
+        # Follow given arrows
+        for (p, q, *_), symbol in puzzle.junctions.items():
+            if type(symbol) is Symbol:
+                (v,) = symbol.get_arrows()
+                if v is not None:
+                    start, end = (p, q) if p.translate(v) == q else (q, p)
+                    if start not in puzzle.points:
+                        sg.solver.add(sg.grid[end] == 1)
+                    elif end not in puzzle.points:
+                        sg.solver.add(And([sg.grid[r] <= sg.grid[start] for r in sg.grid]))
+                    else:
+                        sg.solver.add(Or([sg.grid[shift(end)] == sg.grid[shift(start)] + 1 for shift in shifts]))
 
         # All ice regions must be reached
         uf = UnionFind()

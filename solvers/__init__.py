@@ -3,6 +3,7 @@ from typing import Dict, List, Optional, Tuple
 
 from grilops import Point, SymbolGrid
 from ruamel.yaml import YAML
+from z3 import Or
 
 from lib import GlobalTimeoutLock, Penpa, Solution
 from solvers.abstract_solver import AbstractSolver
@@ -34,8 +35,7 @@ def solve(puzzle_type: str, url: str, parameters: str, different_from: Optional[
         nonlocal solved_grid, solution
 
         if different_from:
-            for p, value in different_from:
-                sg.solver.add(sg.grid[Point(*p)] != value)
+            sg.solver.add(Or([sg.grid[Point(*p)] != value for p, value in different_from]))
 
         sg.solver.set("timeout", 300000)
         if not sg.solve():
