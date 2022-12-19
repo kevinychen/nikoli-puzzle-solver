@@ -25,4 +25,4 @@ class RoundTrip(AbstractSolver):
         solved_grid, solution = solve(sg)
         for p in puzzle.points:
             for v in sg.symbol_set.dir_sets[solved_grid[p]]:
-                solution.lines[frozenset((p, p.translate(v)))] = True
+                solution.lines[p, p.translate(v)] = True

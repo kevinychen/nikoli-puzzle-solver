@@ -33,6 +33,4 @@ class FourWinds(AbstractSolver):
         solved_grid, solution = solve(sg)
         for p in sg.grid:
             if solved_grid[p] != -1:
-                solution.lines[
-                    frozenset((p, p.translate(sg.lattice.opposite_direction(directions[solved_grid[p]]))))
-                ] = True
+                solution.lines[p, p.translate(sg.lattice.opposite_direction(directions[solved_grid[p]]))] = True

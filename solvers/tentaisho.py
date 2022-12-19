@@ -10,7 +10,7 @@ class TentaishoSpiralGalaxies(AbstractSolver):
             *[(p.y, p.x) for p in puzzle.symbols],
             *[
                 (sum(p.y for p in junction) / len(junction), sum(p.x for p in junction) / len(junction))
-                for junction in puzzle.junctions
+                for junction in puzzle.junction_symbols
             ],
         )
 

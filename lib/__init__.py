@@ -2,7 +2,8 @@ from lib._directions import Directions
 from lib._global_timeout_lock import GlobalTimeoutLock
 from lib._paths import PathConstrainer, PathSymbolSet
 from lib._penpa import Penpa
-from lib._puzzle import Puzzle, Solution, Symbol, Symbols
+from lib._puzzle import Puzzle, Solution
+from lib._symbols import Symbol, Symbols
 from lib._union_find import UnionFind
 from lib._utils import (
     continuous_region,

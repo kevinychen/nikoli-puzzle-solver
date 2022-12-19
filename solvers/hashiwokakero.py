@@ -70,7 +70,7 @@ class Hashiwokakero(AbstractSolver):
                 shape = 30 if solved_grid[edge] == 2 else 3
                 if p.y == q.y:
                     for x in range(min(p.x, q.x), max(p.x, q.x)):
-                        solution.lines[frozenset((Point(p.y, x), Point(p.y, x + 1)))] = shape
+                        solution.lines[Point(p.y, x), Point(p.y, x + 1)] = shape
                 elif p.x == q.x:
                     for y in range(min(p.y, q.y), max(p.y, q.y)):
-                        solution.lines[frozenset((Point(y, p.x), Point(y + 1, p.x)))] = shape
+                        solution.lines[Point(y, p.x), Point(y + 1, p.x)] = shape

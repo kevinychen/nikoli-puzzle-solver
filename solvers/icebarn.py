@@ -11,17 +11,16 @@ class IceBarn(AbstractSolver):
             sg.solver.add(pc.is_crossing.grid[p] == (p in puzzle.shaded))
 
         # Follow given arrows
-        for (p, q, *_), symbol in puzzle.junctions.items():
-            if type(symbol) is Symbol:
-                (v,) = symbol.get_arrows()
-                if v is not None:
-                    start, end = (p, q) if p.translate(v) == q else (q, p)
-                    if start not in puzzle.points:
-                        sg.solver.add(pc.orders[0].grid[end] == 1)
-                    elif end not in puzzle.points:
-                        sg.solver.add(And([pc.orders[0].grid[r] <= pc.orders[0].grid[start] for r in sg.grid]))
-                    else:
-                        sg.solver.add(Or([order.grid[end] == order.grid[start] + 1 for order in pc.orders]))
+        for (p, q, *_), symbol in puzzle.junction_symbols.items():
+            (v,) = symbol.get_arrows()
+            if v is not None:
+                start, end = (p, q) if p.translate(v) == q else (q, p)
+                if start not in puzzle.points:
+                    sg.solver.add(pc.orders[0].grid[end] == 1)
+                elif end not in puzzle.points:
+                    sg.solver.add(And([pc.orders[0].grid[r] <= pc.orders[0].grid[start] for r in sg.grid]))
+                else:
+                    sg.solver.add(Or([order.grid[end] == order.grid[start] + 1 for order in pc.orders]))
 
         # All ice regions must be reached
         uf = UnionFind()
@@ -36,4 +35,4 @@ class IceBarn(AbstractSolver):
         solved_grid, solution = solve(sg)
         for p in puzzle.points:
             for v in sg.symbol_set.dir_sets[solved_grid[p]]:
-                solution.lines[frozenset((p, p.translate(v)))] = True
+                solution.lines[p, p.translate(v)] = True

@@ -124,9 +124,20 @@ class Penpa(NamedTuple):
                     Point((p.y + (dy - 3 * dx) // 2) // 3, p.x + (dy + dx) // 2),
                     Point((p.y + (dy + 3 * dx) // 2) // 3, p.x + (-dy + dx) // 2),
                 )
-            puzzle.junctions[frozenset((p, q))] = True
+            puzzle.borders[p, q] = True
+            puzzle.borders[q, p] = True
         for index, (text, _, _) in self.q.number.items():
-            puzzle.texts[self._from_index(index)[0]] = int(text) if type(text) == str and text.isnumeric() else text
+            p, category = self._from_index(index)
+            text = int(text) if type(text) == str and text.isnumeric() else text
+            if category == 0:
+                puzzle.texts[p] = text
+            elif category == 1:
+                regions = p, p.translate(Directions.E), p.translate(Directions.S), p.translate(Directions.SE)
+                puzzle.junction_texts[frozenset(regions)] = text
+            elif category == 2:
+                puzzle.junction_texts[frozenset((p, p.translate(Directions.S)))] = text
+            elif category == 3:
+                puzzle.junction_texts[frozenset((p, p.translate(Directions.E)))] = text
         for index, (text, _) in self.q.numberS.items():
             p, category = self._from_index(int(index) // 4)
             v = (
@@ -141,11 +152,11 @@ class Penpa(NamedTuple):
                 puzzle.symbols[p] = Symbol(style, shape)
             elif category == 1:
                 regions = p, p.translate(Directions.E), p.translate(Directions.S), p.translate(Directions.SE)
-                puzzle.junctions[frozenset(regions)] = Symbol(style, shape)
+                puzzle.junction_symbols[frozenset(regions)] = Symbol(style, shape)
             elif category == 2:
-                puzzle.junctions[frozenset((p, p.translate(Directions.S)))] = Symbol(style, shape)
+                puzzle.junction_symbols[frozenset((p, p.translate(Directions.S)))] = Symbol(style, shape)
             elif category == 3:
-                puzzle.junctions[frozenset((p, p.translate(Directions.E)))] = Symbol(style, shape)
+                puzzle.junction_symbols[frozenset((p, p.translate(Directions.E)))] = Symbol(style, shape)
         for cage in self.q.killercages:
             if cage:
                 puzzle.cages.append([self._from_index(index)[0] for index in cage])
@@ -161,8 +172,8 @@ class Penpa(NamedTuple):
         for p, text in solution.texts.items():
             a.number[self._to_index(p)] = str(text), 2, "1"
         for p, symbol in solution.symbols.items():
-            a.symbol[self._to_index(p)] = symbol.style, symbol.shape, 2
-        for p, q, *_ in solution.junctions:
+            a.symbol[self._to_index(p)] = symbol.style, symbol.shape, 1
+        for p, q in solution.borders:
             dy, dx = q.y - p.y, q.x - p.x
             # Do the reverse of the transformations of lineE done in to_puzzle.
             if self.lattice_type == LatticeTypes.SQUARE:

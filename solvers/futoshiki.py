@@ -8,7 +8,7 @@ class Futoshiki(AbstractSolver):
         for p, number in puzzle.texts.items():
             sg.solver.add(sg.grid[p] == number)
 
-        for (p, q, *_), symbol in puzzle.junctions.items():
+        for (p, q, *_), symbol in puzzle.junction_symbols.items():
             (v,) = symbol.get_arrows()
             big, small = (p, q) if p.translate(v) == q else (q, p)
             sg.solver.add(sg.grid[big] > sg.grid[small])

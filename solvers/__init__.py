@@ -25,7 +25,7 @@ def solve(puzzle_type: str, url: str, parameters: str, different_from: Optional[
     solver = next(
         subclass
         for subclass in AbstractSolver.__subclasses__()
-        if subclass.__name__ == "".join(c for c in puzzle_type if c.isalpha())
+        if subclass.__name__.casefold() == "".join(c for c in puzzle_type if c.isalpha()).casefold()
     )()
     penpa = Penpa.from_url(url, parameters)
     solved_grid: Optional[Dict[Point, int]] = None

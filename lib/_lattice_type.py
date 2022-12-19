@@ -1,4 +1,4 @@
-from typing import Callable, List, Tuple
+from typing import Callable, List
 
 from grilops import Direction, Lattice
 from grilops import Point, PointyToppedHexagonalLattice, RectangularLattice, Vector

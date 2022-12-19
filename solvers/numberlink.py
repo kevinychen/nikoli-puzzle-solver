@@ -19,4 +19,4 @@ class Numberlink(AbstractSolver):
         for p in sg.grid:
             for n in sg.edge_sharing_neighbors(p):
                 if solved_grid[p] != 0 and solved_grid[p] == solved_grid[n.location]:
-                    solution.lines[frozenset((p, n.location))] = True
+                    solution.lines[p, n.location] = True

@@ -1,86 +1,12 @@
 from abc import ABC
-from typing import Callable, Dict, FrozenSet, List, NamedTuple, Set, Tuple, Union
+from typing import Callable, Dict, FrozenSet, List, Set, Tuple, Union
 
 from grilops import Direction, Lattice, Point, SymbolGrid, Vector
 from grilops.shapes import Shape
 
-from lib._directions import Directions
 from lib._lattice_type import LatticeType
+from lib._symbols import Symbol
 from lib._union_find import UnionFind
-
-
-class Symbol(NamedTuple):
-
-    style: Union[int, List[int]]
-    shape: str
-
-    def get_arrows(self) -> List[Direction]:
-        if self.shape.startswith("arrow_fouredge_"):
-            directions = (
-                Directions.E,
-                Directions.S,
-                Directions.W,
-                Directions.N,
-                Directions.W,
-                Directions.N,
-                Directions.E,
-                Directions.S,
-            )
-        elif self.shape == "arrow_cross":
-            directions = Directions.W, Directions.N, Directions.E, Directions.S
-        elif self.shape == "arrow_S" or self.shape.startswith("arrow_N_"):
-            directions = (
-                None,
-                Directions.W,
-                Directions.SW,
-                Directions.N,
-                Directions.NE,
-                Directions.E,
-                Directions.SE,
-                Directions.S,
-                Directions.SW,
-            )
-        elif self.shape == "inequality":
-            directions = (
-                None,
-                Directions.W,
-                Directions.N,
-                Directions.E,
-                Directions.S,
-                Directions.W,
-                Directions.N,
-                Directions.E,
-                Directions.S,
-            )
-        else:
-            assert False
-        if type(self.style) == int:
-            return [directions[self.style]]
-        else:
-            return [v for v, flag in zip(directions, self.style) if flag]
-
-    def is_black(self):
-        return self.style == 2
-
-    def is_circle(self):
-        return self.shape.startswith("circle_")
-
-
-class Symbols:
-
-    WATER = Symbol(7, "battleship_B")
-    BLACK_CIRCLE = Symbol(2, "circle_L")
-    WHITE_CIRCLE = Symbol(8, "circle_L")
-    PLUS_SIGN = Symbol(2, "math")
-    MINUS_SIGN = Symbol(3, "math")
-    X = Symbol(0, "star")
-    STAR = Symbol(2, "star")
-    SUN = Symbol(1, "sun_moon")
-    MOON = Symbol(2, "sun_moon")
-    LIGHT_BULB = Symbol(3, "sun_moon")
-    BOMB = Symbol(4, "sun_moon")
-    TREE = Symbol(1, "tents")
-    TENT = Symbol(2, "tents")
 
 
 class AbstractPuzzle(ABC):
@@ -89,16 +15,22 @@ class AbstractPuzzle(ABC):
         self.texts: Dict[Point, Union[int, str]] = {}
         self.symbols: Dict[Point, Symbol] = {}
 
-        # Text on an edge, for example ((y,x), NE) is the text in the top right corner of (y, x)
+        # Text on an edge, for example ((y,x), NE) is the text in the top right corner of (y, x).
         self.edge_texts: Dict[Tuple[Point, Direction], Union[int, str]] = {}
 
-        # Any point between two cells of the grid. For example, a key of 2 cells corresponds to the edge between the
-        # cells, and can be either a bordering line (if the value is True) or a symbol on that edge.
-        # A key of more than 2 cells is a vertex, e.g. each corner of a square grid is a junction of 4 cells.
-        self.junctions: Dict[FrozenSet[Point], Union[bool, Symbol]] = {}
+        # Contains a set of two points (p,q) if there is a line between p and q. For convenience, in the given puzzle,
+        # both (p,q) and (q,p) will be present, but only one of them needs to be set in the solution.
+        self.borders: Dict[Tuple[Point, Point], bool] = {}
 
-        # Each key is 2 cells, representing a line between the center of those 2 cells in the grid.
-        self.lines: Dict[FrozenSet[Point], Union[bool, int]] = {}
+        # Any value (text or symbol) between cells in the grid. For example, a key of 2 cells corresponds to a value
+        # between them. A key of more than 2 cells is a vertex, e.g. each corner of a square grid is a junction of 4
+        # cells.
+        self.junction_texts: Dict[FrozenSet[Point], Union[int, str]] = {}
+        self.junction_symbols: Dict[FrozenSet[Point], Symbol] = {}
+
+        # Contains a set of two points (p,q) if there is a line from p to q. For convenience, in the given puzzle,
+        # both (p,q) and (q,p) will be present, but only one of them needs to be set in the solution.
+        self.lines: Dict[Tuple[Point, Point], Union[bool, int]] = {}
 
         # Each cage is a region of contiguous cells surrounded by dotted lines.
         self.cages: List[List[Point]] = []
@@ -173,7 +105,7 @@ class Puzzle(AbstractPuzzle):
     def regions(self) -> Set[Tuple[Point, ...]]:
         uf = UnionFind()
         for p, q in self.edges():
-            if frozenset((p, q)) not in self.junctions:
+            if (p, q) not in self.borders:
                 uf.union(p, q)
         return set([tuple(q for q in self.points if uf.find(q) == p) for p in self.points if uf.find(p) == p])
 
@@ -183,10 +115,10 @@ class Solution(AbstractPuzzle):
         for p in sg.grid:
             for v in sg.lattice.edge_sharing_directions():
                 if solved_grid[p] in sg.symbol_set.symbols_for_direction(v):
-                    self.lines[frozenset((p, p.translate(v)))] = True
+                    self.lines[p, p.translate(v)] = True
 
     def set_regions(self, puzzle: Puzzle, solved_grid: Dict[Point, int]):
         for p in puzzle.points:
             for q in puzzle.lattice_type.edge_sharing_points(p):
                 if solved_grid[p] != solved_grid.get(q):
-                    self.junctions[frozenset((p, q))] = True
+                    self.borders[p, q] = True

@@ -28,7 +28,7 @@ class CountryRoad(AbstractSolver):
             sg.solver.add(Sum([sg.cell_is_one_of(p, symbol_set.symbols_for_direction(v)) for (p, v) in exits]) == 2)
 
         # No two unvisited cells in neighboring regions may be adjacent
-        for p, q, *_ in puzzle.junctions:
+        for p, q in puzzle.borders:
             sg.solver.add(Or(sg.grid[p] != symbol_set.EMPTY, sg.grid[q] != symbol_set.EMPTY))
 
         solved_grid, solution = solve(sg)

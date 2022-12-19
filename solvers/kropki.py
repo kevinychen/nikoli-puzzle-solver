@@ -8,7 +8,7 @@ class Kropki(AbstractSolver):
         for p, q in puzzle.edges():
             white_condition = Or(sg.grid[p] == sg.grid[q] + 1, sg.grid[p] + 1 == sg.grid[q])
             black_condition = Or(sg.grid[p] == sg.grid[q] * 2, sg.grid[p] * 2 == sg.grid[q])
-            symbol = puzzle.junctions.get(frozenset((p, q)))
+            symbol = puzzle.junction_symbols.get(frozenset((p, q)))
             if symbol is None:
                 sg.solver.add(Not(Or(white_condition, black_condition)))
             elif symbol.is_black():

@@ -25,7 +25,7 @@ class MoonOrSun(AbstractSolver):
                 sg.solver.add((sg.grid[p] == symbol_set.EMPTY) == is_suns[regions[p]])
 
         # Regions alternate between sun and moon
-        for p, q, *_ in puzzle.junctions:
+        for p, q in puzzle.borders:
             v = next(v for v in sg.lattice.edge_sharing_directions() if p.translate(v) == q)
             sg.solver.add(
                 Implies(
