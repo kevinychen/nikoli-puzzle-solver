@@ -8,7 +8,7 @@ from zlib import compress, decompress
 from grilops import Point, Vector
 
 from lib._directions import Directions
-from lib._lattice_type import LatticeType, LatticeTypes
+from lib._lattices import LatticeType, LatticeTypes
 from lib._puzzle import Puzzle, Solution, Symbol
 
 
@@ -64,6 +64,11 @@ class Penpa(NamedTuple):
             height = int(header[2]) - top_space - bottom_space
         elif header[0] == "hex":
             lattice_type = LatticeTypes.HEXAGON
+            top_space, bottom_space, left_space, right_space = loads(parts[1]) * 4
+            width = int(header[1])
+            height = int(header[2])
+        elif header[0] == "tri":
+            lattice_type = LatticeTypes.TRIANGLE
             top_space, bottom_space, left_space, right_space = loads(parts[1]) * 4
             width = int(header[1])
             height = int(header[2])
@@ -123,6 +128,15 @@ class Penpa(NamedTuple):
                 p, q = (
                     Point((p.y + (dy - 3 * dx) // 2) // 3, p.x + (dy + dx) // 2),
                     Point((p.y + (dy + 3 * dx) // 2) // 3, p.x + (-dy + dx) // 2),
+                )
+            elif self.lattice_type == LatticeTypes.TRIANGLE:
+                # For the triangular grid, consider the hexagonal lattice consisting of the regular hexagon inscribed in
+                # each triangle, and the remaining "holes" to fill the remaining holes. Each vertex is labeled by the
+                # hexagon in the hole.
+                dy, dx = q.y - p.y, q.x - p.x
+                p, q = (
+                    Point((p.y + (dy - dx) // 2), p.x + (dy + 3 * dx) // 6),
+                    Point((p.y + (dy + dx) // 2), p.x + (-dy + 3 * dx) // 6),
                 )
             puzzle.borders[p, q] = True
             puzzle.borders[q, p] = True
@@ -190,6 +204,12 @@ class Penpa(NamedTuple):
                 if p.y % 3 != 1:
                     p, q = q, p
                 index1, index2 = (self._to_index(Point(p.y // 3, p.x + 1), 2), self._to_index(Point(q.y // 3, q.x), 1))
+            elif self.lattice_type == LatticeTypes.TRIANGLE:
+                p, q = (
+                    Point(p.y + (dy - 3 * dx) // 2, p.x + (dy + dx) // 2),
+                    Point(p.y + (dy + 3 * dx) // 2, p.x + (-dy + dx) // 2),
+                )
+                index1, index2 = self._to_index(p, 0), self._to_index(q, 0)
             else:
                 assert False
             a.lineE[f"{min(index1, index2)},{max(index1, index2)}"] = 3
@@ -206,34 +226,47 @@ class Penpa(NamedTuple):
         if self.lattice_type == LatticeTypes.HEXAGON:
             # change from odd-r offset coordinates to doubled coordinates
             p = Point(p.y, 2 * p.x + p.y % 2)
+        elif self.lattice_type == LatticeTypes.TRIANGLE:
+            p = Point(3 * p.y, 2 * p.x + p.y % 2)
+            if category == 2:
+                p = p.translate(Vector(-1, -1))
+            elif category == 0:
+                p = p.translate(Vector(-2, 0))
+            category = 0
         return p.translate(self._v().negate()), category
 
     def _to_index(self, p, category=0):
         y, x = p.translate(self._v())
         if self.lattice_type == LatticeTypes.HEXAGON:
-            # change from doubled offset coordinates to odd-r coordinates
+            # change from doubled coordinates to odd-r offset coordinates
             x //= 2
+        elif self.lattice_type == LatticeTypes.TRIANGLE:
+            category = (1 - y) % 3
+            y = (y + 2) // 3
+            x = (x + 1 - y % 2) // 2
         return self._w() * self._h() * category + self._w() * y + x
 
     def _v(self):
-        """(0,0) in the puzzle grid is mapped to this point in the Penpa numbering system."""
+        # For a square grid, ensure the top left cell is (0, 0) for convenience.
         if self.lattice_type == LatticeTypes.SQUARE:
             return Vector(2 + self.top_space, 2 + self.left_space)
-        elif self.lattice_type == LatticeTypes.HEXAGON:
-            y = (self.height * 3 + 1) // 2
-            return Vector(y, self.width * 3 // 2 * 2 + y % 2)
+        return Vector(0, 0)
 
     def _w(self):
         if self.lattice_type == LatticeTypes.SQUARE:
             return self.width + 4 + self.left_space + self.right_space
         elif self.lattice_type == LatticeTypes.HEXAGON:
             return self.width * 3 + 1
+        elif self.lattice_type == LatticeTypes.TRIANGLE:
+            return (self.width * 4 + 11) // 3
 
     def _h(self):
         if self.lattice_type == LatticeTypes.SQUARE:
             return self.height + 4 + self.top_space + self.bottom_space
         elif self.lattice_type == LatticeTypes.HEXAGON:
             return self.height * 3 + 1
+        elif self.lattice_type == LatticeTypes.TRIANGLE:
+            return (self.height * 4 + 11) // 3
 
 
 PENPA_PREFIX = "m=edit&p="

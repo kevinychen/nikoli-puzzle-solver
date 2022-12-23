@@ -4,7 +4,7 @@ import grilops
 from grilops import SymbolGrid, SymbolSet
 from z3 import And, Implies, Or, Sum
 
-from lib._lattice_type import LatticeType
+from lib._lattices import LatticeType
 from lib._utils import straight_edge_sharing_direction_pairs, var
 
 

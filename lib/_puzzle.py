@@ -4,7 +4,7 @@ from typing import Callable, Dict, FrozenSet, List, Set, Tuple, Union
 from grilops import Direction, Lattice, Point, SymbolGrid, Vector
 from grilops.shapes import Shape
 
-from lib._lattice_type import LatticeType
+from lib._lattices import LatticeType
 from lib._symbols import Symbol
 from lib._union_find import UnionFind
 
