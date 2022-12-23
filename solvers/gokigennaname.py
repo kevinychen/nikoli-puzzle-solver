@@ -3,7 +3,6 @@ from lib import *
 
 class GokigenNanameSlant(AbstractSolver):
     def run(self, puzzle, solve):
-        # 0 is \, 1 is /
         sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
         trees = SymbolGrid(
             grilops.get_rectangle_lattice(puzzle.height + 1, puzzle.width + 1),

@@ -21,7 +21,7 @@ class Yajilin(AbstractSolver):
             else:
                 sg.solver.add(sg.grid[p] != symbol_set.WALL)
 
-            no_adjacent_symbols(sg, symbol_set.BLACK)
+        no_adjacent_symbols(sg, symbol_set.BLACK)
 
         solved_grid, solution = solve(sg)
         solution.set_loop(sg, solved_grid)

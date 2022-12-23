@@ -92,7 +92,7 @@ window.onload = function () {
     iframe.contentWindow.document.addEventListener('click', () => iframe.contentWindow.focus());
 
     setInterval(() => {
-        if (solveButton.textContent === 'Solve' || exp() !== foundUrl) {
+        if (solveButton.textContent !== 'Solving...' && exp() !== foundUrl) {
             foundGrid = null;
             foundUrl = null;
             solveButton.textContent = 'Solve';

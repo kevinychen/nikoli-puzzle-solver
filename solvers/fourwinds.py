@@ -8,7 +8,7 @@ class FourWinds(AbstractSolver):
         sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(-1, len(directions) - 1))
 
         # If an arm is pointing east, then increment the length of the region on the east, or start at 1
-        lengths = dict((p, var()) for p in sg.grid)
+        lengths = {p: var() for p in sg.grid}
         for p in sg.grid:
             sg.solver.add((sg.grid[p] == -1) == (p in puzzle.texts))
 

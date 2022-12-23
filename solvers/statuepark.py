@@ -28,5 +28,5 @@ class StatuePark(AbstractSolver):
 
         solved_grid, solution = solve(sg)
         for p in sg.grid:
-            if solved_grid[p] == 1:
+            if solved_grid[p]:
                 solution.shaded[p] = True

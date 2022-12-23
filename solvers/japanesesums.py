@@ -48,7 +48,7 @@ class JapaneseSums(AbstractSolver):
             sg.solver.add(num_blocks[0] == 0)
             sg.solver.add(num_blocks[-1] == len(block_sums))
 
-        # Each number appears in each row and in each column exactly once
+        # Each number appears in each row and in each column at most once
         for i in range(1, maximum + 1):
             for p, v in puzzle.entrance_points():
                 sg.solver.add(Sum([sg.grid[q] == i for q in sight_line(sg, p.translate(v), v)]) <= 1)

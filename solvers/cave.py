@@ -23,5 +23,5 @@ class Cave(AbstractSolver):
 
         solved_grid, solution = solve(sg)
         for p in sg.grid:
-            if p in puzzle.points and solved_grid[p] == 1:
+            if p in puzzle.points and solved_grid[p]:
                 solution.shaded[p] = True
