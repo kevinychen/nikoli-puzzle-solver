@@ -1,6 +1,6 @@
-from typing import List, NamedTuple, Union
+from typing import List, NamedTuple, Tuple, Union
 
-from grilops import Direction
+from grilops import Direction, Vector
 
 from lib._directions import Directions
 
@@ -11,8 +11,25 @@ class Symbol(NamedTuple):
     shape: str
 
     def get_arrows(self) -> List[Direction]:
-        if self.shape.startswith("arrow_fouredge_"):
-            directions = (
+        if type(self.style) == int:
+            return [self.__get_directions(self.shape)[self.style]]
+        else:
+            return [v for v, flag in zip(self.__get_directions(self.shape), self.style) if flag]
+
+    def is_black(self):
+        return self.style == 2
+
+    def is_circle(self):
+        return self.shape.startswith("circle_")
+
+    @staticmethod
+    def from_arrow(shape: str, v: Direction):
+        return Symbol(Symbol.__get_directions(shape).index(v), shape)
+
+    @staticmethod
+    def __get_directions(shape: str) -> Tuple[Direction, ...]:
+        if shape.startswith("arrow_fouredge_"):
+            return (
                 Directions.E,
                 Directions.S,
                 Directions.W,
@@ -22,13 +39,13 @@ class Symbol(NamedTuple):
                 Directions.E,
                 Directions.S,
             )
-        elif self.shape == "arrow_cross":
-            directions = Directions.W, Directions.N, Directions.E, Directions.S
-        elif self.shape == "arrow_S" or self.shape.startswith("arrow_N_"):
-            directions = (
-                None,
+        elif shape == "arrow_cross":
+            return Directions.W, Directions.N, Directions.E, Directions.S
+        elif shape == "arrow_S" or shape.startswith("arrow_B_") or shape.startswith("arrow_N_"):
+            return (
+                Direction("", Vector(0, 0)),
                 Directions.W,
-                Directions.SW,
+                Directions.NW,
                 Directions.N,
                 Directions.NE,
                 Directions.E,
@@ -36,9 +53,9 @@ class Symbol(NamedTuple):
                 Directions.S,
                 Directions.SW,
             )
-        elif self.shape == "inequality":
-            directions = (
-                None,
+        elif shape == "inequality":
+            return (
+                Direction("", Vector(0, 0)),
                 Directions.W,
                 Directions.N,
                 Directions.E,
@@ -48,18 +65,6 @@ class Symbol(NamedTuple):
                 Directions.E,
                 Directions.S,
             )
-        else:
-            assert False
-        if type(self.style) == int:
-            return [directions[self.style]]
-        else:
-            return [v for v, flag in zip(directions, self.style) if flag]
-
-    def is_black(self):
-        return self.style == 2
-
-    def is_circle(self):
-        return self.shape.startswith("circle_")
 
 
 class Symbols:
