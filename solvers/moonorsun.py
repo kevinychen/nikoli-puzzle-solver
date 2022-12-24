@@ -26,13 +26,14 @@ class MoonOrSun(AbstractSolver):
 
         # Regions alternate between sun and moon
         for p, q in puzzle.borders:
-            v = next(v for v in sg.lattice.edge_sharing_directions() if p.translate(v) == q)
-            sg.solver.add(
-                Implies(
-                    sg.cell_is_one_of(p, symbol_set.symbols_for_direction(v)),
-                    is_suns[regions[p]] != is_suns[regions[q]],
+            if p in sg.grid and q in sg.grid:
+                v = next(v for v in sg.lattice.edge_sharing_directions() if p.translate(v) == q)
+                sg.solver.add(
+                    Implies(
+                        sg.cell_is_one_of(p, symbol_set.symbols_for_direction(v)),
+                        is_suns[regions[p]] != is_suns[regions[q]],
+                    )
                 )
-            )
 
         # Each region is visited once
         region_exits = defaultdict(list)

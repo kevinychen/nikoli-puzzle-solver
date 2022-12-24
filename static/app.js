@@ -51,6 +51,10 @@ window.onload = function () {
             });
 
             solveButton.addEventListener('click', () => {
+                if (!typeSelect.value) {
+                    alert('Choose a puzzle type to solve as.');
+                    return;
+                }
                 solveButton.textContent = 'Solving...';
                 solveButton.disabled = true;
                 fetch('/api/solve', {

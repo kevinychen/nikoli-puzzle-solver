@@ -29,7 +29,7 @@ class CountryRoad(AbstractSolver):
 
         # No two unvisited cells in neighboring regions may be adjacent
         for p, q in puzzle.borders:
-            sg.solver.add(Or(sg.grid[p] != symbol_set.EMPTY, sg.grid[q] != symbol_set.EMPTY))
+            sg.solver.add(Or(sg.grid.get(p) != symbol_set.EMPTY, sg.grid.get(q) != symbol_set.EMPTY))
 
         solved_grid, solution = solve(sg)
         solution.set_loop(sg, solved_grid)

@@ -15,7 +15,7 @@ class LITS(AbstractSolver):
         )
 
         # Each region has one piece
-        for i, region in enumerate(puzzle.regions()):
+        for region in puzzle.regions():
             region_root = var()
             for p in region:
                 sg.solver.add(Implies(sg.grid[p] == 1, sc.shape_instance_grid[p] == region_root))
