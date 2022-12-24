@@ -5,11 +5,13 @@ from lib import *
 
 class Binairo(AbstractSolver):
     def run(self, puzzle, solve):
+        symbols = list(set(symbol for symbol in puzzle.symbols.values()))
+        assert len(symbols) == 2
+
         sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
 
         for p, symbol in puzzle.symbols.items():
-            if symbol.is_circle():
-                sg.solver.add(sg.grid[p] == symbol.is_black())
+            sg.solver.add(sg.grid[p] == symbols.index(symbol))
 
         # Each row and column contains the same number of whites and blacks
         for p, v in puzzle.entrance_points():
@@ -31,4 +33,4 @@ class Binairo(AbstractSolver):
         solved_grid, solution = solve(sg)
         for p in sg.grid:
             if p not in puzzle.symbols:
-                solution.symbols[p] = Symbols.BLACK_CIRCLE if solved_grid[p] else Symbols.WHITE_CIRCLE
+                solution.symbols[p] = symbols[solved_grid[p]]

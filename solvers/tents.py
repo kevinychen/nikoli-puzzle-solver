@@ -24,5 +24,5 @@ class Tents(AbstractSolver):
 
         solved_grid, solution = solve(sg)
         for p in sg.grid:
-            if solved_grid[p] == 1:
+            if solved_grid[p]:
                 solution.symbols[p] = Symbols.TENT

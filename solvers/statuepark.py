@@ -19,6 +19,7 @@ class StatuePark(AbstractSolver):
             if symbol.is_circle():
                 sg.solver.add(sg.grid[p] == symbol.is_black())
 
+        # No two pieces may touch
         for p, q in puzzle.edges():
             sg.solver.add(
                 Implies(And(sg.grid[p] == 1, sg.grid[q] == 1), sc.shape_instance_grid[p] == sc.shape_instance_grid[q])

@@ -17,17 +17,17 @@ class Battleships(AbstractSolver):
         # Satisfy given ship parts/water
         for p, symbol in puzzle.symbols.items():
             if symbol.shape.startswith("battleship_"):
-                sg.solver.add(sg.cell_is(p, 0 if symbol.style == 7 else symbol.style))
+                sg.solver.add(sg.grid[p] == (0 if symbol.style == 7 else symbol.style))
 
         # Restrictions for each ship part
         for p in sg.grid:
             sg.solver.add((sg.grid[p] == 0) == (sc.shape_type_grid[p] == -1))
             # single ship
-            sg.solver.add(Implies(sg.cell_is(p, 1), And([ship.symbol == 0 for ship in sg.edge_sharing_neighbors(p)])))
+            sg.solver.add(Implies(sg.grid[p] == 1, And([ship.symbol == 0 for ship in sg.edge_sharing_neighbors(p)])))
             # ship middle
             sg.solver.add(
                 Implies(
-                    sg.cell_is(p, 2),
+                    sg.grid[p] == 2,
                     Or(
                         And([sg.grid.get(p.translate(v), 0) > 0 for v in (Directions.E, Directions.W)]),
                         And([sg.grid.get(p.translate(v), 0) > 0 for v in (Directions.N, Directions.S)]),
@@ -38,7 +38,7 @@ class Battleships(AbstractSolver):
             for num, v in (3, Directions.W), (4, Directions.N), (5, Directions.E), (6, Directions.S):
                 sg.solver.add(
                     Implies(
-                        sg.cell_is(p, num),
+                        sg.grid[p] == num,
                         And(sg.grid.get(p.translate(v.vector.negate()), 0) > 0, sg.grid.get(p.translate(v), 0) == 0),
                     )
                 )

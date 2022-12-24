@@ -19,13 +19,11 @@ class Doppelblock(AbstractSolver):
                             )
                         )
                 sg.solver.add(Or(choices))
-            else:
-                sg.solver.add(Sum([sg.grid[q] == 0 for q in line]) == 2)
 
         # Each number appears in each row and in each column exactly once
         for i in range(1, puzzle.width - 1):
             for p, v in puzzle.entrance_points():
-                sg.solver.add(Sum([sg.grid[q] == i for q in sight_line(sg, p.translate(v), v)]) <= 1)
+                sg.solver.add(Sum([sg.grid[q] == i for q in sight_line(sg, p.translate(v), v)]) == 1)
 
         solved_grid, solution = solve(sg)
         for p in sg.grid:

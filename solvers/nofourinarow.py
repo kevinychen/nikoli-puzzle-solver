@@ -4,6 +4,7 @@ from lib import *
 class NoFourInARow(AbstractSolver):
     def run(self, puzzle, solve):
         symbols = list(set(symbol for symbol in puzzle.symbols.values()))
+        assert len(symbols) == 2
 
         sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
 

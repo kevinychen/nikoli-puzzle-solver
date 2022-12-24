@@ -26,5 +26,5 @@ class Yajilin(AbstractSolver):
         solved_grid, solution = solve(sg)
         solution.set_loop(sg, solved_grid)
         for p in sg.grid:
-            if solved_grid[p] == sg.symbol_set.BLACK:
+            if solved_grid[p] == symbol_set.BLACK:
                 solution.shaded[p] = True

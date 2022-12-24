@@ -22,6 +22,6 @@ class Cave(AbstractSolver):
             continuous_region(sg, rc, lambda q: sg.grid[q] == i)
 
         solved_grid, solution = solve(sg)
-        for p in sg.grid:
-            if p in puzzle.points and solved_grid[p]:
+        for p in puzzle.points:
+            if solved_grid[p]:
                 solution.shaded[p] = True

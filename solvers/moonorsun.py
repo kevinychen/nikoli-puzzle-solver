@@ -7,6 +7,7 @@ class MoonOrSun(AbstractSolver):
     def run(self, puzzle, solve):
         regions = dict([(p, i) for i, region in enumerate(puzzle.regions()) for p in region])
         symbols = list(set(symbol for symbol in puzzle.symbols.values()))
+        assert len(symbols) == 2
 
         lattice = puzzle.lattice()
         symbol_set = LoopSymbolSet(lattice)

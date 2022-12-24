@@ -34,11 +34,11 @@ class TapaLikeLoop(AbstractSolver):
 
         for p in sg.grid:
             if p not in puzzle.points:
-                sg.solver.add(sg.cell_is(p, symbol_set.EMPTY))
+                sg.solver.add(sg.grid[p] == symbol_set.EMPTY)
 
         for p, text in puzzle.texts.items():
             # A square with numbers must be empty
-            sg.solver.add(sg.cell_is(p, symbol_set.EMPTY))
+            sg.solver.add(sg.grid[p] == symbol_set.EMPTY)
 
             # A square with numbers must have valid loop segments around it
             segment_lens = [int(c) for c in str(text)]
@@ -51,9 +51,9 @@ class TapaLikeLoop(AbstractSolver):
                         loop_dir = (loop_entrance + i) % len(directions)
                         square = p.translate(directions[loop_dir])
                         processed_squares.append(square)
-                        requirements.append(sg.cell_is(square, donut_parts[loop_dir]) == (0 < i < segment_len - 1))
+                        requirements.append((sg.grid[square] == donut_parts[loop_dir]) == (0 < i < segment_len - 1))
                 for square in lattice.vertex_sharing_points(p):
-                    requirements.append(sg.cell_is(square, symbol_set.EMPTY) != (square in processed_squares))
+                    requirements.append((sg.grid[square] == symbol_set.EMPTY) != (square in processed_squares))
                 if len(processed_squares) == len(set(processed_squares)):
                     choices.append(And(requirements))
             sg.solver.add(Or(choices))
