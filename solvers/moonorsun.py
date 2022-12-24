@@ -6,6 +6,7 @@ from lib import *
 class MoonOrSun(AbstractSolver):
     def run(self, puzzle, solve):
         regions = dict([(p, i) for i, region in enumerate(puzzle.regions()) for p in region])
+        symbols = list(set(symbol for symbol in puzzle.symbols.values()))
 
         lattice = puzzle.lattice()
         symbol_set = LoopSymbolSet(lattice)
@@ -15,14 +16,11 @@ class MoonOrSun(AbstractSolver):
         LoopConstrainer(sg, single_loop=True)
 
         # In a sun region, all suns and no moons must be crossed (and similarly for moon regions)
-        is_suns = [var() for _ in puzzle.regions()]
-        for is_sun in is_suns:
-            sg.solver.add(Or(is_sun == 0, is_sun == 1))
+        whichSymbols = [var() for _ in puzzle.regions()]
+        for whichSymbol in whichSymbols:
+            sg.solver.add(Or(whichSymbol == 0, whichSymbol == 1))
         for p, symbol in puzzle.symbols.items():
-            if symbol == Symbols.SUN:
-                sg.solver.add((sg.grid[p] != symbol_set.EMPTY) == is_suns[regions[p]])
-            elif symbol == Symbols.MOON:
-                sg.solver.add((sg.grid[p] == symbol_set.EMPTY) == is_suns[regions[p]])
+            sg.solver.add((sg.grid[p] != symbol_set.EMPTY) == (whichSymbols[regions[p]] == symbols.index(symbol)))
 
         # Regions alternate between sun and moon
         for p, q in puzzle.borders:
@@ -31,7 +29,7 @@ class MoonOrSun(AbstractSolver):
                 sg.solver.add(
                     Implies(
                         sg.cell_is_one_of(p, symbol_set.symbols_for_direction(v)),
-                        is_suns[regions[p]] != is_suns[regions[q]],
+                        whichSymbols[regions[p]] != whichSymbols[regions[q]],
                     )
                 )
 

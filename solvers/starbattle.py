@@ -16,4 +16,5 @@ class StarBattle(AbstractSolver):
 
         solved_grid, solution = solve(sg)
         for p in sg.grid:
-            solution.symbols[p] = Symbols.STAR if solved_grid[p] else Symbols.X
+            if solved_grid[p]:
+                solution.symbols[p] = Symbols.STAR

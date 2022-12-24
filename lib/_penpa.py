@@ -15,6 +15,7 @@ from lib._puzzle import Puzzle, Solution, Symbol
 class PenpaPart:
     def __init__(
         self,
+        arrows: List[List[int]] = None,
         killercages: List[List[int]] = None,
         line: Dict[str, int] = None,
         lineE: Dict[str, int] = None,
@@ -25,7 +26,7 @@ class PenpaPart:
         thermo: List[List[int]] = None,
         **_kwargs,
     ):
-        self.arrows = []
+        self.arrows = arrows or []
         self.direction = []
         self.killercages = killercages or []
         self.line = line or {}
@@ -171,6 +172,9 @@ class Penpa(NamedTuple):
                 puzzle.junction_symbols[frozenset((p, p.translate(Directions.S)))] = Symbol(style, shape)
             elif category == 3:
                 puzzle.junction_symbols[frozenset((p, p.translate(Directions.E)))] = Symbol(style, shape)
+        for arrow in self.q.arrows:
+            if arrow:
+                puzzle.arrows.append([self._from_index(index)[0] for index in arrow])
         for cage in self.q.killercages:
             if cage:
                 puzzle.cages.append([self._from_index(index)[0] for index in cage])

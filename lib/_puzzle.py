@@ -32,10 +32,9 @@ class AbstractPuzzle(ABC):
         # both (p,q) and (q,p) will be present, but only one of them needs to be set in the solution.
         self.lines: Dict[Tuple[Point, Point], Union[bool, int]] = {}
 
-        # Each cage is a region of contiguous cells surrounded by dotted lines.
+        # Objects used in Sudoku variants. Each list of points represents an arrow, cage, or thermometer.
+        self.arrows: List[List[Point]] = []
         self.cages: List[List[Point]] = []
-
-        # Each thermo represents a region of cells ordered from bulb to flat part
         self.thermo: List[List[Point]] = []
 
 

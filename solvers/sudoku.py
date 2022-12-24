@@ -13,6 +13,10 @@ class Sudoku(AbstractSolver):
         for region in puzzle.regions():
             sg.solver.add(Distinct([sg.grid[p] for p in region]))
 
+        # Handle Sudoku arrows
+        for arrow in puzzle.arrows:
+            sg.solver.add(Sum([sg.grid[p] for p in arrow[1:]]) == sg.grid[arrow[0]])
+
         # Handle Killer Sudoku cages
         for cage in puzzle.cages:
             total = next(number for (p, _), number in puzzle.edge_texts.items() if p in cage)

@@ -11,5 +11,5 @@ class Minesweeper(AbstractSolver):
 
         solved_grid, solution = solve(sg)
         for p in sg.grid:
-            if p not in puzzle.texts:
-                solution.symbols[p] = Symbols.BOMB if solved_grid[p] else Symbols.X
+            if solved_grid[p] and p not in puzzle.texts:
+                solution.symbols[p] = Symbols.BOMB
