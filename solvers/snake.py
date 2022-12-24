@@ -20,15 +20,11 @@ class Snake(AbstractSolver):
                 # Every other snake square is orthogonally adjacent to two others
                 sg.solver.add(Or(sg.grid[p] == 0, num_neighbors == 2))
 
-            # Snake can't touch itself diagonally
-            for n in sg.vertex_sharing_neighbors(p):
-                if n not in sg.edge_sharing_neighbors(p):
-                    sg.solver.add(
-                        Implies(
-                            And(sg.grid[p] == 1, n.symbol == 1),
-                            Or(sg.grid[Point(p.y, n.location.x)] == 1, sg.grid[Point(n.location.y, p.x)] == 1),
-                        )
-                    )
+            # Snake can't return to touch itself diagonally
+            for q, intermediates in diagonal_neighbors(sg, p):
+                sg.solver.add(
+                    Implies(And(sg.grid[p] == 1, sg.grid[q] == 1), Or([sg.grid[r] == 1 for r in intermediates]))
+                )
 
         solved_grid, solution = solve(sg)
         for p in sg.grid:

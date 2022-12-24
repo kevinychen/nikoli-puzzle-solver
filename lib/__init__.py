@@ -7,6 +7,7 @@ from lib._symbols import Symbol, Symbols
 from lib._union_find import UnionFind
 from lib._utils import (
     continuous_region,
+    diagonal_neighbors,
     no_adjacent_symbols,
     no2x2,
     sight_line,

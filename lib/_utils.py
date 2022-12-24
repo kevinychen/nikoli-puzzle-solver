@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Callable, List, Tuple, Union
+from typing import Callable, List, Set, Tuple, Union
 from uuid import uuid4
 
 from grilops import SymbolGrid
@@ -12,6 +12,17 @@ def continuous_region(sg: SymbolGrid, rc: RegionConstrainer, good: Callable[[Poi
     region_root = var()
     for p in sg.grid:
         sg.solver.add(good(p) == (rc.region_id_grid[p] == region_root))
+
+
+def diagonal_neighbors(sg: SymbolGrid, p: Point) -> List[Tuple[Point, Set[Point]]]:
+    return [
+        (
+            diagonal.location,
+            set(n.location for n in sg.edge_sharing_neighbors(p))
+            & set(n.location for n in sg.edge_sharing_neighbors(diagonal.location)),
+        )
+        for diagonal in (set(sg.vertex_sharing_neighbors(p)) - set(sg.edge_sharing_neighbors(p)))
+    ]
 
 
 def no_adjacent_symbols(sg: SymbolGrid, symbol: int, no_diagonal: bool = False):
