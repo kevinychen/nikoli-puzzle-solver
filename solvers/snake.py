@@ -4,10 +4,7 @@ from lib import *
 class Snake(AbstractSolver):
     def run(self, puzzle, solve):
         sg = SymbolGrid(puzzle.lattice(), PathSymbolSet(puzzle.lattice_type))
-        pc = PathConstrainer(sg)
-
-        for p in puzzle.points:
-            sg.solver.add(pc.is_crossing.grid[p] == 0)
+        PathConstrainer(sg)
 
         # Satisfy snake square counts
         for p, v in puzzle.entrance_points():

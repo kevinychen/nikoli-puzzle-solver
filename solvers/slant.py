@@ -19,26 +19,21 @@ class SlantGokigenNaname(AbstractSolver):
             sg.solver.add(Sum(pointing_ats) == number)
 
             # Points can be numbered such that each one other than 1 has a parent (to ensure there are no loops)
+            for pointing_at, n in zip(pointing_ats, neighbors):
+                sg.solver.add(Implies(pointing_at, trees.grid[p4] != trees.grid.get(p4.translate(n))))
             sg.solver.add(
                 Or(
                     trees.grid[p4] == 1,
                     Sum(
                         [
-                            And(pointing_at, trees.grid.get(p4.translate(n)) == trees.grid[p4] - 1)
+                            And(pointing_at, trees.grid.get(p4.translate(n)) < trees.grid[p4])
                             for pointing_at, n in zip(pointing_ats, neighbors)
+                            if p4.translate(n) in trees.grid
                         ]
                     )
                     == 1,
                 )
             )
-            for pointing_at, n in zip(pointing_ats, neighbors):
-                p = p4.translate(n)
-                if p in trees.grid:
-                    sg.solver.add(
-                        Implies(
-                            pointing_at, Or(trees.grid[p] == trees.grid[p4] + 1, trees.grid[p] == trees.grid[p4] - 1)
-                        )
-                    )
 
         solved_grid, solution = solve(sg)
         for p in sg.grid:

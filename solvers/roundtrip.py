@@ -4,7 +4,7 @@ from lib import *
 class RoundTrip(AbstractSolver):
     def run(self, puzzle, solve):
         sg = SymbolGrid(puzzle.lattice(), PathSymbolSet(puzzle.lattice_type))
-        pc = PathConstrainer(sg, loop=True)
+        pc = PathConstrainer(sg, crossing=True, loop=True)
 
         # Given numbers represent the length of the closest segment of loop that goes along that line
         for p, v in puzzle.entrance_points():

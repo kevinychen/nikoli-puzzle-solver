@@ -32,6 +32,9 @@ class AbstractPuzzle(ABC):
         # both (p,q) and (q,p) will be present, but only one of them needs to be set in the solution.
         self.lines: Dict[Tuple[Point, Point], Union[bool, int]] = {}
 
+        # A wall at point p going in both the given direction and the opposite direction (both will be present)
+        self.walls: Dict[Tuple[Point, Direction], bool] = {}
+
         # Objects used in Sudoku variants. Each list of points represents an arrow, cage, or thermometer.
         self.arrows: List[List[Point]] = []
         self.cages: List[List[Point]] = []
@@ -101,12 +104,12 @@ class Puzzle(AbstractPuzzle):
         recurse()
         return list(map(Shape, sorted([min(family) for family in polyominoes])))
 
-    def regions(self) -> Set[Tuple[Point, ...]]:
+    def regions(self) -> List[List[Point]]:
         uf = UnionFind()
         for p, q in self.edges():
             if (p, q) not in self.borders:
                 uf.union(p, q)
-        return set([tuple(q for q in self.points if uf.find(q) == p) for p in self.points if uf.find(p) == p])
+        return [[q for q in self.points if uf.find(q) == p] for p in self.points if uf.find(p) == p]
 
 
 class Solution(AbstractPuzzle):

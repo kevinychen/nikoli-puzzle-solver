@@ -16,7 +16,7 @@ class Symbol(NamedTuple):
             return [v for v, flag in zip(self.__get_directions(self.shape), self.style) if flag]
 
     def is_black(self):
-        return self.style == 2
+        return self.style == 2 or self.shape.endswith("_B")
 
     def is_circle(self):
         return self.shape.startswith("circle_") or (self.shape == "ox_B" and self.style == 1)

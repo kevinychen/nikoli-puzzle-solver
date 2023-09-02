@@ -24,6 +24,7 @@ class PenpaPart:
         surface: Dict[str, int] = None,
         symbol: Dict[str, Tuple[int, str, int]] = None,
         thermo: List[List[int]] = None,
+        wall: Dict[str, int] = None,
         **_kwargs,
     ):
         self.arrows = arrows or []
@@ -37,10 +38,10 @@ class PenpaPart:
         self.surface = surface or {}
         self.symbol = symbol or {}
         self.thermo = thermo or []
+        self.wall = wall or {}
 
 
 class Penpa(NamedTuple):
-
     lattice_type: LatticeType
     width: int
     height: int
@@ -172,6 +173,16 @@ class Penpa(NamedTuple):
                 puzzle.junction_symbols[frozenset((p, p.translate(Directions.S)))] = Symbol(style, shape)
             elif category == 3:
                 puzzle.junction_symbols[frozenset((p, p.translate(Directions.E)))] = Symbol(style, shape)
+        for index, wall in self.q.wall.items():
+            (p, category), (q, _) = map(lambda i: self._from_index(i), index.split(","))
+            if category == 2:
+                puzzle.walls[p.translate(Directions.S), Directions.N] = puzzle.walls[
+                    p.translate(Directions.S), Directions.S
+                ] = True
+            elif category == 3:
+                puzzle.walls[p.translate(Directions.E), Directions.W] = puzzle.walls[
+                    p.translate(Directions.E), Directions.E
+                ] = True
         for arrow in self.q.arrows:
             if arrow:
                 puzzle.arrows.append([self._from_index(index)[0] for index in arrow])

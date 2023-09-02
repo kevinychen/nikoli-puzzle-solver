@@ -23,20 +23,23 @@ class PathSymbolSet(SymbolSet):
 
 
 class PathConstrainer:
-    def __init__(self, sg: SymbolGrid, loop=False):
+    def __init__(self, sg: SymbolGrid, crossing=False, loop=False):
         crossing_dir_pairs = straight_edge_sharing_direction_pairs(sg)
+
+        self.crossing = crossing
+        self.loop = loop
 
         # Since we support paths that cross, we need more than one grid with numbers from 1 to n. We need 2 grids for
         # the square grid case: at a non-crossing point, the numbers are the same, but at crossing points, one grid has
         # the number for when crossing horizontally, and th other grid has the number for when crossing vertically.
         # The hex grid case is analogous, but with 3 grids.
-        self.loop = loop
         self.orders = [
             SymbolGrid(
                 sg.lattice, grilops.make_number_range_symbol_set(-1, len(sg.grid) * len(crossing_dir_pairs)), sg.solver
             )
             for _ in crossing_dir_pairs
         ]
+
         self.is_crossing = SymbolGrid(sg.lattice, grilops.make_number_range_symbol_set(0, 1), sg.solver)
         self.path_len = var()
 
@@ -47,6 +50,10 @@ class PathConstrainer:
             for p in sg.grid:
                 sg.solver.add(order.grid[p] != 0)
                 sg.solver.add(order.grid[p] != self.path_len + 1)
+
+        if not self.crossing:
+            for p in sg.grid:
+                sg.solver.add(self.is_crossing.grid[p] == 0)
 
         # If a loop, path_len must be next to 1
         if self.loop:

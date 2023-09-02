@@ -13,8 +13,8 @@ class Sukoro(AbstractSolver):
             )
 
         # Two of the same number may not be adjacent
-        for i in range(1, len(lattice.edge_sharing_directions())):
-            no_adjacent_symbols(sg, i)
+        for p, q in puzzle.edges():
+            sg.solver.add(Or(sg.grid[p] == 0, sg.grid[p] != sg.grid[q]))
 
         for p, number in puzzle.texts.items():
             sg.solver.add(sg.grid[p] == number)

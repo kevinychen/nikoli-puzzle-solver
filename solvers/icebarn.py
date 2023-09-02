@@ -4,7 +4,7 @@ from lib import *
 class IceBarn(AbstractSolver):
     def run(self, puzzle, solve):
         sg = SymbolGrid(puzzle.lattice(), PathSymbolSet(puzzle.lattice_type))
-        pc = PathConstrainer(sg)
+        pc = PathConstrainer(sg, crossing=True)
 
         # Can only cross on ice
         for p in puzzle.points:
