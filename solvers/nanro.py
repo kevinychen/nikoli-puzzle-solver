@@ -6,7 +6,6 @@ class Nanro(AbstractSolver):
         regions = dict([(p, i) for i, region in enumerate(puzzle.regions()) for p in region])
 
         sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, len(puzzle.points) + 1))
-        rc = RegionConstrainer(sg.lattice, sg.solver)
 
         for p, number in puzzle.texts.items():
             sg.solver.add(sg.grid[p] == number)
@@ -28,8 +27,8 @@ class Nanro(AbstractSolver):
             if regions[p] != regions[q]:
                 sg.solver.add(Or(sg.grid[p] == 0, sg.grid[q] == 0, sg.grid[p] != sg.grid[q]))
 
-        continuous_region(sg, rc, lambda r: sg.grid[r] > 0)
-        no2x2(sg, lambda r: sg.grid[r] > 0)
+        require_continuous(sg, lambda p: sg.grid[p] > 0)
+        no2x2(sg, lambda p: sg.grid[p] > 0)
 
         solved_grid, solution = solve(sg)
         for p in sg.grid:

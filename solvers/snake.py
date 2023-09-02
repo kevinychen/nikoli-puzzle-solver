@@ -3,27 +3,36 @@ from lib import *
 
 class Snake(AbstractSolver):
     def run(self, puzzle, solve):
-        sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
+        sg = SymbolGrid(puzzle.lattice(), PathSymbolSet(puzzle.lattice_type))
+        pc = PathConstrainer(sg)
+
+        for p in puzzle.points:
+            sg.solver.add(pc.is_crossing.grid[p] == 0)
 
         # Satisfy snake square counts
         for p, v in puzzle.entrance_points():
             if p in puzzle.texts:
-                sg.solver.add(Sum([sg.grid[q] for q in sight_line(sg, p.translate(v), v)]) == puzzle.texts[p])
+                sg.solver.add(Sum([sg.grid[q] != 0 for q in sight_line(sg, p.translate(v), v)]) == puzzle.texts[p])
 
         for p in sg.grid:
-            num_neighbors = Sum([n.symbol for n in sg.edge_sharing_neighbors(p)])
+            num_neighbors = Sum([n.symbol != 0 for n in sg.edge_sharing_neighbors(p)])
             if p in puzzle.symbols and puzzle.symbols[p].is_circle():
                 # A snake end is only orthogonally adjacent to one other snake square
-                sg.solver.add(sg.grid[p] == 1)
+                sg.solver.add(sg.grid[p] != 0)
                 sg.solver.add(num_neighbors == 1)
             else:
                 # Every other snake square is orthogonally adjacent to two others
-                sg.solver.add(Or(sg.grid[p] == 0, num_neighbors == 2))
+                sg.solver.add(Or(sg.grid[p] == 0, num_neighbors <= 2))
 
             # Snake can't return to touch itself diagonally
-            for q, intermediates in diagonal_neighbors(sg, p):
+            for diagonal in set(sg.vertex_sharing_neighbors(p)) - set(sg.edge_sharing_neighbors(p)):
+                q = diagonal.location
+                junction = next(j for j in junctions(sg) if p in j and q in j)
                 sg.solver.add(
-                    Implies(And(sg.grid[p] == 1, sg.grid[q] == 1), Or([sg.grid[r] == 1 for r in intermediates]))
+                    Implies(
+                        And(sg.grid[p] != 0, sg.grid[q] != 0),
+                        Or([sg.grid[r] != 0 for r in junction if r != p and r != q]),
+                    )
                 )
 
         solved_grid, solution = solve(sg)

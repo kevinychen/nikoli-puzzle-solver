@@ -1,7 +1,7 @@
 from lib import *
 
 
-class EasyAsABC(AbstractSolver):
+class EasyAs(AbstractSolver):
     def run(self, puzzle, solve):
         letters = puzzle.parameters["letters"]
 

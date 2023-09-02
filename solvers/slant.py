@@ -1,12 +1,13 @@
 from lib import *
 
 
-class GokigenNanameSlant(AbstractSolver):
+class SlantGokigenNaname(AbstractSolver):
     def run(self, puzzle, solve):
         sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
         trees = SymbolGrid(
             grilops.get_rectangle_lattice(puzzle.height + 1, puzzle.width + 1),
             grilops.make_number_range_symbol_set(1, (puzzle.height + 1) * (puzzle.width + 1)),
+            solver=sg.solver,
         )
 
         for junction, number in puzzle.junction_texts.items():
@@ -30,6 +31,14 @@ class GokigenNanameSlant(AbstractSolver):
                     == 1,
                 )
             )
+            for pointing_at, n in zip(pointing_ats, neighbors):
+                p = p4.translate(n)
+                if p in trees.grid:
+                    sg.solver.add(
+                        Implies(
+                            pointing_at, Or(trees.grid[p] == trees.grid[p4] + 1, trees.grid[p] == trees.grid[p4] - 1)
+                        )
+                    )
 
         solved_grid, solution = solve(sg)
         for p in sg.grid:

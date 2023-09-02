@@ -12,17 +12,15 @@ class Shakashaka(AbstractSolver):
 
         # In every 2x2 box, if there are 3 empty squares, the 4th is either empty
         # or contains a triangle in the corresponding direction as its position in the box
-        for row in range(puzzle.height - 1):
-            for col in range(puzzle.width - 1):
-                box = [Point(y, x) for y in range(row, row + 2) for x in range(col, col + 2)]
-                for (i, p) in enumerate(box):
-                    corresponding_direction = [symbol_set.NW, symbol_set.NE, symbol_set.SW, symbol_set.SE][i]
-                    sg.solver.add(
-                        Implies(
-                            And([sg.grid[q] == symbol_set.EMPTY for q in box if q != p]),
-                            Or(sg.grid[p] == symbol_set.EMPTY, sg.grid[p] == corresponding_direction),
-                        )
+        directions = [symbol_set.NW, symbol_set.NE, symbol_set.SW, symbol_set.SE]
+        for junction in junctions(sg):
+            for p, direction in zip(junction, directions):
+                sg.solver.add(
+                    Implies(
+                        And([sg.grid[q] == symbol_set.EMPTY for q in junction if q != p]),
+                        Or(sg.grid[p] == symbol_set.EMPTY, sg.grid[p] == direction),
                     )
+                )
 
         for p in sg.grid:
             if p not in puzzle.points:

@@ -4,7 +4,6 @@ from lib import *
 class YajisanKazusan(AbstractSolver):
     def run(self, puzzle, solve):
         sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
-        rc = RegionConstrainer(sg.lattice, sg.solver)
 
         for p in sg.grid:
             if p in puzzle.texts and p in puzzle.symbols:
@@ -14,7 +13,7 @@ class YajisanKazusan(AbstractSolver):
                 )
 
         no_adjacent_symbols(sg, 1)
-        continuous_region(sg, rc, lambda q: sg.grid[q] == 0)
+        require_continuous(sg, lambda q: sg.grid[q] == 0)
 
         solved_grid, solution = solve(sg)
         for p in sg.grid:

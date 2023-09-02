@@ -32,9 +32,8 @@ class TapaLikeLoop(AbstractSolver):
         sg = SymbolGrid(lattice, symbol_set)
         LoopConstrainer(sg, single_loop=True)
 
-        for p in sg.grid:
-            if p not in puzzle.points:
-                sg.solver.add(sg.grid[p] == symbol_set.EMPTY)
+        for p in sg.grid.keys() - puzzle.points:
+            sg.solver.add(sg.grid[p] == symbol_set.EMPTY)
 
         for p, text in puzzle.texts.items():
             # A square with numbers must be empty

@@ -6,7 +6,6 @@ from lib._directions import Directions
 
 
 class Symbol(NamedTuple):
-
     style: Union[int, List[int]]
     shape: str
 
@@ -20,7 +19,7 @@ class Symbol(NamedTuple):
         return self.style == 2
 
     def is_circle(self):
-        return self.shape.startswith("circle_")
+        return self.shape.startswith("circle_") or (self.shape == "ox_B" and self.style == 1)
 
     @staticmethod
     def from_arrow(shape: str, v: Direction):
@@ -68,7 +67,6 @@ class Symbol(NamedTuple):
 
 
 class Symbols:
-
     WATER = Symbol(7, "battleship_B")
     VERY_SMALL_WHITE_CIRCLE = Symbol(8, "circle_SS")
     PLUS_SIGN = Symbol(2, "math")

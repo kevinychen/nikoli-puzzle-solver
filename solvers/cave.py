@@ -4,22 +4,15 @@ from lib import *
 class Cave(AbstractSolver):
     def run(self, puzzle, solve):
         sg = SymbolGrid(puzzle.lattice(border=True), grilops.make_number_range_symbol_set(0, 1))
-        rc = RegionConstrainer(sg.lattice, sg.solver)
 
-        for p in sg.grid:
-            if p not in puzzle.points:
-                sg.solver.add(sg.grid[p] == 1)
+        for p in sg.grid.keys() - puzzle.points:
+            sg.solver.add(sg.grid[p] == 1)
 
         for p, number in puzzle.texts.items():
-            all_is_visible = [sg.grid[p] == 0]
-            for direction in sg.lattice.edge_sharing_directions():
-                line = sight_line(sg, p, direction)
-                for i in range(1, len(line)):
-                    all_is_visible.append(And([sg.grid[q] == 0 for q in line[: i + 1]]))
-            sg.solver.add(Sum(all_is_visible) == number)
+            require_sight_line_count(sg, p, lambda q: sg.grid[q] == 0, number)
 
         for i in range(2):
-            continuous_region(sg, rc, lambda q: sg.grid[q] == i)
+            require_continuous(sg, lambda q: sg.grid[q] == i)
 
         solved_grid, solution = solve(sg)
         for p in puzzle.points:

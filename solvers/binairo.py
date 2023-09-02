@@ -10,6 +10,7 @@ class Binairo(AbstractSolver):
 
         sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
 
+        # Satisfy given symbols
         for p, symbol in puzzle.symbols.items():
             sg.solver.add(sg.grid[p] == symbols.index(symbol))
 
@@ -17,13 +18,11 @@ class Binairo(AbstractSolver):
         for p, v in puzzle.entrance_points():
             sg.solver.add(Sum([sg.grid[q] for q in sight_line(sg, p.translate(v), v)]) == puzzle.width // 2)
 
-        # No three-in-a-row of the same color
+        # No three-in-a-row
         for p in sg.grid:
             for v in sg.lattice.edge_sharing_directions():
-                q = p.translate(v)
-                r = q.translate(v)
-                if r in sg.grid:
-                    sg.solver.add(Or(sg.grid[p] != sg.grid[q], sg.grid[p] != sg.grid[r]))
+                points = [Point(p.y + v.vector.dy * i, p.x + v.vector.dx * i) for i in range(1, 3)]
+                sg.solver.add(Or([sg.grid[p] != sg.grid.get(q) for q in points]))
 
         # All rows and columns are unique
         for i1, i2 in combinations(range(puzzle.width), 2):

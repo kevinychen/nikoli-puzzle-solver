@@ -22,8 +22,10 @@ class Battleships(AbstractSolver):
         # Restrictions for each ship part
         for p in sg.grid:
             sg.solver.add((sg.grid[p] == 0) == (sc.shape_type_grid[p] == -1))
+
             # single ship
             sg.solver.add(Implies(sg.grid[p] == 1, And([ship.symbol == 0 for ship in sg.edge_sharing_neighbors(p)])))
+
             # ship middle
             sg.solver.add(
                 Implies(
@@ -34,6 +36,7 @@ class Battleships(AbstractSolver):
                     ),
                 )
             )
+
             # ship ends
             for num, v in (3, Directions.W), (4, Directions.N), (5, Directions.E), (6, Directions.S):
                 sg.solver.add(

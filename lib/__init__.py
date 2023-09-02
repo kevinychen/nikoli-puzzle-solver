@@ -1,3 +1,12 @@
+from lib._constraints import (
+    no2x2,
+    no_adjacent_regions,
+    no_adjacent_symbols,
+    require_contiguous_block_sums,
+    require_continuous,
+    require_region_area,
+    require_sight_line_count,
+)
 from lib._directions import Directions
 from lib._global_timeout_lock import GlobalTimeoutLock
 from lib._paths import PathConstrainer, PathSymbolSet
@@ -6,10 +15,7 @@ from lib._puzzle import Puzzle, Solution
 from lib._symbols import Symbol, Symbols
 from lib._union_find import UnionFind
 from lib._utils import (
-    continuous_region,
-    diagonal_neighbors,
-    no_adjacent_symbols,
-    no2x2,
+    junctions,
     sight_line,
     straight_edge_sharing_direction_pairs,
     var,

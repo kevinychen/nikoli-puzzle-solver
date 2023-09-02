@@ -21,7 +21,7 @@ class Pentopia(AbstractSolver):
             if arrows:
                 lines = [(v, sight_line(sg, p.translate(v), v)) for v in sg.lattice.edge_sharing_directions()]
                 choices = []
-                for i in range(min([len(line) for v, line in lines if v in arrows])):
+                for i in range(min(len(line) for v, line in lines if v in arrows)):
                     choices.append(
                         And(
                             [

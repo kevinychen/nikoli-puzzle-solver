@@ -10,10 +10,10 @@ class Arrows(AbstractSolver):
         arrow_spots = set(
             [q for p in puzzle.points for q in sg.lattice.edge_sharing_points(p) if q not in puzzle.points]
         )
-        print(arrow_spots)
         for p in sg.grid:
             sg.solver.add((sg.grid[p] >= 0) == (p in arrow_spots))
 
+        # Each number represents the number of arrows pointing to it
         for p, number in puzzle.texts.items():
             num_pointing = []
             for v in sg.lattice.vertex_sharing_directions():

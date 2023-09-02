@@ -17,11 +17,11 @@ class MoonOrSun(AbstractSolver):
         LoopConstrainer(sg, single_loop=True)
 
         # In a sun region, all suns and no moons must be crossed (and similarly for moon regions)
-        whichSymbols = [var() for _ in puzzle.regions()]
-        for whichSymbol in whichSymbols:
-            sg.solver.add(Or(whichSymbol == 0, whichSymbol == 1))
+        which_symbols = [var() for _ in puzzle.regions()]
+        for which_symbol in which_symbols:
+            sg.solver.add(Or(which_symbol == 0, which_symbol == 1))
         for p, symbol in puzzle.symbols.items():
-            sg.solver.add((sg.grid[p] != symbol_set.EMPTY) == (whichSymbols[regions[p]] == symbols.index(symbol)))
+            sg.solver.add((sg.grid[p] != symbol_set.EMPTY) == (which_symbols[regions[p]] == symbols.index(symbol)))
 
         # Regions alternate between sun and moon
         for p, q in puzzle.borders:
@@ -30,7 +30,7 @@ class MoonOrSun(AbstractSolver):
                 sg.solver.add(
                     Implies(
                         sg.cell_is_one_of(p, symbol_set.symbols_for_direction(v)),
-                        whichSymbols[regions[p]] != whichSymbols[regions[q]],
+                        which_symbols[regions[p]] != which_symbols[regions[q]],
                     )
                 )
 

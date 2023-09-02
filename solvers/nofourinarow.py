@@ -11,14 +11,11 @@ class NoFourInARow(AbstractSolver):
         for p, symbol in puzzle.symbols.items():
             sg.solver.add(sg.grid[p] == symbols.index(symbol))
 
+        # No four-in-a-row
         for p in sg.grid:
             for v in sg.lattice.vertex_sharing_directions():
-                p2 = p.translate(v)
-                p3 = p2.translate(v)
-                p4 = p3.translate(v)
-                sg.solver.add(
-                    Or(sg.grid[p] != sg.grid.get(p2), sg.grid[p] != sg.grid.get(p3), sg.grid[p] != sg.grid.get(p4))
-                )
+                points = [Point(p.y + v.vector.dy * i, p.x + v.vector.dx * i) for i in range(1, 4)]
+                sg.solver.add(Or([sg.grid[p] != sg.grid.get(q) for q in points]))
 
         solved_grid, solution = solve(sg)
         for p in sg.grid:

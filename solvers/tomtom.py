@@ -3,12 +3,10 @@ from lib import *
 
 class TomTom(AbstractSolver):
     def run(self, puzzle, solve):
-        regions = dict([(p, i) for i, region in enumerate(puzzle.regions()) for p in region])
-
         sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(1, puzzle.width))
 
         for (p, _), text in puzzle.edge_texts.items():
-            region = [q for q in sg.grid if regions[p] == regions[q]]
+            region = next(region for region in puzzle.regions() if p in region)
             text = str(text)
             number = int("".join(filter(lambda c: c.isnumeric(), text)))
 

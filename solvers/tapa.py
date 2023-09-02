@@ -9,11 +9,9 @@ class Tapa(AbstractSolver):
         directions = sorted(puzzle.lattice_type.vertex_sharing_directions(), key=lambda v: atan2(*v.vector))
 
         sg = SymbolGrid(puzzle.lattice(border=True), grilops.make_number_range_symbol_set(0, 1))
-        rc = RegionConstrainer(sg.lattice, sg.solver)
 
-        for p in sg.grid:
-            if p not in puzzle.points:
-                sg.solver.add(sg.grid[p] == 0)
+        for p in sg.grid.keys() - puzzle.points:
+            sg.solver.add(sg.grid[p] == 0)
 
         for p, text in puzzle.texts.items():
             # A square with numbers must be white
@@ -26,7 +24,7 @@ class Tapa(AbstractSolver):
                 choices.append(And([sg.grid[p.translate(v)] == neighbor_colors[i] for i, v in enumerate(directions)]))
             sg.solver.add(Or(choices))
 
-        continuous_region(sg, rc, lambda q: sg.grid[q] == 1)
+        require_continuous(sg, lambda q: sg.grid[q] == 1)
         no2x2(sg, lambda q: sg.grid[q] == 1)
 
         solved_grid, solution = solve(sg)

@@ -6,7 +6,6 @@ class Heyawake(AbstractSolver):
         regions = dict([(p, i) for i, region in enumerate(puzzle.regions()) for p in region])
 
         sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, 1))
-        rc = RegionConstrainer(sg.lattice, sg.solver)
 
         # Number of black squares in each region is correct
         for p, number in puzzle.texts.items():
@@ -23,7 +22,7 @@ class Heyawake(AbstractSolver):
                         break
                     p = p.translate(v)
 
-        continuous_region(sg, rc, lambda q: sg.grid[q] == 0)
+        require_continuous(sg, lambda q: sg.grid[q] == 0)
         no_adjacent_symbols(sg, 1)
 
         solved_grid, solution = solve(sg)

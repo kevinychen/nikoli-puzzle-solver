@@ -2,7 +2,6 @@ from grilops import Direction, Vector
 
 
 class Directions:
-
     E = Direction("E", Vector(0, 1))
     NE = Direction("NE", Vector(-1, 1))
     N = Direction("N", Vector(-1, 0))

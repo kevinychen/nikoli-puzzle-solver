@@ -4,35 +4,11 @@ from uuid import uuid4
 
 from grilops import SymbolGrid
 from grilops.geometry import Direction, Point, Vector
-from grilops.regions import RegionConstrainer
-from z3 import And, BoolRef, Int, Not
+from z3 import Int
 
 
-def continuous_region(sg: SymbolGrid, rc: RegionConstrainer, good: Callable[[Point], BoolRef]):
-    region_root = var()
-    for p in sg.grid:
-        sg.solver.add(good(p) == (rc.region_id_grid[p] == region_root))
-
-
-def diagonal_neighbors(sg: SymbolGrid, p: Point) -> List[Tuple[Point, Set[Point]]]:
-    return [
-        (
-            diagonal.location,
-            set(n.location for n in sg.edge_sharing_neighbors(p))
-            & set(n.location for n in sg.edge_sharing_neighbors(diagonal.location)),
-        )
-        for diagonal in (set(sg.vertex_sharing_neighbors(p)) - set(sg.edge_sharing_neighbors(p)))
-    ]
-
-
-def no_adjacent_symbols(sg: SymbolGrid, symbol: int, no_diagonal: bool = False):
-    for p in sg.grid:
-        for n in sg.vertex_sharing_neighbors(p) if no_diagonal else sg.edge_sharing_neighbors(p):
-            sg.solver.add(Not(And(sg.cell_is(p, symbol), n.symbol == symbol)))
-
-
-def no2x2(sg: SymbolGrid, of: Callable[[Point], BoolRef]):
-    # The generalization to non-square grids is: not all regions that touch a vertex can be marked.
+def junctions(sg: SymbolGrid) -> List[Set[Point]]:
+    """Returns all vertices in the puzzle, where each vertex is represented by all cells with that vertex."""
     neighbors = defaultdict(set)
     for p in sg.grid:
         for q in sg.lattice.vertex_sharing_points(p):
@@ -41,9 +17,7 @@ def no2x2(sg: SymbolGrid, of: Callable[[Point], BoolRef]):
     for p in sg.grid:
         for q in neighbors[p]:
             for r in neighbors[p].intersection(neighbors[q]):
-                sg.solver.add(
-                    Not(And([of(p) for p in neighbors[p].intersection(neighbors[q], neighbors[r]).union((p, q, r))]))
-                )
+                yield sorted(neighbors[p].intersection(neighbors[q], neighbors[r]).union((p, q, r)))
 
 
 def sight_line(

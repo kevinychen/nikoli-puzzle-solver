@@ -7,15 +7,15 @@ class CastleWall(AbstractSolver):
         symbol_set = LoopSymbolSet(lattice)
         symbol_set.append("EMPTY")
 
-        sg = SymbolGrid(lattice, symbol_set)
-        lc = LoopConstrainer(sg, single_loop=True)
-
         # find the region where the loop should be (not any of the small white regions with numbers)
         region = next(
             region
             for region in puzzle.regions()
             if any(p not in puzzle.shaded and p not in puzzle.texts for p in region)
         )
+
+        sg = SymbolGrid(lattice, symbol_set)
+        lc = LoopConstrainer(sg, single_loop=True)
 
         for p in sg.grid:
             if p in puzzle.texts and p in puzzle.symbols:

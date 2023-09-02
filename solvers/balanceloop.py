@@ -41,7 +41,7 @@ class BalanceLoop(AbstractSolver):
             sg.solver.add(Or(choices))
 
         # Optimization: loop starts at one of the circles
-        sg.solver.add(lc.loop_order_grid[circles[0] or sg.lattice.points[0]] == 0)
+        sg.solver.add(lc.loop_order_grid[circles[0] if circles else sg.lattice.points[0]] == 0)
 
         solved_grid, solution = solve(sg)
         solution.set_loop(sg, solved_grid)

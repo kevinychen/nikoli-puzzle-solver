@@ -11,15 +11,14 @@ class Hashiwokakero(AbstractSolver):
 
         # Neighbor graph is symmetric and has no self-edges
         for edge in sg.grid:
-            if edge.x < edge.y:
-                sg.solver.add(sg.grid[edge] == sg.grid[Point(edge.x, edge.y)])
+            sg.solver.add(sg.grid[edge] == sg.grid[Point(edge.x, edge.y)])
 
         # Only orthogonally adjacent islands can have bridges
         edges = []
         for edge in sg.grid:
             p, q = number_positions[edge.x], number_positions[edge.y]
             if edge.x == edge.y:
-                sg.solver.add(sg.grid[edge] == 1)
+                sg.solver.add(sg.grid[edge] == 0)
             elif p.y == q.y and all(Point(p.y, x) not in puzzle.texts for x in range(min(p.x, q.x) + 1, max(p.x, q.x))):
                 edges.append(edge)
             elif p.x == q.x and all(Point(y, p.x) not in puzzle.texts for y in range(min(p.y, q.y) + 1, max(p.y, q.y))):
@@ -40,28 +39,15 @@ class Hashiwokakero(AbstractSolver):
                     sg.solver.add(Or(sg.grid[edge1] == 0, sg.grid[edge2] == 0))
 
         # Bridges are all connected
-        graph = defaultdict(var)
-        sg.solver.add(Sum([graph[edge] == 0 for edge in edges if edge.x < edge.y]) == 1)
-        for edge in edges:
-            sg.solver.add(graph[edge] >= 0)
-            sg.solver.add(graph[edge] < len(number_positions))
-            sg.solver.add(graph[edge] == graph[Point(edge.x, edge.y)])
-            sg.solver.add(
-                Or(
-                    sg.grid[edge] == 0,
-                    graph[edge] == 0,
-                    *[
-                        And(graph[edge] > graph[other_edge], sg.grid[other_edge] != 0)
-                        for other_edge in edges
-                        if other_edge.x == edge.x
-                    ],
-                    *[
-                        And(graph[edge] > graph[other_edge], sg.grid[other_edge] != 0)
-                        for other_edge in edges
-                        if other_edge.y == edge.y
-                    ]
-                )
-            )
+        require_continuous(
+            sg,
+            lambda e: sg.grid[e] != 0,
+            lambda e: [
+                edge2 if edge2.y < edge2.x else Point(edge2.x, edge2.y)
+                for edge2 in edges
+                if edge2.x == e.x or edge2.y == e.y
+            ],
+        )
 
         solved_grid, solution = solve(sg)
         for edge in sg.grid:

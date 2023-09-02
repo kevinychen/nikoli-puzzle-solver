@@ -9,6 +9,7 @@ class SimpleLoop(AbstractSolver):
 
         sg = SymbolGrid(lattice, symbol_set)
         lc = LoopConstrainer(sg, single_loop=True)
+
         for p in sg.grid:
             sg.solver.add((lc.inside_outside_grid[p] == L) == (p not in puzzle.shaded))
 

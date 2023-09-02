@@ -8,8 +8,7 @@ class Tents(AbstractSolver):
 
         # Each tree and its tent is a region of size 2; everything else must be EMPTY
         for p in sg.grid:
-            is_tree = p in puzzle.symbols and puzzle.symbols[p] == Symbols.TREE
-            if is_tree:
+            if puzzle.symbols.get(p) == Symbols.TREE:
                 sg.solver.add(rc.parent_grid[p] == R)
                 sg.solver.add(sg.grid[p] == 0)
             else:
@@ -18,7 +17,7 @@ class Tents(AbstractSolver):
         # Satisfy tent counts
         for p, v in puzzle.entrance_points():
             if p in puzzle.texts:
-                sg.solver.add(Sum([sg.grid[q] == 1 for q in sight_line(sg, p.translate(v), v)]) == puzzle.texts[p])
+                sg.solver.add(Sum([sg.grid[q] for q in sight_line(sg, p.translate(v), v)]) == puzzle.texts[p])
 
         no_adjacent_symbols(sg, 1, no_diagonal=True)
 

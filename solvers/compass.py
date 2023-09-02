@@ -3,7 +3,7 @@ from lib import *
 
 class Compass(AbstractSolver):
     def run(self, puzzle, solve):
-        sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(1, len(puzzle.points)))
+        sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, len(puzzle.points)))
         rc = RegionConstrainer(sg.lattice, sg.solver)
 
         region_ids = []
