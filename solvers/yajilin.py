@@ -24,7 +24,7 @@ class Yajilin(AbstractSolver):
         no_adjacent_symbols(sg, symbol_set.BLACK)
 
         solved_grid, solution = solve(sg)
-        solution.set_loop(sg, solved_grid)
+        solution.set_paths(sg, solved_grid)
         for p in sg.grid:
             if solved_grid[p] == symbol_set.BLACK:
                 solution.shaded[p] = True

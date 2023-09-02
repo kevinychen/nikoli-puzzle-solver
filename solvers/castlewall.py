@@ -32,4 +32,4 @@ class CastleWall(AbstractSolver):
                 sg.solver.add(lc.inside_outside_grid[p] == I)
 
         solved_grid, solution = solve(sg)
-        solution.set_loop(sg, solved_grid)
+        solution.set_paths(sg, solved_grid)

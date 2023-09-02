@@ -44,4 +44,4 @@ class MoonOrSun(AbstractSolver):
             sg.solver.add(Sum([sg.cell_is_one_of(p, symbol_set.symbols_for_direction(v)) for (p, v) in exits]) == 2)
 
         solved_grid, solution = solve(sg)
-        solution.set_loop(sg, solved_grid)
+        solution.set_paths(sg, solved_grid)

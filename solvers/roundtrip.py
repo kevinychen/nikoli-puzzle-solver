@@ -3,8 +3,8 @@ from lib import *
 
 class RoundTrip(AbstractSolver):
     def run(self, puzzle, solve):
-        sg = SymbolGrid(puzzle.lattice(), PathSymbolSet(puzzle.lattice_type))
-        pc = PathConstrainer(sg, crossing=True, loop=True)
+        sg = SymbolGrid(puzzle.lattice(), CrossingPathSymbolSet(puzzle.lattice_type))
+        pc = CrossingPathConstrainer(sg, loop=True)
 
         # Given numbers represent the length of the closest segment of loop that goes along that line
         for p, v in puzzle.entrance_points():

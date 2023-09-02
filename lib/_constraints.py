@@ -87,7 +87,7 @@ def require_region_area(sg: SymbolGrid, start: Point, good: Callable[[Point], bo
     floodfill = defaultdict(var)
     for p in sg.grid:
         sg.solver.add(floodfill[p] == (start == p))
-    for i in range(min(target, len(sg.grid))):
+    for _ in range(min(target, len(sg.grid))):
         new_floodfill = defaultdict(var)
         for p in sg.grid:
             sg.solver.add(

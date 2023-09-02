@@ -1,5 +1,3 @@
-from collections import defaultdict
-
 from lib import *
 
 
@@ -12,7 +10,7 @@ class Nuribou(AbstractSolver):
             sg.solver.add((sg.grid[p] == 0) == (rc.region_id_grid[p] == -1))
 
         # Each number is the root of a white region
-        tree = defaultdict(var)
+        tree = {p: var() for p in sg.grid}
         for p in sg.grid:
             sg.solver.add(tree[p] >= 0)
             sg.solver.add((sg.grid[p] == 0) == (tree[p] != 0))

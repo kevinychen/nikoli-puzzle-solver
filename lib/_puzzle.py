@@ -113,7 +113,7 @@ class Puzzle(AbstractPuzzle):
 
 
 class Solution(AbstractPuzzle):
-    def set_loop(self, sg: SymbolGrid, solved_grid: Dict[Point, int]):
+    def set_paths(self, sg: SymbolGrid, solved_grid: Dict[Point, int]):
         for p in sg.grid:
             for v in sg.lattice.edge_sharing_directions():
                 if solved_grid[p] in sg.symbol_set.symbols_for_direction(v):

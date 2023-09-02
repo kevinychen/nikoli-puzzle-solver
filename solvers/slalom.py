@@ -47,4 +47,4 @@ class Slalom(AbstractSolver):
                     sg.solver.add(Or([lc.loop_order_grid[q] == orders[number - 1] for q in gate]))
 
         solved_grid, solution = solve(sg)
-        solution.set_loop(sg, solved_grid)
+        solution.set_paths(sg, solved_grid)

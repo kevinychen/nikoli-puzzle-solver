@@ -44,4 +44,4 @@ class Geradeweg(AbstractSolver):
         sg.solver.add(lc.loop_order_grid[next(iter(puzzle.texts), sg.lattice.points[0])] == 0)
 
         solved_grid, solution = solve(sg)
-        solution.set_loop(sg, solved_grid)
+        solution.set_paths(sg, solved_grid)

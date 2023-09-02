@@ -32,4 +32,4 @@ class CountryRoad(AbstractSolver):
             sg.solver.add(Or(sg.grid.get(p) != symbol_set.EMPTY, sg.grid.get(q) != symbol_set.EMPTY))
 
         solved_grid, solution = solve(sg)
-        solution.set_loop(sg, solved_grid)
+        solution.set_paths(sg, solved_grid)

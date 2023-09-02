@@ -17,4 +17,4 @@ class SimpleLoop(AbstractSolver):
         sg.solver.add(lc.loop_order_grid[next(p for p in sg.grid if p not in puzzle.shaded)] == 0)
 
         solved_grid, solution = solve(sg)
-        solution.set_loop(sg, solved_grid)
+        solution.set_paths(sg, solved_grid)

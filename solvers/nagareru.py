@@ -3,8 +3,11 @@ from lib import *
 
 class Nagareru(AbstractSolver):
     def run(self, puzzle, solve):
-        sg = SymbolGrid(puzzle.lattice(), PathSymbolSet(puzzle.lattice_type))
-        pc = PathConstrainer(sg, loop=True)
+        sg = SymbolGrid(puzzle.lattice(), CrossingPathSymbolSet(puzzle.lattice_type))
+        pc = CrossingPathConstrainer(sg, loop=True)
+
+        for p in sg.grid:
+            sg.solver.add(pc.is_crossing.grid[p] == 0)
 
         for p in puzzle.shaded:
             sg.solver.add(sg.grid[p] == 0)

@@ -8,7 +8,7 @@ from lib._lattices import LatticeType
 from lib._utils import straight_edge_sharing_direction_pairs, var
 
 
-class PathSymbolSet(SymbolSet):
+class CrossingPathSymbolSet(SymbolSet):
     def __init__(self, lattice_type: LatticeType):
         super().__init__([])
         directions = lattice_type.edge_sharing_directions()
@@ -22,11 +22,10 @@ class PathSymbolSet(SymbolSet):
             self.append()
 
 
-class PathConstrainer:
-    def __init__(self, sg: SymbolGrid, crossing=False, loop=False):
+class CrossingPathConstrainer:
+    def __init__(self, sg: SymbolGrid, loop=False):
         crossing_dir_pairs = straight_edge_sharing_direction_pairs(sg)
 
-        self.crossing = crossing
         self.loop = loop
 
         # Since we support paths that cross, we need more than one grid with numbers from 1 to n. We need 2 grids for
@@ -50,10 +49,6 @@ class PathConstrainer:
             for p in sg.grid:
                 sg.solver.add(order.grid[p] != 0)
                 sg.solver.add(order.grid[p] != self.path_len + 1)
-
-        if not self.crossing:
-            for p in sg.grid:
-                sg.solver.add(self.is_crossing.grid[p] == 0)
 
         # If a loop, path_len must be next to 1
         if self.loop:
