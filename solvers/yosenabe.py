@@ -13,7 +13,7 @@ class Yosenabe(AbstractSolver):
         # All paths are straight
         straight_lines = [symbol_set.symbol_for_direction_pair(*v) for v in straight_edge_sharing_direction_pairs(sg)]
         for p in sg.grid:
-            sg.solver.add(Or(Not(symbol_set.is_path_segment(sg.grid[p]), sg.cell_is_one_of(p, straight_lines))))
+            sg.solver.add(Or(Not(symbol_set.is_path_segment(sg.grid[p])), sg.cell_is_one_of(p, straight_lines)))
 
         # All paths start at a circle and can only end in a shaded area
         for p in sg.grid:

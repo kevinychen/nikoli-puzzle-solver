@@ -3,10 +3,11 @@ from lib import *
 
 class Sashigane(AbstractSolver):
     def run(self, puzzle, solve):
+        max_length = max(puzzle.height, puzzle.width) + 1
         shapes = [
             Shape([Vector(0, 0)] + [Vector(i + 1, 0) for i in range(a)] + [Vector(0, j + 1) for j in range(b)])
-            for a in range(1, puzzle.height)
-            for b in range(1, puzzle.width)
+            for a in range(1, max_length)
+            for b in range(1, max_length)
         ]
 
         sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, len(puzzle.points)))

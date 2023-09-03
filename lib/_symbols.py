@@ -27,6 +27,8 @@ class Symbol(NamedTuple):
 
     @staticmethod
     def __get_directions(shape: str) -> Tuple[Direction, ...]:
+        unused = Direction("", Vector(0, 0))
+
         if shape.startswith("arrow_fouredge_"):
             return (
                 Directions.E,
@@ -42,7 +44,7 @@ class Symbol(NamedTuple):
             return Directions.W, Directions.N, Directions.E, Directions.S
         elif shape == "arrow_S" or shape.startswith("arrow_B_") or shape.startswith("arrow_N_"):
             return (
-                Direction("", Vector(0, 0)),
+                unused,
                 Directions.W,
                 Directions.NW,
                 Directions.N,
@@ -54,7 +56,7 @@ class Symbol(NamedTuple):
             )
         elif shape == "inequality":
             return (
-                Direction("", Vector(0, 0)),
+                unused,
                 Directions.W,
                 Directions.N,
                 Directions.E,
@@ -64,6 +66,8 @@ class Symbol(NamedTuple):
                 Directions.E,
                 Directions.S,
             )
+        elif shape == "pencils":
+            return unused, Directions.W, Directions.N, Directions.E, Directions.S
 
 
 class Symbols:
