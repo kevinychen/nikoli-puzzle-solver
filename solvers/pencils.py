@@ -44,7 +44,7 @@ class Pencils(AbstractSolver):
         for p, pencil in puzzle.symbols.items():
             (v,) = pencil.get_arrows()
             sg.solver.add(And(symbol_set.is_terminal(sg.grid[p]), pc.path_order_grid[p] != 0))
-            sg.solver.add(sg.grid[p.translate(v.vector.negate())] == symbol_set[f"PENCIL_{v.name}"])
+            sg.solver.add(sg.grid[p.translate(v)] == symbol_set[f"PENCIL_{sg.lattice.opposite_direction(v).name}"])
 
         solved_grid, solution = solve(sg)
         for p in sg.grid:
@@ -60,5 +60,5 @@ class Pencils(AbstractSolver):
                             continue
                     solution.borders[p, n.location] = True
                 if is_pencil_p and not is_pencil_q and solved_grid[p] == symbol_set[f"PENCIL_{n.direction.name}"]:
-                    solution.symbols[q] = Symbol.from_arrow("pencils", n.direction)
+                    solution.symbols[q] = Symbol.from_arrow("pencils", sg.lattice.opposite_direction(n.direction))
         solution.set_paths(sg, solved_grid)

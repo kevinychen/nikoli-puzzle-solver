@@ -54,6 +54,8 @@ class Symbol(NamedTuple):
                 Directions.S,
                 Directions.SW,
             )
+        elif shape == "firefly" or shape == "pencils":
+            return unused, Directions.E, Directions.S, Directions.W, Directions.N
         elif shape == "inequality":
             return (
                 unused,
@@ -66,8 +68,6 @@ class Symbol(NamedTuple):
                 Directions.E,
                 Directions.S,
             )
-        elif shape == "pencils":
-            return unused, Directions.W, Directions.N, Directions.E, Directions.S
 
 
 class Symbols:

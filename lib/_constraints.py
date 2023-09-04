@@ -1,4 +1,3 @@
-from collections import defaultdict
 from typing import Callable, List
 
 from grilops import SymbolGrid
@@ -65,7 +64,7 @@ def require_contiguous_block_sums(sg: SymbolGrid, line: List[Point], target_sums
 def require_continuous(
     sg: SymbolGrid, good: Callable[[Point], bool | BoolRef], neighbors: Callable[[Point], List[Point]] = None
 ):
-    tree = defaultdict(var)
+    tree = {p: var() for p in sg.grid}
     for p in sg.grid:
         sg.solver.add(tree[p] >= 0)
         sg.solver.add(good(p) == (tree[p] != 0))
@@ -84,11 +83,11 @@ def require_continuous(
 def require_region_area(sg: SymbolGrid, start: Point, good: Callable[[Point], bool], target: int):
     # Perform a floodfill from the starting point to all contiguous shaded squares.
     # Ensure the total number of reached squares is equal to the number (plus one to include the original square).
-    floodfill = defaultdict(var)
+    floodfill = {p: var() for p in sg.grid}
     for p in sg.grid:
         sg.solver.add(floodfill[p] == (start == p))
     for _ in range(min(target, len(sg.grid))):
-        new_floodfill = defaultdict(var)
+        new_floodfill = {p: var() for p in sg.grid}
         for p in sg.grid:
             sg.solver.add(
                 new_floodfill[p]

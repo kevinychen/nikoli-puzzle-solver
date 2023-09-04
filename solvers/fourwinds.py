@@ -1,7 +1,7 @@
 from lib import *
 
 
-class FourWinds(AbstractSolver):
+class FourWindsWalls(AbstractSolver):
     def run(self, puzzle, solve):
         directions = puzzle.lattice_type.edge_sharing_directions()
 

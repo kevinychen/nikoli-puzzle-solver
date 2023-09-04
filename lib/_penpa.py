@@ -143,6 +143,8 @@ class Penpa(NamedTuple):
             puzzle.borders[p, q] = True
             puzzle.borders[q, p] = True
         for index, (text, _, _) in self.q.number.items():
+            if text == "":
+                continue
             p, category = self._from_index(index)
             text = int(text) if type(text) == str and text.isnumeric() else text
             if category == 0:
