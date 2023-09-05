@@ -15,9 +15,7 @@ class FiveCells(AbstractSolver):
 
         # Ensure solution is unique
         for p in sg.grid:
-            for q in sg.grid:
-                if sg.lattice.point_to_index(p) < sg.lattice.point_to_index(q):
-                    sg.solver.add(Implies(sg.grid[p] == sg.grid[q], sg.grid[q] != sg.lattice.point_to_index(q)))
+            sg.solver.add(sg.grid[p] >= sg.lattice.point_to_index(p))
 
         solved_grid, solution = solve(sg)
         solution.set_regions(puzzle, solved_grid)

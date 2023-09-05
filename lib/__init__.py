@@ -4,6 +4,7 @@ from lib._constraints import (
     no_adjacent_symbols,
     require_contiguous_block_sums,
     require_continuous,
+    require_loop_direction,
     require_region_area,
     require_sight_line_count,
 )

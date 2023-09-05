@@ -1,7 +1,7 @@
 from typing import Callable, List
 
 from grilops import SymbolGrid
-from grilops.geometry import Point
+from grilops.geometry import Point, Direction
 from grilops.regions import RegionConstrainer
 from z3 import And, BoolRef, Implies, Not, Or, Sum
 
@@ -78,6 +78,34 @@ def require_continuous(
             )
         )
     sg.solver.add(Sum([tree[p] == 1 for p in sg.grid]) == 1)
+
+
+def require_loop_direction(sg: SymbolGrid):
+    class DirectionRef:
+        def __init__(self, dirs):
+            self._directions = dirs
+            self.ref = var()
+
+        def __eq__(self, v: Direction):
+            return self.ref == self._directions.index(v)
+
+        def __ne__(self, v: Direction):
+            return self.ref != self._directions.index(v)
+
+    directions = sg.lattice.edge_sharing_directions()
+    loop_direction = {p: DirectionRef(directions) for p in sg.grid}
+    for p in sg.grid:
+        sg.solver.add(And(loop_direction[p].ref >= -1, loop_direction[p].ref < len(directions)))
+        sg.solver.add(Implies(loop_direction[p].ref == -1, Not(sg.symbol_set.is_loop(sg.grid[p]))))
+        for v in directions:
+            sg.solver.add(Implies(loop_direction[p] == v, sg.cell_is_one_of(p, sg.symbol_set.symbols_for_direction(v))))
+            sg.solver.add(
+                Implies(
+                    loop_direction[p] == v,
+                    loop_direction.get(p.translate(v)) != sg.lattice.opposite_direction(v),
+                )
+            )
+    return loop_direction
 
 
 def require_region_area(sg: SymbolGrid, start: Point, good: Callable[[Point], bool], target: int):

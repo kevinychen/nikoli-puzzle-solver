@@ -1,7 +1,7 @@
 from lib import *
 
 
-class CrissCross(AbstractSolver):
+class CrissCrossNansuke(AbstractSolver):
     def run(self, puzzle, solve):
         words = [text for p, text in puzzle.texts.items() if p not in puzzle.points]
         all_letters = list(set(c for word in words for c in word))
