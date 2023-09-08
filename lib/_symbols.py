@@ -73,6 +73,8 @@ class Symbol(NamedTuple):
 class Symbols:
     WATER = Symbol(7, "battleship_B")
     VERY_SMALL_WHITE_CIRCLE = Symbol(8, "circle_SS")
+    HORIZONTAL_LINE = Symbol(1, "line")
+    VERTICAL_LINE = Symbol(2, "line")
     PLUS_SIGN = Symbol(2, "math")
     MINUS_SIGN = Symbol(3, "math")
     NW_TO_SE = Symbol(5, "ox_B")

@@ -1,4 +1,4 @@
-from typing import Callable, List
+from typing import Callable, List, Union
 
 from grilops import SymbolGrid
 from grilops.geometry import Point, Direction
@@ -8,7 +8,7 @@ from z3 import And, BoolRef, Implies, Not, Or, Sum
 from lib._utils import junctions, sight_line, var
 
 
-def no2x2(sg: SymbolGrid, good: Callable[[Point], bool | BoolRef]):
+def no2x2(sg: SymbolGrid, good: Callable[[Point], Union[bool, BoolRef]]):
     for junction in junctions(sg):
         sg.solver.add(Not(And([good(p) for p in junction])))
 
@@ -30,7 +30,7 @@ def no_adjacent_regions(sg: SymbolGrid, rc: RegionConstrainer):
             )
 
 
-def require_contiguous_block_sums(sg: SymbolGrid, line: List[Point], target_sums: List[int | str]):
+def require_contiguous_block_sums(sg: SymbolGrid, line: List[Point], target_sums: List[Union[int, str]]):
     # For each horizontal/vertical line, use dynamic programming where num_blocks[i] is the current number of blocks
     # seen so far. Then anytime we end a block, we check if the block is the right sum and increment num_blocks[i] if
     # so. Otherwise, we keep num_blocks[i] as the same value.
@@ -62,7 +62,7 @@ def require_contiguous_block_sums(sg: SymbolGrid, line: List[Point], target_sums
 
 
 def require_continuous(
-    sg: SymbolGrid, good: Callable[[Point], bool | BoolRef], neighbors: Callable[[Point], List[Point]] = None
+    sg: SymbolGrid, good: Callable[[Point], Union[bool, BoolRef]], neighbors: Callable[[Point], List[Point]] = None
 ):
     tree = {p: var() for p in sg.grid}
     for p in sg.grid:

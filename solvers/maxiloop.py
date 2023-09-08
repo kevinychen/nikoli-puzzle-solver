@@ -18,18 +18,18 @@ class MaxiLoop(AbstractSolver):
                 break
 
             max_length = {p: var() for p in region}
-            for p in region:
-                sg.solver.add(max_length[p] == 1)
+            for q in region:
+                sg.solver.add(max_length[q] == 1)
             for i in range(number):
                 if i == number - 1:
                     sg.solver.add(Or([max_length[p] == 1 for p in region]))
                 new_max_length = {p: var() for p in region}
-                for p in region:
+                for q in region:
                     sg.solver.add(
-                        new_max_length[p]
+                        new_max_length[q]
                         == Or(
                             [
-                                And(loop_direction[p] == v, max_length.get(p.translate(v)) == 1)
+                                And(loop_direction[q] == v, max_length.get(q.translate(v)) == 1)
                                 for v in sg.lattice.edge_sharing_directions()
                             ]
                         )
