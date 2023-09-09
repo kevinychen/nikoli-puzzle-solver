@@ -1,5 +1,3 @@
-from collections import defaultdict
-
 from lib import *
 
 
@@ -35,12 +33,12 @@ class MoonOrSun(AbstractSolver):
                 )
 
         # Each region is visited once
-        region_exits = defaultdict(list)
-        for p in sg.grid:
-            for n in sg.edge_sharing_neighbors(p):
-                if regions[p] != regions[n.location]:
-                    region_exits[regions[p]].append((p, n.direction))
-        for region, exits in region_exits.items():
+        for region in puzzle.regions():
+            exits = []
+            for p in region:
+                for n in sg.edge_sharing_neighbors(p):
+                    if (p, n.location) in puzzle.borders:
+                        exits.append((p, n.direction))
             sg.solver.add(Sum([sg.cell_is_one_of(p, symbol_set.symbols_for_direction(v)) for (p, v) in exits]) == 2)
 
         solved_grid, solution = solve(sg)

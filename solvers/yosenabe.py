@@ -24,9 +24,10 @@ class Yosenabe(AbstractSolver):
         # Create a grid where every cell on a path has the value of the starting circle
         values = {p: var() for p in sg.grid}
         for p in sg.grid:
-            sg.solver.add(Implies(sg.grid[p] == symbol_set.EMPTY, values[p] == 0))
             if p in puzzle.symbols:
                 sg.solver.add(values[p] == puzzle.texts[p])
+            else:
+                sg.solver.add(Implies(sg.grid[p] == symbol_set.EMPTY, values[p] == 0))
             for v in sg.lattice.edge_sharing_directions():
                 sg.solver.add(
                     Implies(
