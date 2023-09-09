@@ -21,6 +21,9 @@ class Symbol(NamedTuple):
     def is_circle(self):
         return self.shape.startswith("circle_") or (self.shape == "ox_B" and self.style == 1)
 
+    def is_square(self):
+        return self.shape.startswith("square_")
+
     @staticmethod
     def from_arrow(shape: str, v: Direction):
         return Symbol(Symbol.__get_directions(shape).index(v), shape)
