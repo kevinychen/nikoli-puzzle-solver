@@ -44,11 +44,14 @@ def require_contiguous_block_sums(sg: SymbolGrid, line: List[Point], target_sums
             if target_sum == "*":
                 choices.append(And(num_blocks[i] == block_num + 1, num_blocks[i - 1] == block_num + 1))
             else:
+                next_block_num = block_num + (
+                    2 if block_num + 1 < len(target_sums) and target_sums[block_num + 1] == "*" else 1
+                )
                 for block_size in range(1, i):
                     squares = [sg.grid[line[i - j - 1]] for j in range(block_size)]
                     choices.append(
                         And(
-                            num_blocks[i] == block_num + 1,
+                            num_blocks[i] == next_block_num,
                             num_blocks[i - block_size] == block_num,
                             sg.grid[line[i]] == 0,
                             *[square != 0 for square in squares],
@@ -65,19 +68,18 @@ def require_continuous(
     sg: SymbolGrid, good: Callable[[Point], Union[bool, BoolRef]], neighbors: Callable[[Point], List[Point]] = None
 ):
     tree = {p: var() for p in sg.grid}
+    root = var()
     for p in sg.grid:
-        sg.solver.add(tree[p] >= 0)
-        sg.solver.add(good(p) == (tree[p] != 0))
         sg.solver.add(
             Or(
-                tree[p] <= 1,
+                Not(good(p)),
+                sg.lattice.point_to_index(p) == root,
                 *[
-                    And(tree[q] != 0, tree[q] < tree[p])
+                    And(good(q), tree[q] < tree[p])
                     for q in (neighbors(p) if neighbors else [n.location for n in sg.edge_sharing_neighbors(p)])
                 ]
             )
         )
-    sg.solver.add(Sum([tree[p] == 1 for p in sg.grid]) == 1)
 
 
 def require_loop_direction(sg: SymbolGrid):

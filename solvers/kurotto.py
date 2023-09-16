@@ -9,6 +9,7 @@ class Kurotto(AbstractSolver):
             sg.solver.add(sg.grid[p] == 0)
 
         for p, number in puzzle.texts.items():
+            sg.solver.add(sg.grid[p] == 0)
             require_region_area(sg, p, lambda q: sg.grid[q] == 1, number + 1)
 
         solved_grid, solution = solve(sg)

@@ -1,7 +1,7 @@
 from lib import *
 
 
-class TentaishoSpiralGalaxies(AbstractSolver):
+class SpiralGalaxiesTentaisho(AbstractSolver):
     def run(self, puzzle, solve):
         sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(0, len(puzzle.points)))
         rc = RegionConstrainer(sg.lattice, sg.solver)

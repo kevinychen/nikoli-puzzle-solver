@@ -1,7 +1,7 @@
 from lib import *
 
 
-class TomTom(AbstractSolver):
+class CalcudokuKenKen(AbstractSolver):
     def run(self, puzzle, solve):
         sg = SymbolGrid(puzzle.lattice(), grilops.make_number_range_symbol_set(1, puzzle.width))
 
