@@ -35,6 +35,8 @@ class Tapa(AbstractSolver):
     @staticmethod
     def _valid_neighbor_colors(desired_block_sizes, num_neighbors):
         # Get all tuples of valid colorings of a region's neighbors.
+        if desired_block_sizes == [0]:
+            return [[0] * num_neighbors]
         if desired_block_sizes == [num_neighbors]:
             return [[1] * num_neighbors]
         valid_neighbor_colors = set()
