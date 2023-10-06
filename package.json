@@ -1,0 +1,21 @@
+{
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "lodash": "^4.17.21",
+    "pako": "^2.1.0",
+    "z3-solver": "^4.12.1"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.6",
+    "@types/lodash": "^4.14.198",
+    "@types/pako": "^2.0.0",
+    "@types/webpack-env": "^1.18.1",
+    "copy-webpack-plugin": "^11.0.0",
+    "html-webpack-plugin": "^5.5.3",
+    "ts-loader": "^9.4.4",
+    "typescript": "^5.2.2",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1"
+  }
+}

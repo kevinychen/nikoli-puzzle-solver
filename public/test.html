@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Nikoli Puzzle Solver Tests</title>
+    <meta charset="utf-8" />
+    <style>
+        table {
+            margin: 10px;
+            width: 90vw;
+            overflow-wrap: anywhere;
+        }
+
+        td:first-child {
+            width: 200px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="result"></div>
+    <table id="table"></table>
+    <script src="z3-built.js"></script>
+    <script src="bundle.js"></script>
+    <script>
+        const result = document.getElementById("result");
+        const table = document.getElementById("table");
+
+        (async () => {
+            // Ensure z3 is loaded before we start timings
+            await initPromise;
+
+            const allStart = Date.now();
+            let passed = true;
+            for (const { name, parameters, samples } of solverRegistry) {
+                for (const { name: sampleName, puzzle, parameters: sampleParameters, answer: expectedAnswer } of samples) {
+                    const start = Date.now();
+                    let answer, differentFrom;
+                    try {
+                        [answer, differentFrom] = await solve(name, puzzle, sampleParameters || parameters);
+                        if (answer !== expectedAnswer) {
+                            table.innerHTML += `<tr><td>${sampleName || name}</td><td>Wrong answer; got ${answer}</td></tr>`;
+                            passed = false;
+                            continue;
+                        }
+                    } catch (e) {
+                        table.innerHTML += `<tr><td>${sampleName || name}</td><td>Got error: ${e.message}</td></tr>`;
+                        console.log(e);
+                        passed = false;
+                        continue;
+                    }
+                    try {
+                        await solve(name, puzzle, parameters, differentFrom);
+                        table.innerHTML += `<tr><td>${sampleName || name}</td><td>Solution not unique</td></tr>`;
+                        passed = false;
+                        continue;
+                    } catch (e) {
+                        if (e.message !== 'No other solution found.') {
+                            table.innerHTML += `<tr><td>${sampleName || name}</td><td>Got error: ${e.message}</td></tr>`;
+                            console.log(e);
+                            passed = false;
+                            continue;
+                        }
+                    }
+                    table.innerHTML += `<tr><td>${sampleName || name}</td><td>${Date.now() - start} ms</td></tr>`;
+                }
+            }
+
+            result.innerHTML = `<h1>${passed ? `All passed! ${Date.now() - allStart} ms` : "Found failures"}</h1>`;
+        })();
+    </script>
+</body>
+
+</html>
