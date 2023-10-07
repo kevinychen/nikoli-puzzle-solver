@@ -5,9 +5,19 @@ module.exports = {
     devServer: {
         devMiddleware: { writeToDisk: true },
         headers: {
-            "Cross-Origin-Embedder-Policy": "require-corp",
+            "Cross-Origin-Embedder-Policy": "credentialless",
             "Cross-Origin-Opener-Policy": "same-origin",
         },
+        static: [
+            {
+                directory: path.resolve(__dirname, "public"),
+                publicPath: '/',
+            },
+            {
+                directory: path.resolve(__dirname, "penpa-edit/docs"),
+                publicPath: '/penpa-edit',
+            },
+        ],
     },
     entry: "./src/index.ts",
     externals: {

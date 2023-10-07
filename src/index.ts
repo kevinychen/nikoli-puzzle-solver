@@ -9,7 +9,7 @@ interface PenpaEditWindow {
 
 declare global {
     var initPromise: ReturnType<typeof init>;
-    var refs: any[];
+    var cleanupFunc: (args: any) => void;
     var solverRegistry: PuzzleSolver[];
     var exp: () => string;
     var imp: (url: string) => void;
@@ -23,8 +23,23 @@ declare global {
     var initSolverUI: () => void;
 }
 
-global.initPromise = init();
-global.refs = [];
+global.initPromise = init().then(z3 => {
+    // z3 lib calls del_context in the finalizer, but we want to free memory immediately because
+    // the finalizer isn't guaranteed to run. But del_context isn't idempotent, so we call it
+    // ourselves and clear the actual cleanup functions so that the finalizer doesn't run them.
+    global.cleanupFunc = z3.Z3.del_context;
+    z3.Z3.ast_map_dec_ref = () => {};
+    z3.Z3.ast_vector_dec_ref = () => {};
+    z3.Z3.del_context = () => {};
+    z3.Z3.dec_ref = () => {};
+    z3.Z3.func_entry_dec_ref = () => {};
+    z3.Z3.func_interp_dec_ref = () => {};
+    z3.Z3.model_dec_ref = () => {};
+    z3.Z3.optimize_dec_ref = () => {};
+    z3.Z3.solver_dec_ref = () => {};
+    z3.Z3.tactic_dec_ref = () => {};
+    return z3;
+});
 
 // Dynamically load all solvers
 global.solverRegistry = [];
@@ -47,14 +62,7 @@ global.solve = async (puzzleName: string, url: string, parameters: string, diffe
     return solverRegistry
         .find(({ name }) => name === puzzleName)
         .solve(context, toPuzzle(penpa), cs, solution)
-        .finally(() => {
-            // z3 lib calls del_context in the finalizer, but we want to free memory immediately.
-            // HACKHACK: del_context isn't idempotent, so we keep a reference to the context so the
-            // finalizer doesn't call del_context, which is a memory leak but a tiny one.
-            refs.push(z3Context);
-            z3.Z3.del_context(z3Context.ptr);
-            z3.Z3.dec_ref = () => {};
-        })
+        .finally(() => global.cleanupFunc(z3Context.ptr))
         .then(() => [toPenpaUrl(penpa, solution), newValues]);
 };
 
