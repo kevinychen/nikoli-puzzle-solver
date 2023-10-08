@@ -43,7 +43,7 @@ To generate production assets and start the server, run:
 
 Then go to http://localhost:8080.
 
-You can also run a development server, which will automatically refresh when the source code changes:
+To run a development server, which will automatically refresh when the source code changes:
 
     npx webpack serve --mode development
 
@@ -57,7 +57,7 @@ Start the development server with `npx webpack serve --mode development`, then g
 - Using the existing solvers as examples, define a solve function that takes a Z3 `Context` (to construct constraints) and a `Puzzle` (that contains the contents from the Penpa UI) as input.
 - At the bottom of the file, add it to the solver registry with `solverRegistry.push({...})`.
     - You can construct the sample puzzle in Penpa, and click "Share" -> "Editing URL" to get the encoded puzzle.
-- Run the tests by to verify the new solver implementation and sample puzzle are correct.
+- Run the tests to verify the new solver implementation and sample puzzle are correct.
 
 ### Credits
 

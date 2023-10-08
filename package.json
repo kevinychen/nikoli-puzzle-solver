@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "choices.js": "^10.2.0",
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
     "pako": "^2.1.0",

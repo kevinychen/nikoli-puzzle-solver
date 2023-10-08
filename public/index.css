@@ -1,0 +1,141 @@
+body {
+    margin: 0;
+}
+
+#iframe {
+    display: block;
+    border: none;
+    width: 100vw;
+    height: 100vh;
+}
+
+.left {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+}
+
+.right {
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+}
+
+.choices {
+    position: relative;
+}
+
+.choices__list--single,
+#parameters,
+#solve,
+select {
+    margin-bottom: 10px;
+    border: 1px outset #808080;
+    border-radius: 3px;
+    background-color: #f8f8f8;
+    cursor: pointer;
+    width: 400px;
+    height: 45px;
+    text-align: center;
+    line-height: 45px;
+    font-size: 24px;
+}
+
+.choices::after {
+    position: absolute;
+    right: 5px;
+    bottom: 50%;
+    border-width: 6px;
+    border-style: solid;
+    border-color: transparent transparent #333;
+    width: 0;
+    height: 0;
+    content: "";
+}
+
+#parameters {
+    display: none;
+    padding: 0;
+    height: 30px;
+    resize: none;
+    line-height: 30px;
+}
+
+#solve {
+    background-color: #f2f2f2;
+}
+
+#solve:hover {
+    background-color: #e8e8e8;
+}
+
+.choices__list--dropdown {
+    display: none;
+    position: absolute;
+    bottom: 40px;
+    margin-bottom: 10px;
+    border: 2px outset #808080;
+    border-radius: 3px;
+    background-color: #f8f8f8;
+    padding: 5px;
+    text-align: initial;
+    font-size: 20px;
+}
+
+.right .choices__list--dropdown {
+    right: 0;
+}
+
+.choices__list--dropdown > .choices__list {
+    display: grid;
+    grid-template-rows: repeat(25, auto);
+    grid-auto-flow: column;
+    max-width: calc(95vw - 100px);
+    max-height: calc(95vh - 150px);
+    overflow: scroll;
+}
+
+.choices__list--dropdown .choices__placeholder {
+    display: none;
+}
+
+.choices__item--choice {
+    cursor: pointer;
+    padding: 2px;
+    width: 250px;
+}
+
+.is-active {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.is-highlighted {
+    background-color: #e8e8e8;
+}
+
+.github-corner:hover .octo-arm {
+    animation: none;
+}
+
+@keyframes octocat-wave {
+    0%,
+    100% {
+        transform: rotate(0);
+    }
+    20%,
+    60% {
+        transform: rotate(-25deg);
+    }
+    40%,
+    80% {
+        transform: rotate(10deg);
+    }
+}
+
+@media (max-width: 500px) {
+}
+
+.github-corner .octo-arm {
+    animation: octocat-wave 560ms ease-in-out;
+}

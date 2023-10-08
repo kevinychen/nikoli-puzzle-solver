@@ -9,98 +9,22 @@
     <meta name="theme-color" content="#000000" />
     <meta name="description"
         content="Solver for many types of Nikoli-style logic puzzles, including Sudoku, Slitherlink, Nurikabe, Fillomino, and more." />
-    <style>
-        body {
-            margin: 0;
-        }
-
-        iframe {
-            margin: 0;
-            width: 100vw;
-            height: 100vh;
-        }
-
-        .left {
-            position: fixed;
-            left: 10px;
-            bottom: 10px;
-        }
-
-        .right {
-            position: fixed;
-            right: 10px;
-            bottom: 10px;
-        }
-
-        select,
-        button {
-            display: block;
-            font-size: 24px;
-            margin-bottom: 10px;
-            width: 400px;
-            height: 45px;
-            text-align: center;
-            cursor: pointer;
-        }
-
-        textarea {
-            display: none;
-            font-size: 24px;
-            margin-bottom: 10px;
-            width: 400px;
-            height: 30px;
-            text-align: center;
-            resize: none;
-            vertical-align: middle;
-        }
-
-        .github-corner:hover .octo-arm {
-            animation: octocat-wave 560ms ease-in-out;
-        }
-
-        @keyframes octocat-wave {
-
-            0%,
-            100% {
-                transform: rotate(0);
-            }
-
-            20%,
-            60% {
-                transform: rotate(-25deg);
-            }
-
-            40%,
-            80% {
-                transform: rotate(10deg);
-            }
-        }
-
-        @media (max-width:500px) {
-            .github-corner:hover .octo-arm {
-                animation: none;
-            }
-
-            .github-corner .octo-arm {
-                animation: octocat-wave 560ms ease-in-out;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="index.css">
 </head>
 
 <body>
     <iframe id="iframe" src="penpa-edit/"></iframe>
     <div class="left">
         <select id="sample">
-            <option value="" disabled selected>Sample puzzles...</option>
+            <option value="">Choose sample puzzle…</option>
         </select>
     </div>
     <div class="right">
         <select id="type">
-            <option value="" disabled selected>Solve as...</option>
+            <option value="">Solve as…</option>
         </select>
         <textarea id="parameters"></textarea>
-        <button id="solve">Solve</button>
+        <div id="solve">Solve</div>
     </div>
 
     <a href="https://github.com/kevinychen/nikoli-puzzle-solver" class="github-corner"

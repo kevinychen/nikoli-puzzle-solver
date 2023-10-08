@@ -1,3 +1,4 @@
+import Choices from "choices.js";
 import { init } from "z3-solver";
 import { fromPenpaUrl, newSolution, toPenpaUrl, toPuzzle } from "./internal/penpa";
 import { ConstraintsImpl, PuzzleSolver, ValueMap } from "./lib";
@@ -82,22 +83,30 @@ global.initSolverUI = async function () {
     let prevFoundUrl: string = undefined;
     let prevFoundValues: ValueMap<any, number> = undefined;
 
+    const sampleOptions = [];
+    const typeOptions = [];
     for (const { name, samples } of solverRegistry) {
-        typeSelect.add(
-            Object.assign(document.createElement("option"), {
-                text: name,
-                value: name,
-            })
-        );
+        typeOptions.push({
+            label: name,
+            value: name,
+        });
         for (const { name: sampleName } of samples) {
-            sampleSelect.add(
-                Object.assign(document.createElement("option"), {
-                    text: sampleName || name,
-                    value: sampleName || name,
-                })
-            );
+            sampleOptions.push({
+                label: sampleName || name,
+                value: sampleName || name,
+            });
         }
     }
+    const sampleChoices = new Choices(sampleSelect, {
+        allowHTML: false,
+        choices: sampleOptions,
+        placeholder: true,
+    });
+    const typeChoices = new Choices(typeSelect, {
+        allowHTML: false,
+        choices: typeOptions,
+        placeholder: true,
+    });
 
     sampleSelect.addEventListener("change", () => {
         const {
@@ -108,8 +117,8 @@ global.initSolverUI = async function () {
             .flatMap(({ name, parameters, samples }) => samples.map(sample => ({ name, parameters, sample })))
             .find(({ name, sample }) => (sample.name || name) === sampleSelect.value);
         imp(puzzle);
-        typeSelect.value = name;
-        sampleSelect.value = "";
+        typeChoices.setChoiceByValue(name);
+        sampleChoices.setChoiceByValue("");
         parametersTextarea.value = sampleParameters || parameters;
         parametersTextarea.style.display = parameters ? "block" : "none";
     });
