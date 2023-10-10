@@ -5,7 +5,7 @@ const solve = async ({ And, Implies, Or, Sum }: Context, puzzle: Puzzle, cs: Con
     // Each snake consists of a sequence of the numbers from 1 to 5 which are orthogonally adjacent
     const count = 5;
     const grid = new ValueMap(puzzle.points, _ => cs.int(0, count));
-    const instanceGrid = new ValueMap(puzzle.points, _ => cs.enum(puzzle.points));
+    const instanceGrid = new ValueMap(puzzle.points, _ => cs.choice(puzzle.points));
     for (const [p, arith] of grid) {
         cs.add(Implies(arith.eq(1), instanceGrid.get(p).is(p)));
         for (let i = 1; i <= count; i++) {

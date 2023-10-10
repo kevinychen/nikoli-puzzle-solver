@@ -6,7 +6,7 @@ const solve = async ({ Sum }: Context, puzzle: Puzzle, cs: Constraints, solution
     const grid = new ValueMap(puzzle.points, _ => cs.int(0, maximum));
 
     // A row or column may not contain two identical numbers
-    for (const [p, v] of puzzle.entrancePoints()) {
+    for (const [p, v] of puzzle.points.entrances()) {
         for (let i = 1; i <= maximum; i++) {
             cs.add(Sum(...puzzle.points.sightLine(p.translate(v), v).map(p => grid.get(p).eq(i))).le(1));
         }
@@ -14,7 +14,7 @@ const solve = async ({ Sum }: Context, puzzle: Puzzle, cs: Constraints, solution
 
     // Sums on the outside indicate the sums of consecutive digits in that row or column
     const texts = new PointSet(puzzle.lattice, [...puzzle.texts.keys()]);
-    for (const [p, v] of puzzle.entrancePoints()) {
+    for (const [p, v] of puzzle.points.entrances()) {
         cs.addContiguousBlockSums(
             puzzle.points.sightLine(p.translate(v), v).map(p => grid.get(p)),
             texts

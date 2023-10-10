@@ -10,7 +10,7 @@ const solve = async ({ Or, Sum }: Context, puzzle: Puzzle, cs: Constraints, solu
     }
 
     // A row or column may not contain two unshaded cells with identical numbers
-    for (const [p, v] of puzzle.entrancePoints()) {
+    for (const [p, v] of puzzle.points.entrances()) {
         for (let i = 1; i <= puzzle.width; i++) {
             cs.add(
                 Sum(

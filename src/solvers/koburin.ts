@@ -29,7 +29,7 @@ const solve = async ({ And, Iff, Implies, Or, Sum }: Context, puzzle: Puzzle, cs
 
     // Fill in solved loop
     for (const [p, arith] of grid) {
-        for (const v of network.getDirections(model.get(arith))) {
+        for (const v of network.directionSets[model.get(arith)]) {
             solution.lines.set([p, p.translate(v)], true);
         }
     }

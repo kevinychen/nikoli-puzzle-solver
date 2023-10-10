@@ -3,7 +3,7 @@ import { Constraints, Context, Puzzle, Solution, ValueMap } from "../lib";
 const solve = async ({ Or }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Draw a horizontal or a vertical line in each white cell
     const directions = puzzle.lattice.edgeSharingDirections();
-    const grid = new ValueMap(puzzle.points, _ => cs.enum(directions));
+    const grid = new ValueMap(puzzle.points, _ => cs.choice(directions));
 
     // Each number represents the total number of white cells occupied by the lines from that number
     // (A line is represented by an arrow coming out of the number)

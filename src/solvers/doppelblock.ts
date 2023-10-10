@@ -6,12 +6,12 @@ const solve = async ({ And, Or, Sum }: Context, puzzle: Puzzle, cs: Constraints,
     const grid = new ValueMap(puzzle.points, _ => cs.int(0, puzzle.width - 2));
 
     // Every row and column has exactly 2 shaded cells
-    for (const [p, v] of puzzle.entrancePoints()) {
+    for (const [p, v] of puzzle.points.entrances()) {
         cs.add(Sum(...puzzle.points.sightLine(p.translate(v), v).map(p => grid.get(p).eq(0))).eq(2));
     }
 
     // Each row and column contains exactly one of each number
-    for (const [p, v] of puzzle.entrancePoints()) {
+    for (const [p, v] of puzzle.points.entrances()) {
         for (let i = 1; i <= puzzle.width - 2; i++) {
             cs.add(Or(...puzzle.points.sightLine(p.translate(v), v).map(p => grid.get(p).eq(i))));
         }
@@ -19,7 +19,7 @@ const solve = async ({ And, Or, Sum }: Context, puzzle: Puzzle, cs: Constraints,
 
     // A clue outside the grid indicates the sum of the numbers which appear between the two shaded
     // cells in the corresponding row or column
-    for (const [p, v] of puzzle.entrancePoints()) {
+    for (const [p, v] of puzzle.points.entrances()) {
         if (puzzle.texts.has(p)) {
             const line = puzzle.points.sightLine(p.translate(v), v);
             const choices = [];

@@ -10,7 +10,7 @@ const solve = async ({ And, Or }: Context, puzzle: Puzzle, cs: Constraints, solu
     );
 
     // Divide the board into dominoes
-    const grid = new ValueMap(puzzle.points, _ => cs.enum(dominoes));
+    const grid = new ValueMap(puzzle.points, _ => cs.choice(dominoes));
 
     const placementGrid = new ValueMap(dominoes, _ => cs.int());
     for (const [p, arith] of grid) {

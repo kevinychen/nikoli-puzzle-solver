@@ -4,14 +4,14 @@ const solve = async ({ And, Implies, Not, Or, Sum }: Context, puzzle: Puzzle, cs
     // Shade a right triangle in some empty cells, each of which occupies exactly half the cell it's in
     // SW means a black triangle with an SW corner, i.e. a line going from NW to SE with the bottom left shaded
     const values = ["NW", "SW", "SE", "NE", "WALL"];
-    const grid = new ValueMap(puzzle.points, _ => cs.enum(values));
+    const grid = new ValueMap(puzzle.points, _ => cs.choice(values));
     for (const [p, arith] of grid) {
         cs.add(arith.is("WALL").eq(!puzzle.points.has(p) || puzzle.shaded.has(p)));
     }
 
     // Each unshaded area must be rectangular in shape. The rectangle can be upright, or rotated at a 45º angle
     for (const vertex of puzzle.points.vertices()) {
-        // In every 2x2 box, if there are 3 empty squares, the 4th is either empty or contains a
+        // In every 2x2 box, if there are 3 empty cells, the 4th is either empty or contains a
         // triangle in the corresponding direction as its position in the box
         for (const [i, p] of vertex.entries()) {
             cs.add(

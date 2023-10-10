@@ -4,7 +4,7 @@ const solve = async ({}: Context, puzzle: Puzzle, cs: Constraints, solution: Sol
     // Draw a loop that goes through every unshaded cell
     const [loop, grid, root] = cs.SingleLoopGrid(puzzle.points);
 
-    // Optimization: start the loop at one of the empty squares
+    // Optimization: start the loop at one of the empty cells
     cs.add(root.is([...puzzle.points].find(p => !puzzle.shaded.has(p))));
 
     // The loop cannot go through shaded cells
@@ -16,7 +16,7 @@ const solve = async ({}: Context, puzzle: Puzzle, cs: Constraints, solution: Sol
 
     // Fill in solved loop
     for (const [p, arith] of grid) {
-        for (const v of loop.getDirections(model.get(arith))) {
+        for (const v of loop.directionSets[model.get(arith)]) {
             solution.lines.set([p, p.translate(v)], true);
         }
     }

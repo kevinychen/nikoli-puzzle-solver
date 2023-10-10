@@ -1,6 +1,6 @@
 import { Constraints, Context, Puzzle, Solution, Vector } from "../lib";
 
-const solve = async ({ And, Or }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
+const solve = async ({ And, Not, Or }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Draw lines through orthogonally adjacent cells to form a loop
     const [loop, grid, root] = cs.SingleLoopGrid(puzzle.points);
 
@@ -37,11 +37,11 @@ const solve = async ({ And, Or }: Context, puzzle: Puzzle, cs: Constraints, solu
             if (len1 < line1.length && len2 < line2.length) {
                 choices.push(
                     And(
-                        grid.get(p).eq(loop.valueForDirections(v, w)),
-                        ...line1.slice(1, len1).map(p => grid.get(p).eq(loop.valueForDirections(v, v.negate()))),
-                        grid.get(line1[len1]).neq(loop.valueForDirections(v, v.negate())),
-                        ...line2.slice(1, len2).map(p => grid.get(p).eq(loop.valueForDirections(w, w.negate()))),
-                        grid.get(line2[len2]).neq(loop.valueForDirections(w, w.negate()))
+                        grid.get(p).is([v, w]),
+                        ...line1.slice(1, len1).map(p => grid.get(p).is([v, v.negate()])),
+                        Not(grid.get(line1[len1]).is([v, v.negate()])),
+                        ...line2.slice(1, len2).map(p => grid.get(p).is([w, w.negate()])),
+                        Not(grid.get(line2[len2]).is([w, w.negate()]))
                     )
                 );
             }
@@ -53,7 +53,7 @@ const solve = async ({ And, Or }: Context, puzzle: Puzzle, cs: Constraints, solu
 
     // Fill in solved loop
     for (const [p, arith] of grid) {
-        for (const v of loop.getDirections(model.get(arith))) {
+        for (const v of loop.directionSets[model.get(arith)]) {
             solution.lines.set([p, p.translate(v)], true);
         }
     }

@@ -1,6 +1,6 @@
 import { Constraints, Context, Point, Puzzle, Solution, ValueMap, Vector } from "../lib";
 
-const solve = async ({ And, Or }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
+const solve = async ({ And, Not, Or }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Draw lines through orthogonally adjacent cells to form a loop that goes through every circle
     const [network, grid] = cs.SingleLoopGrid(puzzle.points);
 
@@ -20,10 +20,10 @@ const solve = async ({ And, Or }: Context, puzzle: Puzzle, cs: Constraints, solu
                 choices.push(
                     And(
                         grid.get(p).hasDirection(v),
-                        ...line1.slice(1, i).map(p => grid.get(p).eq(network.valueForDirections(v, w))),
-                        grid.get(line1[i]).neq(network.valueForDirections(v, w)),
-                        ...line2.slice(1, i).map(p => grid.get(p).eq(network.valueForDirections(v, w))),
-                        grid.get(line2[i]).neq(network.valueForDirections(v, w))
+                        ...line1.slice(1, i).map(p => grid.get(p).is([v, w])),
+                        Not(grid.get(line1[i]).is([v, w])),
+                        ...line2.slice(1, i).map(p => grid.get(p).is([v, w])),
+                        Not(grid.get(line2[i]).is([v, w]))
                     )
                 );
             }
@@ -35,7 +35,7 @@ const solve = async ({ And, Or }: Context, puzzle: Puzzle, cs: Constraints, solu
 
     // Fill in solved loop
     for (const [p, arith] of grid) {
-        for (const v of network.getDirections(model.get(arith))) {
+        for (const v of network.directionSets[model.get(arith)]) {
             solution.lines.set([p, p.translate(v)], true);
         }
     }

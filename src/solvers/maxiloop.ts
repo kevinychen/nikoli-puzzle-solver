@@ -8,7 +8,7 @@ const solve = async ({ And, Implies, Not, Or }: Context, puzzle: Puzzle, cs: Con
     }
 
     // Pick an orientation of the loop
-    const loopDirection = new ValueMap(puzzle.points, _ => cs.enum(puzzle.lattice.edgeSharingDirections()));
+    const loopDirection = new ValueMap(puzzle.points, _ => cs.choice(puzzle.lattice.edgeSharingDirections()));
     for (const [p, arith] of loopDirection) {
         cs.add(Implies(arith.eq(-1), grid.get(p).eq(0)));
         for (const v of puzzle.lattice.edgeSharingDirections()) {
@@ -54,7 +54,7 @@ const solve = async ({ And, Implies, Not, Or }: Context, puzzle: Puzzle, cs: Con
 
     // Fill in solved loop
     for (const [p, arith] of grid) {
-        for (const v of network.getDirections(model.get(arith))) {
+        for (const v of network.directionSets[model.get(arith)]) {
             solution.lines.set([p, p.translate(v)], true);
         }
     }

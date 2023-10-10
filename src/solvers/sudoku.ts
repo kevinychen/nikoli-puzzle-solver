@@ -2,7 +2,7 @@ import { Constraints, Context, Puzzle, Solution, ValueMap } from "../lib";
 
 const solve = async ({ Distinct, Sum }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Place a number in each cell
-    // Numbers must be between 1 and N
+    // Numbers must be between 1 and N, where N is the width of the board
     const grid = new ValueMap(puzzle.points, _ => cs.int(1, puzzle.width));
 
     // Some numbers are given
@@ -11,7 +11,7 @@ const solve = async ({ Distinct, Sum }: Context, puzzle: Puzzle, cs: Constraints
     }
 
     // Each row and column contains exactly one of each number
-    for (const [p, v] of puzzle.entrancePoints()) {
+    for (const [p, v] of puzzle.points.entrances()) {
         cs.add(Distinct(...puzzle.points.sightLine(p.translate(v), v).map(p => grid.get(p))));
     }
 

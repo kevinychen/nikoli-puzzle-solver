@@ -58,7 +58,7 @@ const solve = async ({ Iff, Not, Or, Sum }: Context, puzzle: Puzzle, cs: Constra
 
     // Fill in solved loop
     for (const [p, arith] of grid) {
-        for (const v of network.getDirections(model.get(arith))) {
+        for (const v of network.directionSets[model.get(arith)]) {
             solution.lines.set([p, p.translate(v)], true);
         }
     }

@@ -10,7 +10,7 @@ const solve = async ({ Or }: Context, puzzle: Puzzle, cs: Constraints, solution:
     // An asterisk represents an unknown amount of blocks of any length
     // An asterisk may also be meaningless, i.e. represent no blocks at all
     const texts = new PointSet(puzzle.lattice, [...puzzle.texts.keys()]);
-    for (const [p, v] of puzzle.entrancePoints()) {
+    for (const [p, v] of puzzle.points.entrances()) {
         cs.addContiguousBlockSums(
             puzzle.points.sightLine(p.translate(v), v).map(p => grid.get(p)),
             texts

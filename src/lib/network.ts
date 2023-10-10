@@ -1,4 +1,3 @@
-import { isEqual, range } from "lodash";
 import { ValueSet } from "./collections";
 import { Lattice } from "./geometry/lattice";
 import { Vector } from "./geometry/vector";
@@ -9,30 +8,7 @@ import { Vector } from "./geometry/vector";
  * example, a loop requires that each cell is either empty or has exactly two neighbors.
  */
 export class Network {
-    readonly numDirectionSets: number;
-
-    constructor(readonly directionSets: Vector[][]) {
-        this.numDirectionSets = directionSets.length;
-    }
-
-    findIndices(predicate: (vs: Vector[]) => boolean) {
-        return range(this.directionSets.length).filter(i => predicate(this.directionSets[i]));
-    }
-
-    /** @returns all directions in the direction set with the given index */
-    getDirections(i: number): Vector[] {
-        return this.directionSets[i];
-    }
-
-    /** @returns the index of the direction set containing exactly the given directions */
-    valueForDirections(...vs: Vector[]): number {
-        return range(this.directionSets.length).find(i => isEqual(this.directionSets[i], vs.sort()));
-    }
-
-    /** @returns the index of all direction sets containing the given direction */
-    valuesWithDirection(v: Vector): number[] {
-        return range(this.directionSets.length).filter(i => this.directionSets[i].some(w => w.eq(v)));
-    }
+    constructor(readonly directionSets: Vector[][]) {}
 
     /** A network where each cell can be any subset of directions */
     static all(lattice: Lattice): Network {

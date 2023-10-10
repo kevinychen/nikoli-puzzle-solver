@@ -6,7 +6,7 @@ const solve = async ({ Distinct, Or, Product, Sum }: Context, puzzle: Puzzle, cs
     const grid = new ValueMap(puzzle.points, _ => cs.int(1, puzzle.width));
 
     // Each row and column contains exactly one of each number
-    for (const [p, v] of puzzle.entrancePoints()) {
+    for (const [p, v] of puzzle.points.entrances()) {
         cs.add(Distinct(...puzzle.points.sightLine(p.translate(v), v).map(p => grid.get(p))));
     }
 

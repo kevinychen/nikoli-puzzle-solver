@@ -26,7 +26,7 @@ const solve = async ({ And, Or, Sum }: Context, puzzle: Puzzle, cs: Constraints,
 
     // All unshaded rectangles form a diagonally contiguous area
     const tree = new ValueMap(puzzle.points, _ => cs.int());
-    const root = cs.enum(puzzle.points);
+    const root = cs.choice(puzzle.points);
     for (const [p, arith] of grid) {
         cs.add(
             Or(

@@ -6,7 +6,7 @@ const solve = async ({ And, Or }: Context, puzzle: Puzzle, cs: Constraints, solu
     const words = [...puzzle.texts].filter(([p]) => !puzzle.points.has(p)).map(([_, text]) => text);
     const allLetters = [...new Set(words.flatMap(word => [...word]))];
     const good = (p: Point) => puzzle.points.has(p) && !puzzle.shaded.has(p);
-    const grid = new ValueMap([...puzzle.points].filter(good), _ => cs.enum(allLetters));
+    const grid = new ValueMap([...puzzle.points].filter(good), _ => cs.choice(allLetters));
 
     // Find all lines in the grid for words
     const lines = [];

@@ -21,7 +21,7 @@ const solve = async ({ Or, Sum }: Context, puzzle: Puzzle, cs: Constraints, solu
     const plusSign = [...puzzle.symbols.keys()].find(p => puzzle.symbols.get(p).eq(Symbol.PLUS_SIGN));
     const isPlusSign = (p: Point) =>
         puzzle.lattice.edgeSharingDirections().some(v => v.crossProduct(p.directionTo(plusSign)) === 0);
-    for (const [p, v] of puzzle.entrancePoints()) {
+    for (const [p, v] of puzzle.points.entrances()) {
         for (const q of [p, p.translate(v.negate())]) {
             if (puzzle.texts.has(q)) {
                 const value = isPlusSign(q) ? 1 : -1;

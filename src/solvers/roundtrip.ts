@@ -46,7 +46,7 @@ const solve = async ({ And, If, Not, Or, Xor }: Context, puzzle: Puzzle, cs: Con
     // section of the loop that travels horizontally in that row
     // Likewise, the numbers to the top/bottom of the columns indicate the number of cells visited
     // by the nearest section of the loop that travels vertically in that column
-    for (const [p, v] of puzzle.entrancePoints()) {
+    for (const [p, v] of puzzle.points.entrances()) {
         if (puzzle.texts.has(p)) {
             const line = puzzle.points.sightLine(p.translate(v), v);
             const length = parseInt(puzzle.texts.get(p));
@@ -68,7 +68,7 @@ const solve = async ({ And, If, Not, Or, Xor }: Context, puzzle: Puzzle, cs: Con
 
     // Fill in solved loop
     for (const [p, arith] of grid) {
-        for (const v of network.getDirections(model.get(arith))) {
+        for (const v of network.directionSets[model.get(arith)]) {
             solution.lines.set([p, p.translate(v)], true);
         }
     }

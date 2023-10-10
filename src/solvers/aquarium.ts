@@ -6,7 +6,7 @@ const solve = async ({ And, Or, Sum }: Context, puzzle: Puzzle, cs: Constraints,
     const grid = new ValueMap(puzzle.points, _ => cs.int(0, 1));
 
     // The numbers around the grid indicate the number of shaded cells in that row/column
-    for (const [p, v] of puzzle.entrancePoints()) {
+    for (const [p, v] of puzzle.points.entrances()) {
         if (puzzle.texts.has(p)) {
             const number = parseInt(puzzle.texts.get(p));
             cs.add(Sum(...puzzle.points.sightLine(p.translate(v), v).map(p => grid.get(p))).eq(number));

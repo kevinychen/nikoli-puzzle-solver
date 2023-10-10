@@ -1,6 +1,6 @@
 import { Constraints, Context, Puzzle, Solution, ValueMap } from "../lib";
 
-const solve = async ({ And, If, Implies, Or, Sum }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
+const solve = async ({ And, Implies, Or, Sum }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // You're given a grid divided into tiles
     // Shade some tiles on the board to form a maze
     const grid = new ValueMap(puzzle.points, _ => cs.int(0, 1));
@@ -50,7 +50,7 @@ const solve = async ({ And, If, Implies, Or, Sum }: Context, puzzle: Puzzle, cs:
 
     // Circles must be part of this path, while triangles must not
     for (const [p, symbol] of puzzle.symbols) {
-        cs.add(path.get(p).eq(If(symbol.isCircle(), 1, 0)));
+        cs.add(path.get(p).eq(1).eq(symbol.isCircle()));
     }
 
     const model = await cs.solve(grid);

@@ -31,7 +31,7 @@ const solve = async ({ And, Iff, Implies, Or, Sum }: Context, puzzle: Puzzle, cs
         if (model.get(shadedGrid.get(p))) {
             solution.shaded.add(p);
         } else {
-            for (const v of network.getDirections(model.get(arith))) {
+            for (const v of network.directionSets[model.get(arith)]) {
                 solution.lines.set([p, p.translate(v)], true);
             }
         }

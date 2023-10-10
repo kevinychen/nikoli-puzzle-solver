@@ -11,16 +11,16 @@ const solve = async ({ And, Implies, Or, Sum }: Context, puzzle: Puzzle, cs: Con
 
     // Symbols outside the grid indicate a light source
     // The light travels as a beam into the grid and is reflected by the mirrors
-    let lasers = new ValueMap(puzzle.entrancePoints(), _ => cs.enum([]));
+    let lasers = new ValueMap(puzzle.points.entrances(), _ => cs.choice([]));
     for (const [p] of grid) {
         for (const v of puzzle.lattice.edgeSharingDirections()) {
-            lasers.set([p, v], cs.enum([]));
+            lasers.set([p, v], cs.choice([]));
         }
     }
     const labels = [...new Set(puzzle.texts.values())];
     for (let i = 0; i < grid.size(); i++) {
-        const newLasers = new ValueMap(lasers.keys(), _ => cs.enum(labels));
-        for (const [p, v] of puzzle.entrancePoints()) {
+        const newLasers = new ValueMap(lasers.keys(), _ => cs.choice(labels));
+        for (const [p, v] of puzzle.points.entrances()) {
             cs.add(newLasers.get([p, v]).is(puzzle.texts.get(p)));
         }
         for (const [p, arith] of grid) {
@@ -46,7 +46,7 @@ const solve = async ({ And, Implies, Or, Sum }: Context, puzzle: Puzzle, cs: Con
     }
 
     // A light beam that starts from a letter must finish at another instance of the same letter
-    for (const [p, v] of puzzle.entrancePoints()) {
+    for (const [p, v] of puzzle.points.entrances()) {
         cs.add(lasers.get([p.translate(v), v.negate()]).is(puzzle.texts.get(p)));
     }
 

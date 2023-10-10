@@ -39,12 +39,7 @@ const solve = async ({ And, Implies, Or }: Context, puzzle: Puzzle, cs: Constrai
                             arith.hasDirection(v),
                             ...line
                                 .slice(1, distance)
-                                .map(p =>
-                                    And(
-                                        distances.get(p).eq(-1),
-                                        grid.get(p).eq(network.valueForDirections(v, v.negate()))
-                                    )
-                                ),
+                                .map(p => And(distances.get(p).eq(-1), grid.get(p).is([v, v.negate()]))),
                             distances.get(line[distance]).eq(distance - 1)
                         )
                     );
@@ -63,7 +58,7 @@ const solve = async ({ And, Implies, Or }: Context, puzzle: Puzzle, cs: Constrai
 
     // Fill in solved paths
     for (const [p, arith] of grid) {
-        for (const v of network.getDirections(model.get(arith))) {
+        for (const v of network.directionSets[model.get(arith)]) {
             solution.lines.set([p, p.translate(v)], true);
         }
     }

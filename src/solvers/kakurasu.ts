@@ -7,7 +7,7 @@ const solve = async ({ If, Sum }: Context, puzzle: Puzzle, cs: Constraints, solu
     // Each row and column has a certain value, indicated by the circled numbers in the right and bottom of the grid
     // The numbers at the top indicate the sum of the values of the rows which have a shaded cell in that column
     // The numbers on the left indicate the sum of the values of the columns which have a shaded cell in that row
-    for (const [p, v] of puzzle.entrancePoints()) {
+    for (const [p, v] of puzzle.points.entrances()) {
         if (puzzle.texts.has(p) && [Vector.E, Vector.S].some(w => w.eq(v))) {
             cs.add(
                 Sum(...puzzle.points.sightLine(p.translate(v), v).map((p, i) => If(grid.get(p).eq(1), i + 1, 0))).eq(

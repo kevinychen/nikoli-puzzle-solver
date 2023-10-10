@@ -5,7 +5,7 @@ const solve = async ({ Or, Sum }: Context, puzzle: Puzzle, cs: Constraints, solu
     // Every arrow can go horizontally, vertically or diagonally
     const directions = puzzle.lattice.vertexSharingDirections();
     const points = puzzle.points.expandToBorders();
-    const grid = new ValueMap(points, _ => cs.enum(directions));
+    const grid = new ValueMap(points, _ => cs.choice(directions));
     const arrowSpots = new ValueSet(
         [...puzzle.points].flatMap(p => puzzle.lattice.edgeSharingPoints(p)).filter(p => !puzzle.points.has(p))
     );

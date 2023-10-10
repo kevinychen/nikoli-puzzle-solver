@@ -31,8 +31,8 @@ const solve = async ({ And, Implies, Or }: Context, puzzle: Puzzle, cs: Constrai
     // Both areas must be the same size and shape
     // They can be rotated or mirrored
     const transforms = puzzle.lattice.transformationFunctions(TransformationType.ALLOW_ROTATIONS_AND_REFLECTIONS);
-    const partners = new ValueMap(puzzle.points, _ => cs.enum(puzzle.points));
-    const transformIndices = new ValueMap(puzzle.points, _ => cs.enum(transforms));
+    const partners = new ValueMap(puzzle.points, _ => cs.choice(puzzle.points));
+    const transformIndices = new ValueMap(puzzle.points, _ => cs.choice(transforms));
     for (const [p] of grid) {
         const choices = [];
         for (const [q] of grid) {

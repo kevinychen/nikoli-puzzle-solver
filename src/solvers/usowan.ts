@@ -19,7 +19,7 @@ const solve = async ({ Iff, Or, Sum }: Context, puzzle: Puzzle, cs: Constraints,
     // However, every region contains exactly one incorrect number, which must not indicate the
     // amount of shaded cells
     const regions = puzzle.regions();
-    const isLie = new ValueMap(regions, _ => cs.enum(puzzle.points));
+    const isLie = new ValueMap(regions, _ => cs.choice(puzzle.points));
     for (const region of regions) {
         cs.add(Or(...region.filter(p => puzzle.texts.has(p)).map(p => isLie.get(region).is(p))));
     }

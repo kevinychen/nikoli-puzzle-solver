@@ -7,7 +7,7 @@ const solve = async ({}: Context, puzzle: Puzzle, cs: Constraints, solution: Sol
     // Clues outside the grid represent the lengths of each of the blocks of consecutive shaded
     // cells in the corresponding row or column, in order from left to right or top to bottom
     const texts = new PointSet(puzzle.lattice, [...puzzle.texts.keys()]);
-    for (const [p, v] of puzzle.entrancePoints()) {
+    for (const [p, v] of puzzle.points.entrances()) {
         cs.addContiguousBlockSums(
             puzzle.points.sightLine(p.translate(v), v).map(p => grid.get(p)),
             texts

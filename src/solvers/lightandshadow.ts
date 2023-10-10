@@ -1,6 +1,6 @@
 import { Constraints, Context, Puzzle, Solution, ValueMap } from "../lib";
 
-const solve = async ({ If }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
+const solve = async ({}: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Shade some cells on the board to form shaded and unshaded areas
     const grid = new ValueMap(puzzle.points, _ => cs.int(0, 1));
 
@@ -13,7 +13,7 @@ const solve = async ({ If }: Context, puzzle: Puzzle, cs: Constraints, solution:
 
     // A clue represents the size of the area of shaded or unshaded cells that the clue belongs to
     for (const [p, text] of puzzle.texts) {
-        cs.add(grid.get(p).eq(If(puzzle.shaded.has(p), 1, 0)));
+        cs.add(grid.get(p).eq(1).eq(puzzle.shaded.has(p)));
         cs.addContiguousArea(puzzle.lattice, puzzle.points, p, q => grid.get(q).eq(grid.get(p)), parseInt(text));
     }
 

@@ -3,8 +3,8 @@ import { Constraints, Context, Puzzle, Solution, ValueMap } from "../lib";
 const solve = async ({ And, If, Implies, Or, Sum }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Divide the grid into regions
     const grid = new ValueMap(puzzle.points, _ => cs.int());
-    const instance = new ValueMap(puzzle.points, _ => cs.enum(puzzle.points));
-    const parent = new ValueMap(puzzle.points, _ => cs.enum(puzzle.points));
+    const instance = new ValueMap(puzzle.points, _ => cs.choice(puzzle.points));
+    const parent = new ValueMap(puzzle.points, _ => cs.choice(puzzle.points));
     const subtreeArea = new ValueMap(puzzle.points, _ => cs.int());
     const area = new ValueMap(puzzle.points, _ => cs.int());
     const tree = new ValueMap(puzzle.points, _ => cs.int());

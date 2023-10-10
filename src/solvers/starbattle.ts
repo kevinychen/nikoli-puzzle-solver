@@ -13,7 +13,7 @@ const solve = async ({ Or, Sum }: Context, puzzle: Puzzle, cs: Constraints, solu
 
     // The number at the top of the grid indicates how many stars are in each row, column and outlined region
     const numStars = parseInt(puzzle.parameters["stars"]);
-    for (const [p, v] of puzzle.entrancePoints()) {
+    for (const [p, v] of puzzle.points.entrances()) {
         cs.add(Sum(...puzzle.points.sightLine(p.translate(v), v).map(p => grid.get(p))).eq(numStars));
     }
     for (const region of puzzle.regions()) {

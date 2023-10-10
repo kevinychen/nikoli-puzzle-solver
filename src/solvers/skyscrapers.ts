@@ -13,14 +13,14 @@ const solve = async ({ And, Distinct, Sum }: Context, puzzle: Puzzle, cs: Constr
     }
 
     // Each row and column contains exactly one of each number
-    for (const [p, v] of puzzle.entrancePoints()) {
+    for (const [p, v] of puzzle.points.entrances()) {
         cs.add(Distinct(...puzzle.points.sightLine(p.translate(v), v).map(p => grid.get(p))));
     }
 
     // Every number inside the grid represents a building, with a height equal to the number. A
     // clue outside the grid represents how many buildings can be seen in the corresponding row or
     // column from that direction, where higher buildings hide all lower buildings behind it
-    for (const [p, v] of puzzle.entrancePoints()) {
+    for (const [p, v] of puzzle.points.entrances()) {
         if (puzzle.texts.has(p)) {
             const number = parseInt(puzzle.texts.get(p));
             const line = puzzle.points.sightLine(p.translate(v), v);

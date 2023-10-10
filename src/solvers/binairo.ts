@@ -12,7 +12,7 @@ const solve = async ({ Or, Sum }: Context, puzzle: Puzzle, cs: Constraints, solu
     }
 
     // Each row and column contains an equal number of white and black circles
-    for (const [p, v] of puzzle.entrancePoints()) {
+    for (const [p, v] of puzzle.points.entrances()) {
         const line = puzzle.points.sightLine(p.translate(v), v);
         cs.add(Sum(...line.map(p => grid.get(p))).eq(line.length / 2));
     }

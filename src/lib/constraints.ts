@@ -1,4 +1,4 @@
-import { isEqual } from "lodash";
+import { isEqual, range } from "lodash";
 import { Arith, Bool, Solver } from "z3-solver";
 import { ValueMap } from "./collections";
 import { Lattice } from "./geometry/lattice";
@@ -8,12 +8,13 @@ import { Vector } from "./geometry/vector";
 import { Network } from "./network";
 import { Context } from "./solver";
 
-export type EnumArith<T> = Arith & {
+export type ChoiceArith<T> = Arith & {
     is(val: T): Bool;
 };
 
 export type NetworkArith = Arith & {
     hasDirection(v: Vector): Bool;
+    is(vs: Vector[]): Bool;
     isLoopSegment(): Bool;
     isStraight(): Bool;
     isTerminal(): Bool;
@@ -28,7 +29,7 @@ export interface Constraints {
     int(minInclusive?: number, maxInclusive?: number): Arith;
 
     /** Creates a new variable that can take any of the given values, or none of them (-1). */
-    enum<V>(values: Iterable<V>): EnumArith<V>;
+    choice<V>(values: Iterable<V>): ChoiceArith<V>;
 
     /**
      * Returns a grid of variables that forms a valid network, e.g. if a cell goes right, then
@@ -47,7 +48,7 @@ export interface Constraints {
      * Returns a valid network grid consisting of a single connected loop.
      * @returns [network, grid, root] where root is an arbitrary start point on the loop.
      */
-    SingleLoopGrid(points: PointSet): [Network, ValueMap<Point, NetworkArith>, EnumArith<Point>];
+    SingleLoopGrid(points: PointSet): [Network, ValueMap<Point, NetworkArith>, ChoiceArith<Point>];
 
     /** Adds the given constraints. */
     add(...exprs: Bool[]): void;
@@ -60,7 +61,7 @@ export interface Constraints {
         points: PointSet,
         isRoot: (p: Point) => boolean | Bool,
         isEdge: (p: Point, q: Point) => boolean | Bool
-    ): ValueMap<Point, EnumArith<Point>>;
+    ): ValueMap<Point, ChoiceArith<Point>>;
 
     /**
      * Returns a variable representing the number of orthogonally connected points within the given
@@ -105,7 +106,7 @@ export class ConstraintsImpl implements Constraints {
         return arith;
     }
 
-    enum<V>(valuesIt: Iterable<V>) {
+    choice<V>(valuesIt: Iterable<V>) {
         const values = [...valuesIt];
         return Object.assign(this.int(-1, values.length - 1), {
             is(val: V): Bool {
@@ -116,27 +117,30 @@ export class ConstraintsImpl implements Constraints {
 
     NetworkGrid(points: PointSet, network: Network) {
         const { Implies, Or } = this.context;
+        const getIndices = (predicate: (vs: Vector[]) => Boolean) =>
+            range(network.directionSets.length).filter(i => predicate(network.directionSets[i]));
         const grid = new ValueMap(points, _ =>
-            Object.assign(this.int(0, network.numDirectionSets - 1), {
+            Object.assign(this.int(0, network.directionSets.length - 1), {
                 hasDirection(v: Vector) {
-                    return Or(...network.findIndices(vs => vs.some(w => w.eq(v))).map(i => this.eq(i)));
+                    return Or(...getIndices(vs => vs.some(w => w.eq(v))).map(i => this.eq(i)));
+                },
+                is(vs: Vector[]) {
+                    return Or(...getIndices(ws => isEqual(ws, vs.sort())).map(i => this.eq(i)));
                 },
                 isLoopSegment() {
-                    return Or(...network.findIndices(vs => vs.length === 2).map(i => this.eq(i)));
+                    return Or(...getIndices(vs => vs.length === 2).map(i => this.eq(i)));
                 },
                 isStraight() {
                     return Or(
-                        ...network
-                            .findIndices(vs =>
-                                points.lattice
-                                    .oppositeDirections()
-                                    .every(([v, w]) => vs.some(x => x.eq(v)) === vs.some(x => x.eq(w)))
-                            )
-                            .map(i => this.eq(i))
+                        ...getIndices(vs =>
+                            points.lattice
+                                .oppositeDirections()
+                                .every(([v, w]) => vs.some(x => x.eq(v)) === vs.some(x => x.eq(w)))
+                        ).map(i => this.eq(i))
                     );
                 },
                 isTerminal() {
-                    return Or(...network.findIndices(vs => vs.length === 1).map(i => this.eq(i)));
+                    return Or(...getIndices(vs => vs.length === 1).map(i => this.eq(i)));
                 },
             })
         );
@@ -167,11 +171,11 @@ export class ConstraintsImpl implements Constraints {
         return [network, grid, order];
     }
 
-    SingleLoopGrid(points: PointSet): [Network, ValueMap<Point, NetworkArith>, EnumArith<Point>] {
+    SingleLoopGrid(points: PointSet): [Network, ValueMap<Point, NetworkArith>, ChoiceArith<Point>] {
         const { Or } = this.context;
         const network = Network.loop(points.lattice);
         const grid = this.NetworkGrid(points, network);
-        const root = this.enum(points);
+        const root = this.choice(points);
         this.addConnected(
             points,
             p => Or(grid.get(p).eq(0), root.is(p)),
@@ -187,7 +191,7 @@ export class ConstraintsImpl implements Constraints {
     addAllConnected(points: PointSet, good: (p: Point) => Bool) {
         const { And, Not, Or } = this.context;
         const tree = new ValueMap(points, _ => this.int());
-        const root = this.enum(points);
+        const root = this.choice(points);
         for (const p of points) {
             this.add(
                 Or(
@@ -205,7 +209,7 @@ export class ConstraintsImpl implements Constraints {
         isEdge: (p: Point, q: Point) => boolean | Bool
     ) {
         const { And, If, Implies, Or } = this.context;
-        const instance = new ValueMap(points, _ => this.enum(points));
+        const instance = new ValueMap(points, _ => this.choice(points));
         const tree = new ValueMap(points, _ => this.int());
         for (const p of points) {
             this.add(

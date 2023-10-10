@@ -10,7 +10,7 @@ const solve = async ({ Distinct, Implies, Or }: Context, puzzle: Puzzle, cs: Con
 
     // Create grid where every cell on a path has the value of the starting letter
     const letters = [...new Set(puzzle.texts.values())];
-    const whichLetter = new ValueMap(puzzle.points, _ => cs.enum(letters));
+    const whichLetter = new ValueMap(puzzle.points, _ => cs.choice(letters));
     for (const [p, text] of puzzle.texts) {
         cs.add(whichLetter.get(p).is(text));
     }
@@ -38,7 +38,7 @@ const solve = async ({ Distinct, Implies, Or }: Context, puzzle: Puzzle, cs: Con
 
     // Fill in solved paths
     for (const [p, arith] of grid) {
-        for (const v of network.getDirections(model.get(arith))) {
+        for (const v of network.directionSets[model.get(arith)]) {
             solution.lines.set([p, p.translate(v)], true);
         }
     }

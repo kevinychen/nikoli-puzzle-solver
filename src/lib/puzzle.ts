@@ -64,23 +64,6 @@ export class Puzzle {
     thermo: Point[][];
 
     /**
-     * @returns all [p, v] where p is a point right outside the puzzle, neighboring a point q in
-     * the puzzle, and v is the direction from p to q.
-     */
-    entrancePoints(): [Point, Vector][] {
-        const entrancePoints = new ValueSet([]);
-        for (const v of this.lattice.edgeSharingDirections()) {
-            for (let p of this.points) {
-                while (this.points.has(p)) {
-                    p = p.translate(v);
-                }
-                entrancePoints.add([p, v.negate()]);
-            }
-        }
-        return [...entrancePoints.keys()];
-    }
-
-    /**
      * @returns all Point[] of unshaded cells that are bounded by either shaded cells or border
      * edges.
      */

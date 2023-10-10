@@ -3,7 +3,7 @@ import { Constraints, Context, Puzzle, Solution, Symbol, ValueMap } from "../lib
 const solve = async ({ Distinct }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Place an arrow in every empty cell
     const directions = puzzle.lattice.edgeSharingDirections();
-    const grid = new ValueMap(puzzle.points, _ => cs.enum(directions));
+    const grid = new ValueMap(puzzle.points, _ => cs.choice(directions));
     for (const [p, symbol] of puzzle.symbols) {
         cs.add(grid.get(p).eq(-1).eq(symbol.isCircle()));
     }

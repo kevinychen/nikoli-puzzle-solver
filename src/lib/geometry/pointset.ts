@@ -1,4 +1,4 @@
-import { ValueMap } from "../collections";
+import { ValueMap, ValueSet } from "../collections";
 import { Lattice, TransformationType } from "./lattice";
 import { Point } from "./point";
 import { Vector } from "./vector";
@@ -44,6 +44,23 @@ export class PointSet {
      */
     edgeSharingNeighbors(p: Point): [Point, Vector][] {
         return this.lattice.edgeSharingNeighbors(p).filter(([q]) => this.has(q));
+    }
+
+    /**
+     * @returns all [p, v] where p is a point right outside this point set, neighboring a point q in
+     * this point set, and v is the direction from p to q.
+     */
+    entrances(): [Point, Vector][] {
+        const entrances = new ValueSet([]);
+        for (const v of this.lattice.edgeSharingDirections()) {
+            for (let p of this) {
+                while (this.has(p)) {
+                    p = p.translate(v);
+                }
+                entrances.add([p, v.negate()]);
+            }
+        }
+        return [...entrances.keys()];
     }
 
     /** @returns a new point set that contains all vertex adjacent points of points in this set */

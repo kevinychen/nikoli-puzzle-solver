@@ -5,7 +5,7 @@ const solve = async ({ And, Implies, Or }: Context, puzzle: Puzzle, cs: Constrai
     // Place several pencils into the grid, and draw lines into the other cells
     const directions = puzzle.lattice.edgeSharingDirections();
     const grid = new ValueMap(puzzle.points, _ => cs.int());
-    const pencilTipGrid = new ValueMap(puzzle.points, _ => cs.enum(directions));
+    const pencilTipGrid = new ValueMap(puzzle.points, _ => cs.choice(directions));
     const [network, paths, order] = cs.PathsGrid(puzzle.points);
 
     // Some pencil tips are given
@@ -90,7 +90,7 @@ const solve = async ({ And, Implies, Or }: Context, puzzle: Puzzle, cs: Constrai
 
     // Fill in solved paths
     for (const [p, arith] of paths) {
-        for (const v of network.getDirections(model.get(arith))) {
+        for (const v of network.directionSets[model.get(arith)]) {
             solution.lines.set([p, p.translate(v)], true);
         }
     }

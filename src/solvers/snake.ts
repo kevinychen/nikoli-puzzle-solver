@@ -5,7 +5,7 @@ const solve = async ({ And, Implies, Or, Sum }: Context, puzzle: Puzzle, cs: Con
     // Shade some cells into the grid to form a snake
     const grid = new ValueMap(puzzle.points, _ => cs.int(0, 1));
     const [_, paths] = cs.PathsGrid(puzzle.points);
-    const root = cs.enum(puzzle.points);
+    const root = cs.choice(puzzle.points);
     cs.addConnected(
         puzzle.points,
         p => Or(grid.get(p).eq(0), root.is(p)),
@@ -34,7 +34,7 @@ const solve = async ({ And, Implies, Or, Sum }: Context, puzzle: Puzzle, cs: Con
     }
 
     // A number outside the grid represents how many cells in the corresponding row or column are shaded
-    for (const [p, v] of puzzle.entrancePoints()) {
+    for (const [p, v] of puzzle.points.entrances()) {
         if (puzzle.texts.has(p)) {
             const number = parseInt(puzzle.texts.get(p));
             cs.add(Sum(...puzzle.points.sightLine(p.translate(v), v).map(p => grid.get(p))).eq(number));

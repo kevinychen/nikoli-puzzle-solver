@@ -3,7 +3,7 @@ import { Constraints, Context, Point, Puzzle, Solution, ValueMap } from "../lib"
 
 const solve = async ({ And, Or }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Draw lines over the dotted lines to divide the board into rectangles
-    const grid = new ValueMap(puzzle.points, _ => cs.enum(puzzle.points));
+    const grid = new ValueMap(puzzle.points, _ => cs.choice(puzzle.points));
 
     // Each rectangle contains exactly one black circle
     // A number indicates the size of the rectangle, in cells

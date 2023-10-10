@@ -22,7 +22,7 @@ const solve = async ({ And, Or }: Context, puzzle: Puzzle, cs: Constraints, solu
 
     // Find all placements
     const circleGrid = new ValueMap(puzzle.points, _ => cs.int(0, 1));
-    const arrowGrid = new ValueMap(puzzle.points, _ => cs.enum(directions));
+    const arrowGrid = new ValueMap(puzzle.points, _ => cs.choice(directions));
     const sizeGrid = new ValueMap(puzzle.points, _ => cs.int());
     const placements = puzzle.points.placements(lShapes);
     for (const [p] of grid) {

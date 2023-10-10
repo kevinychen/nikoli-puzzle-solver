@@ -17,7 +17,7 @@ const solve = async ({ And, Implies, Not, Or }: Context, puzzle: Puzzle, cs: Con
             // The loop must turn on black circles and travel straight through the cells before and after the circle
             cs.add(Not(grid.get(p).isStraight()));
             for (const [q, v] of puzzle.points.edgeSharingNeighbors(p)) {
-                cs.add(Implies(grid.get(p).hasDirection(v), grid.get(q).eq(network.valueForDirections(v, v.negate()))));
+                cs.add(Implies(grid.get(p).hasDirection(v), grid.get(q).is([v, v.negate()])));
             }
         } else {
             // The loop must go straight through white circles, and turn in at least one of the cells on either side
@@ -28,11 +28,8 @@ const solve = async ({ And, Implies, Not, Or }: Context, puzzle: Puzzle, cs: Con
                         .filter(([v, w]) => grid.has(p.translate(v)) && grid.has(p.translate(w)))
                         .map(([v, w]) =>
                             And(
-                                grid.get(p).eq(network.valueForDirections(v, w)),
-                                Or(
-                                    grid.get(p.translate(v)).neq(network.valueForDirections(v, w)),
-                                    grid.get(p.translate(w)).neq(network.valueForDirections(v, w))
-                                )
+                                grid.get(p).is([v, w]),
+                                Not(And(grid.get(p.translate(v)).is([v, w]), grid.get(p.translate(w)).is([v, w])))
                             )
                         )
                 )
@@ -44,7 +41,7 @@ const solve = async ({ And, Implies, Not, Or }: Context, puzzle: Puzzle, cs: Con
 
     // Fill in solved loop
     for (const [p, arith] of grid) {
-        for (const v of network.getDirections(model.get(arith))) {
+        for (const v of network.directionSets[model.get(arith)]) {
             solution.lines.set([p, p.translate(v)], true);
         }
     }

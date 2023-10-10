@@ -20,7 +20,7 @@ const solve = async ({ Implies }: Context, puzzle: Puzzle, cs: Constraints, solu
 
     // Fill in solved paths
     for (const [p, arith] of grid) {
-        for (const v of network.getDirections(model.get(arith))) {
+        for (const v of network.directionSets[model.get(arith)]) {
             solution.lines.set([p, p.translate(v)], true);
         }
     }

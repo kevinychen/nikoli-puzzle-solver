@@ -14,7 +14,7 @@ const solve = async ({ And, Implies, Not, Or, Sum }: Context, puzzle: Puzzle, cs
             cs.add(Or(arith.eq(0), arith.isLoopSegment()));
         }
     }
-    const root = cs.enum(points);
+    const root = cs.choice(points);
     cs.addConnected(
         points,
         p => Or(grid.get(p).eq(0), root.is(p)),
@@ -28,7 +28,7 @@ const solve = async ({ And, Implies, Not, Or, Sum }: Context, puzzle: Puzzle, cs
 
     // A path cannot connect directly between two black dots
     const fireflyLocations = [...fireflies.keys()];
-    const instance = new ValueMap(points, _ => cs.enum(fireflyLocations));
+    const instance = new ValueMap(points, _ => cs.choice(fireflyLocations));
     for (const p of fireflyLocations) {
         cs.add(instance.get(p).is(p));
     }
@@ -47,7 +47,7 @@ const solve = async ({ And, Implies, Not, Or, Sum }: Context, puzzle: Puzzle, cs
     }
 
     // No extraneous paths; pick an orientation for each path so that it points to a black dot
-    const pathDirections = new ValueMap(points, _ => cs.enum(lattice.edgeSharingDirections()));
+    const pathDirections = new ValueMap(points, _ => cs.choice(lattice.edgeSharingDirections()));
     for (const [p, arith] of pathDirections) {
         if (!fireflies.has(p)) {
             cs.add(Implies(arith.eq(-1), grid.get(p).eq(0)));
@@ -83,7 +83,7 @@ const solve = async ({ And, Implies, Not, Or, Sum }: Context, puzzle: Puzzle, cs
             const [v1, v2] = puzzle.lattice
                 .vertices(p)
                 .filter(vertex => puzzle.lattice.vertices(q).some(v => v.eq(vertex)));
-            if (network.getDirections(model.get(grid.get(v1))).some(v => v.eq(v1.directionTo(v2)))) {
+            if (network.directionSets[model.get(grid.get(v1))].some(v => v.eq(v1.directionTo(v2)))) {
                 solution.borders.add([p, q]);
             }
         }

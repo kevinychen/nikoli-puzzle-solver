@@ -37,7 +37,7 @@ const solve = async ({ And, Or, Sum }: Context, puzzle: Puzzle, cs: Constraints,
 
     // The islands are connected into one network
     const tree = new ValueMap(edges, _ => cs.int());
-    const root = cs.enum(edges);
+    const root = cs.choice(edges);
     for (const edge of edges) {
         const [p1, _, q1] = edge;
         cs.add(

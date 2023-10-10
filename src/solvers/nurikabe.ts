@@ -6,7 +6,7 @@ const solve = async ({ Or }: Context, puzzle: Puzzle, cs: Constraints, solution:
 
     // Each region contains exactly one number
     // All shaded cells form an orthogonally contiguous area
-    const shadedRoot = cs.enum(puzzle.points);
+    const shadedRoot = cs.choice(puzzle.points);
     cs.addConnected(
         puzzle.points,
         p => Or(puzzle.texts.has(p), shadedRoot.is(p)),

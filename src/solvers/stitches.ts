@@ -4,7 +4,7 @@ const solve = async ({ Implies, Not, Sum }: Context, puzzle: Puzzle, cs: Constra
     // Add stitches (lines of length one cell) to connect the regions
     const stitches = parseInt(puzzle.parameters["stitches"]);
     const directions = puzzle.lattice.edgeSharingDirections();
-    const grid = new ValueMap(puzzle.points, _ => cs.enum(directions));
+    const grid = new ValueMap(puzzle.points, _ => cs.choice(directions));
     for (const [p] of grid) {
         for (const [q, v] of puzzle.lattice.edgeSharingNeighbors(p)) {
             cs.add(Implies(grid.get(p).is(v), grid.get(q)?.is(v.negate()) || false));
@@ -40,7 +40,7 @@ const solve = async ({ Implies, Not, Sum }: Context, puzzle: Puzzle, cs: Constra
 
     // A number at the edge of the grid indicates how many line end points must be placed in the
     // corresponding row or colum
-    for (const [p, v] of puzzle.entrancePoints()) {
+    for (const [p, v] of puzzle.points.entrances()) {
         if (puzzle.texts.has(p)) {
             const number = parseInt(puzzle.texts.get(p));
             cs.add(Sum(...puzzle.points.sightLine(p.translate(v), v).map(p => grid.get(p).neq(-1))).eq(number));

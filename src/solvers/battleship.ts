@@ -54,7 +54,7 @@ const solve = async ({ And, Or, Sum }: Context, puzzle: Puzzle, cs: Constraints,
     }
 
     // Numbers outside the grid indicate how many cells in the row or column are occupied by ships
-    for (const [p, v] of puzzle.entrancePoints()) {
+    for (const [p, v] of puzzle.points.entrances()) {
         if (puzzle.texts.has(p)) {
             const number = parseInt(puzzle.texts.get(p));
             cs.add(Sum(...puzzle.points.sightLine(p.translate(v), v).map(p => grid.get(p).neq(0))).eq(number));

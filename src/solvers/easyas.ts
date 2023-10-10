@@ -3,18 +3,18 @@ import { Constraints, Context, Puzzle, Solution, ValueMap } from "../lib";
 const solve = async ({ And, Or, Sum }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Place letters from the given range into some of the cells
     const letters = [...puzzle.parameters["letters"]];
-    const grid = new ValueMap(puzzle.points, _ => cs.enum(letters));
+    const grid = new ValueMap(puzzle.points, _ => cs.choice(letters));
 
     // Each row and column contains exactly one of each letter
     // Some cells remain empty
-    for (const [p, v] of puzzle.entrancePoints()) {
+    for (const [p, v] of puzzle.points.entrances()) {
         for (const c of letters) {
             cs.add(Sum(...puzzle.points.sightLine(p.translate(v), v).map(p => grid.get(p).is(c))).eq(1));
         }
     }
 
     // A clue outside the grid represents the first letter seen in the corresponding row or column from that direction (ignoring empty cells)
-    for (const [p, v] of puzzle.entrancePoints()) {
+    for (const [p, v] of puzzle.points.entrances()) {
         if (puzzle.texts.has(p)) {
             const line = puzzle.points.sightLine(p.translate(v), v);
             cs.add(
