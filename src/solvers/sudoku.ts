@@ -11,8 +11,8 @@ const solve = async ({ Distinct, Sum }: Context, puzzle: Puzzle, cs: Constraints
     }
 
     // Each row and column contains exactly one of each number
-    for (const [p, v] of puzzle.points.entrances()) {
-        cs.add(Distinct(...puzzle.points.sightLine(p.translate(v), v).map(p => grid.get(p))));
+    for (const [line] of puzzle.points.lines()) {
+        cs.add(Distinct(...line.map(p => grid.get(p))));
     }
 
     // Each outlined block contains exactly one of each number

@@ -1,5 +1,6 @@
 export * from "./collections";
 export * from "./constraints";
+export * from "./geometry/bearing";
 export * from "./geometry/lattice";
 export * from "./geometry/point";
 export * from "./geometry/pointset";

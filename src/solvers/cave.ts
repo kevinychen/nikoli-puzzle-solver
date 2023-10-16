@@ -1,9 +1,8 @@
-import { Constraints, Context, Puzzle, Solution, ValueMap } from "../lib";
+import { Constraints, Context, PointSet, Puzzle, Solution, ValueMap } from "../lib";
 
-const solve = async ({}: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
+const solve = async ({ Or }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Shade some cells on the board to form a cave
-    const points = puzzle.points.expandToBorders();
-    const grid = new ValueMap(points, _ => cs.int(0, 1));
+    const grid = new ValueMap(puzzle.points, _ => cs.int(0, 1));
     for (const [p, arith] of grid) {
         if (!puzzle.points.has(p)) {
             cs.add(arith.eq(1));
@@ -11,7 +10,11 @@ const solve = async ({}: Context, puzzle: Puzzle, cs: Constraints, solution: Sol
     }
 
     // All shaded cells are connected through other shaded cells to the outside of the grid
-    cs.addAllConnected(points, p => grid.get(p).eq(1));
+    const expandedPoints = new PointSet(
+        puzzle.lattice,
+        [...puzzle.points].flatMap(p => puzzle.lattice.vertexSharingPoints(p))
+    );
+    cs.addAllConnected(expandedPoints, p => Or(!grid.has(p) || grid.get(p).eq(1)));
 
     // Numbers cannot be shaded
     for (const [p] of puzzle.texts) {
@@ -21,11 +24,11 @@ const solve = async ({}: Context, puzzle: Puzzle, cs: Constraints, solution: Sol
     // Clues represent the total number of unshaded cells that can be seen in a straight line
     // vertically or horizontally, including itself
     for (const [p, text] of puzzle.texts) {
-        cs.addSightLineCount(puzzle.lattice, points, p, p => grid.get(p).eq(0), parseInt(text));
+        cs.addSightLineCount(puzzle.lattice, puzzle.points, p, p => grid.get(p).eq(0), parseInt(text));
     }
 
     // All unshaded cells on the board form an orthogonally connected area
-    cs.addAllConnected(points, p => grid.get(p).eq(0));
+    cs.addAllConnected(puzzle.points, p => grid.get(p).eq(0));
 
     const model = await cs.solve(grid);
 

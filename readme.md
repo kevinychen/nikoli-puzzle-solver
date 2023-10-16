@@ -4,7 +4,7 @@ Solver for over 100 types of Nikoli-style logic puzzles, including Sudoku, Slith
 
 The app hooks up to the [Penpa UI](https://github.com/swaroopg92/penpa-edit) to make it easy to input and view puzzles.
 
-![Solving](solving.gif)
+![Solving](docs/solving.gif)
 
 ## Features
 

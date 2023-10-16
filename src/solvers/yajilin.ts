@@ -21,7 +21,8 @@ const solve = async ({ And, Iff, Implies, Or, Sum }: Context, puzzle: Puzzle, cs
     // A number indicates the amount of shaded cells in the given direction
     for (const [p, text] of puzzle.texts) {
         const [v] = puzzle.symbols.get(p).getArrows();
-        cs.add(Sum(...puzzle.points.sightLine(p, v).map(p => shadedGrid.get(p))).eq(parseInt(text)));
+        const number = parseInt(text);
+        cs.add(Sum(...puzzle.points.lineFrom(p, puzzle.lattice.bearing(p, v)).map(p => shadedGrid.get(p))).eq(number));
     }
 
     const model = await cs.solve(grid);
@@ -31,7 +32,7 @@ const solve = async ({ And, Iff, Implies, Or, Sum }: Context, puzzle: Puzzle, cs
         if (model.get(shadedGrid.get(p))) {
             solution.shaded.add(p);
         } else {
-            for (const v of network.directionSets[model.get(arith)]) {
+            for (const v of network.directionSets(p)[model.get(arith)]) {
                 solution.lines.set([p, p.translate(v)], true);
             }
         }

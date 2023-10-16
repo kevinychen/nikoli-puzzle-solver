@@ -34,10 +34,9 @@ const solve = async ({ And, Implies, Or, Sum }: Context, puzzle: Puzzle, cs: Con
     }
 
     // A number outside the grid represents how many cells in the corresponding row or column are shaded
-    for (const [p, v] of puzzle.points.entrances()) {
+    for (const [line, p] of puzzle.points.lines()) {
         if (puzzle.texts.has(p)) {
-            const number = parseInt(puzzle.texts.get(p));
-            cs.add(Sum(...puzzle.points.sightLine(p.translate(v), v).map(p => grid.get(p))).eq(number));
+            cs.add(Sum(...line.map(p => grid.get(p))).eq(parseInt(puzzle.texts.get(p))));
         }
     }
 

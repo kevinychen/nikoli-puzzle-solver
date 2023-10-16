@@ -2,7 +2,7 @@ import { Constraints, Context, Puzzle, Solution } from "../lib";
 
 const solve = async ({}: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Draw lines through orthogonally adjacent cells to form a loop
-    const [loop, grid] = cs.SingleLoopGrid(puzzle.points);
+    const [network, grid] = cs.SingleLoopGrid(puzzle.points);
 
     const regions = puzzle.regions();
     const isStraights = new Map(regions.map(region => [region, cs.int(0, 1)]));
@@ -27,7 +27,7 @@ const solve = async ({}: Context, puzzle: Puzzle, cs: Constraints, solution: Sol
 
     // Fill in solved loop
     for (const [p, arith] of grid) {
-        for (const v of loop.directionSets[model.get(arith)]) {
+        for (const v of network.directionSets(p)[model.get(arith)]) {
             solution.lines.set([p, p.translate(v)], true);
         }
     }

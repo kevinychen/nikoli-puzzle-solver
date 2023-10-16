@@ -13,7 +13,7 @@ const solve = async ({ Or }: Context, puzzle: Puzzle, cs: Constraints, solution:
 
     // There may not be a straight run of 4 or more consecutive shaded or unshaded cells
     for (const [p, arith] of grid) {
-        for (const v of puzzle.lattice.vertexSharingDirections()) {
+        for (const v of puzzle.lattice.vertexSharingDirections(p)) {
             cs.add(Or(...range(4).map(i => arith.neq(grid.get(p.translate(v.scale(i))) || -1))));
         }
     }

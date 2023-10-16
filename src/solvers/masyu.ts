@@ -24,7 +24,9 @@ const solve = async ({ And, Implies, Not, Or }: Context, puzzle: Puzzle, cs: Con
             cs.add(
                 Or(
                     ...puzzle.lattice
-                        .oppositeDirections()
+                        .bearings()
+                        .map(bearing => bearing.from(p))
+                        .map(v => [v, v.negate()])
                         .filter(([v, w]) => grid.has(p.translate(v)) && grid.has(p.translate(w)))
                         .map(([v, w]) =>
                             And(
@@ -41,7 +43,7 @@ const solve = async ({ And, Implies, Not, Or }: Context, puzzle: Puzzle, cs: Con
 
     // Fill in solved loop
     for (const [p, arith] of grid) {
-        for (const v of network.directionSets[model.get(arith)]) {
+        for (const v of network.directionSets(p)[model.get(arith)]) {
             solution.lines.set([p, p.translate(v)], true);
         }
     }
@@ -57,7 +59,7 @@ solverRegistry.push({
         },
         // {
         //     puzzle: "m=edit&p=7VZNb+M2EL37VxAE9kbHkvwRW7fU2fSSbNuNi0VgGAEl05JgSnRJqt4oyH/fIaVu9MEsukCLtkAhazx+Gs48inxDq99KKhnxPfOZzQl8wzVbze0dLBf29pprk2nOQnRH1VNJrkqdChmijcjRWnD+xCRJtT6pcDI5n88XSX4qq4ozdRGLfBJxkUwCL/AnvjfJTYJx9DTWIh/H9djxdELuNS32VO7rCuhjCaNDdC3pGVGksiLh7F2wRoUoxlmhmVQs1oAiLsQJ6ZRqdKJKMQW+FGWSIso5ijMZc7ZHMeNcXaBNyur4vFQaJQIpLWmWpPrrIA0RNhidM52ic5ppAGwWZcpblCJdygJlBYKqnFHIJQqGxKE1PMtzts+oZvwJRewgJJvQA9BGjMbdvH1aOT2ydgmYhkkbcRof21SiEmL784ABkQCKf4ZEO+PFu+AaPjdCIlrCylCdxUgJXupMFChOWXyEl23KGi6vZCOG9rBElmkiGSuaROSnmxtyoFyx0bbZQbvRc7UKqytS/RhucYCJvX28I9Uv4XN1F1YPpLqHR5j4gN2C52MyBfd97QbgfrLPDbiuIz1wP9TPzagHcOsZPd7VyM/httoQbMr8YIcYF+fid4brYfY3bNMoM0BENexzlWan5okq9+JYNrH+7oVUV5ZtM+TblI37LcpmSi3KtzXynZR5VrDPLrar3csLvPSPwPcx3Brqv7669+Ez2A/W+tY+hM94OoWxS0jefod4unShc9+JrgAN+ugicMVeutG5E7105V16rtil4TuIXTljfW/hhp3z8P2ZM9o37Ibw1ExwmGRm3vIQnrsJLhzRsFw3dtECazewpqSaWnttrWft3NpbG/Pe2k/Wrq2dWbv8Y0+8vVe+hryxbf5CNgsbc2mKjbbT+kjqXvP/HrYbbfFa5CehoO1jaIQYWuujKuWBxqBp2ydBu4AVZR4x2YFMszUSx6GWZYNlSQHN/PVJL5ztky5Yx0dC7nvJz3C8dID6T0EHqvddB9ISOk/rN5VSnDsInCBpB2g11k4mVuguAU27FOmR9qrlr3N+GeHP2N6gkGBOFv+fMv/IKWNWwPu+s+ZvaRr/5nZWq15Ip/ABdmgfUKfIG3ygc8AHijYFh6IG1KFrQPvSBmiobgAHAgfsDY2brH2ZG1Z9pZtSA7GbUm29b3cj630B",
-        //     answer: "m=edit&p=7VfbbttGEH33VywI5G1scS9cXt5SO+6L0zaxiyAQjICS1hJhinTJZRXL0L939kJLlNhLgAJBgULS8vhw5swhucNdt791eaOAhuYrIsAjfkQa2R9LpP2F/nNX6FJl5H3ePnfwttOrusnIXb0ml3VZPqsGVlo/tdlkstlsLpbrp267LVV7Ma/Xk1lZLycsZHRCw8naCJzPns91vT6fu9xzPoFbnVeLvFm4CuRjh9kZuWryDclJW1TLUr1hl6Sqq/Oi0qpp1VwjS8q6fiJ6lWvylLetahE3dbdckbwsybxo5qVakLkqy/aC3K2Ui193rSbLmrS6yYvlSr8maYywwWRT6BXZrAqtvEpryls2J7prKlJUBKuWKketulKkfjhIL9ZrtShyrcpnMlMPdaMm+QPaJiqfD3WPba3zR3VYAi/DyM7KfP54aGXW6dPrwIRZjRb/iYlDxYs37Aq/13VD8g6fTK6LOWnrstNFXZH5Ss0f8WabsnpgdqbIAh+RdbpslKq8EPx8fQ0Pedmqs6mfQfdnL9s0276F7Y/ZNGAB2B8N7mH7IXvZvs+2n2F7i6cCoMjdIKIBcITvHGQIP9nzhrx0kSHCn9x5k/UZobuiL+8d80s23d5BYMr8YFMMDNb17ypwafZvnKazwhCzXOM8b1fFkz/Tdov6sQv6EjvYvrVufcpfW+Z/Y5kNLd845hstl0Wlvo65Te93O7zpH9Hvl2xqrP+6h7fZy874MCO14+fsJeAccxMY3sOAJ2NsREfZFFl2zEo2FhuPs9EoG4/pJuFYbJKMxaajsTSU4/TodVAqRqNpPEpzNioi+CgdjRuUI9H4uK7tQ2N2vMNnCltuxys7hnaM7HhjY97Z8ZMdL+0o7Jj0c8LMlUMJ2ScHPASOD5uDQUI4hEtF5BADM20cEtIhDtzHCeA+LgLuz0rgsUMxmMllUAI8dSiFyOkJAZE7i8tT5M4KCcLlihikcyUSXLJ6ZKaaQSlIpxKFENEeSecqohC5uIiBdK4iDtIpRwnE/iyqhBbJsK8mGcQuQ3KIXYYUIN1Vyghi50VKSHxuDInLjRkkLjfGXNGjxKnEAmKnEkd9jTiG2N2DOOmVkxBSl5tQSF0GLtVeJUkgSXtEQ3chSQqpM5NisjOT4nofuuyUQcp7ZFvCQN6Xwf2AbQhuGsPsF+geU+ExqtHIYxSh0mOO8WKPaeyxQJx4jPq015dAWehxjLnJHrO+brL3Q1GH+RiKOqznUYd7HYq5fgZjTbB9aXG6r8XQP/M8Q/+Me4ye/WzFOkBFH4O5wsdgW7zqYxNQ3vMm1187NgIV3ie2AvW9YLGfvciBfQtYjJ79vMWaiH28QE3fg3hE7O+5MDp9DOr4LsHjvi42BfVdgXUQex1sB+rnL9bBWj43Mh58LjYF9T2IR4z3PqXR8T6l0fH3B9vktRa2h9N/fQ8dLjzuXXXbL0Kv7zPzrtqdTbnbmA4/0X+Puz+bBpf1+qlucfMX4HYowA3Wl7ZrHvI5rux2twSWq7r1TDUDymy5zEIfZLrpPFcsK9zS7c8chavFcki6+FndLI7EN7jJHBCt/ddgQLnVZ0Dpphj8nTdNvRkwuI9cDYiD7dVASVV6aEDnQ4v5Y35Ubb2/5t1Z8DWwP1wnWQTy/73md9lrmicQftuO81/cyLj9SmzHwaZm3E7yPZztfNfXzWjjIz3S+8iONrnnT/oc+ZOONgVPmxrZkb5G9ri1kTrtbiRPGhy5P+lxo3rc5sbVcaebUifNbkod9vv0/syiPwA=",
+        //     answer: "",
         // },
     ],
 });

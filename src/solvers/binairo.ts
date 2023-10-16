@@ -1,5 +1,5 @@
-import { range } from "lodash";
-import { Constraints, Context, Point, Puzzle, Solution, ValueMap, ValueSet } from "../lib";
+import { range, zip } from "lodash";
+import { Constraints, Context, Puzzle, Solution, ValueMap, ValueSet } from "../lib";
 
 const solve = async ({ Or, Sum }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Place a black or white circle in every cell
@@ -12,23 +12,26 @@ const solve = async ({ Or, Sum }: Context, puzzle: Puzzle, cs: Constraints, solu
     }
 
     // Each row and column contains an equal number of white and black circles
-    for (const [p, v] of puzzle.points.entrances()) {
-        const line = puzzle.points.sightLine(p.translate(v), v);
+    for (const [line] of puzzle.points.lines()) {
         cs.add(Sum(...line.map(p => grid.get(p))).eq(line.length / 2));
     }
 
     // There may not be a horizontal or vertical run of 3 or more consecutive shaded or unshaded cells
     for (const [p, arith] of grid) {
-        for (const v of puzzle.lattice.edgeSharingDirections()) {
-            cs.add(Or(...range(3).map(i => arith.neq(grid.get(p.translate(v.scale(i))) || -1))));
+        for (const bearing of puzzle.lattice.bearings()) {
+            const line = puzzle.points.lineFrom(p, bearing);
+            cs.add(Or(...range(3).map(i => arith.neq(grid.get(line[i]) || -1))));
         }
     }
 
     // Each row and column is unique
-    for (let i1 = 0; i1 < puzzle.width; i1++) {
-        for (let i2 = i1 + 1; i2 < puzzle.width; i2++) {
-            cs.add(Or(...range(puzzle.width).map(j => grid.get(new Point(i1, j)).neq(grid.get(new Point(i2, j))))));
-            cs.add(Or(...range(puzzle.width).map(j => grid.get(new Point(j, i1)).neq(grid.get(new Point(j, i2))))));
+    for (const bearing of puzzle.lattice.bearings()) {
+        const lines = puzzle.points
+            .lines()
+            .filter(([_, __, b]) => b.eq(bearing))
+            .map(([p]) => p);
+        for (const [line1, line2] of lines.flatMap((line1, i) => lines.slice(i + 1).map(line2 => [line1, line2]))) {
+            cs.add(Or(...zip(line1, line2).map(([p, q]) => grid.get(p).neq(grid.get(q)))));
         }
     }
 

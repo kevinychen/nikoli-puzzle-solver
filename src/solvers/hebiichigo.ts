@@ -42,14 +42,15 @@ const solve = async ({ And, Implies, Or, Sum }: Context, puzzle: Puzzle, cs: Con
     // Snakes are facing in the direction away from its second number
     // Snakes cannot look directly at other snakes, unless separated by a black cell
     for (const [p, arith] of grid) {
-        for (const [q, v] of puzzle.points.edgeSharingNeighbors(p)) {
+        for (const bearing of puzzle.lattice.bearings()) {
             cs.add(
                 Implies(
-                    And(arith.eq(2), grid.get(q).eq(1)),
+                    And(arith.eq(2), grid.get(bearing.next(p))?.eq(1) || false),
                     And(
                         ...puzzle.points
-                            .sightLine(q.translate(v), v, p => !puzzle.shaded.has(p))
+                            .lineFrom(p, bearing, p => !puzzle.shaded.has(p))
                             .map(p => grid.get(p).eq(0))
+                            .slice(2)
                     )
                 )
             );
@@ -62,7 +63,7 @@ const solve = async ({ And, Implies, Or, Sum }: Context, puzzle: Puzzle, cs: Con
     for (const [p, text] of puzzle.texts) {
         const number = parseInt(text);
         const [v] = puzzle.symbols.get(p).getArrows();
-        const line = puzzle.points.sightLine(p.translate(v), v, p => !puzzle.shaded.has(p));
+        const line = puzzle.points.lineFrom(p.translate(v), puzzle.lattice.bearing(p, v), p => !puzzle.shaded.has(p));
         if (number === 0) {
             cs.add(...line.map(p => grid.get(p).eq(0)));
         } else {

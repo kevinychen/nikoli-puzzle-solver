@@ -1,21 +1,32 @@
-import { Constraints, Context, Point, Puzzle, Solution, ValueMap, Vector } from "../lib";
+import { Bearing, Constraints, Context, Point, Puzzle, Solution, ValueMap } from "../lib";
 
 const solve = async ({ And, Not, Or }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Draw lines through orthogonally adjacent cells to form a loop that goes through every circle
     const [network, grid] = cs.SingleLoopGrid(puzzle.points);
 
     // Each circle marks the center of the straight line segment it lies on
-    const dots = new ValueMap<[Point, Point], [Vector, Vector][]>([]);
+    const dots = new ValueMap<[Point, Point], [Bearing, Bearing][]>([]);
     for (const [p] of puzzle.symbols) {
-        dots.set([p, p], puzzle.lattice.oppositeDirections());
+        for (const bearing of puzzle.lattice.bearings()) {
+            dots.set([p, p], [[bearing, bearing.negate()]]);
+        }
     }
     for (const [[p, q]] of puzzle.junctionSymbols) {
-        dots.set([p, q], [[p.directionTo(q), q.directionTo(p)]]);
+        dots.set(
+            [p, q],
+            [
+                [
+                    puzzle.lattice.bearings().find(bearing => bearing.next(p).eq(q)),
+                    puzzle.lattice.bearings().find(bearing => bearing.next(q).eq(p)),
+                ],
+            ]
+        );
     }
     for (const [[p, q], dirs] of dots) {
         const choices = [];
-        for (const [v, w] of dirs) {
-            const [line1, line2] = [puzzle.points.sightLine(p, v), puzzle.points.sightLine(q, w)];
+        for (const [bearing1, bearing2] of dirs) {
+            const [line1, line2] = [puzzle.points.lineFrom(p, bearing1), puzzle.points.lineFrom(q, bearing2)];
+            const [v, w] = [bearing1.from(p), bearing2.from(q)];
             for (let i = 1; i < line1.length && i < line2.length; i++) {
                 choices.push(
                     And(
@@ -35,7 +46,7 @@ const solve = async ({ And, Not, Or }: Context, puzzle: Puzzle, cs: Constraints,
 
     // Fill in solved loop
     for (const [p, arith] of grid) {
-        for (const v of network.directionSets[model.get(arith)]) {
+        for (const v of network.directionSets(p)[model.get(arith)]) {
             solution.lines.set([p, p.translate(v)], true);
         }
     }

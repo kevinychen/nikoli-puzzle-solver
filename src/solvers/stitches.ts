@@ -3,8 +3,7 @@ import { Constraints, Context, Puzzle, Solution, Symbol, ValueMap } from "../lib
 const solve = async ({ Implies, Not, Sum }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Add stitches (lines of length one cell) to connect the regions
     const stitches = parseInt(puzzle.parameters["stitches"]);
-    const directions = puzzle.lattice.edgeSharingDirections();
-    const grid = new ValueMap(puzzle.points, _ => cs.choice(directions));
+    const grid = new ValueMap(puzzle.points, p => cs.choice(puzzle.lattice.edgeSharingDirections(p)));
     for (const [p] of grid) {
         for (const [q, v] of puzzle.lattice.edgeSharingNeighbors(p)) {
             cs.add(Implies(grid.get(p).is(v), grid.get(q)?.is(v.negate()) || false));
@@ -40,10 +39,9 @@ const solve = async ({ Implies, Not, Sum }: Context, puzzle: Puzzle, cs: Constra
 
     // A number at the edge of the grid indicates how many line end points must be placed in the
     // corresponding row or colum
-    for (const [p, v] of puzzle.points.entrances()) {
+    for (const [line, p] of puzzle.points.lines()) {
         if (puzzle.texts.has(p)) {
-            const number = parseInt(puzzle.texts.get(p));
-            cs.add(Sum(...puzzle.points.sightLine(p.translate(v), v).map(p => grid.get(p).neq(-1))).eq(number));
+            cs.add(Sum(...line.map(p => grid.get(p).neq(-1))).eq(parseInt(puzzle.texts.get(p))));
         }
     }
 
@@ -54,7 +52,7 @@ const solve = async ({ Implies, Not, Sum }: Context, puzzle: Puzzle, cs: Constra
         const value = model.get(arith);
         if (value !== -1) {
             solution.symbols.set(p, Symbol.VERY_SMALL_WHITE_CIRCLE);
-            solution.lines.set([p, p.translate(directions[value])], true);
+            solution.lines.set([p, p.translate(puzzle.lattice.edgeSharingDirections(p)[value])], true);
         }
     }
 };

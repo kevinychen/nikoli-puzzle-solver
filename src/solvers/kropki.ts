@@ -6,8 +6,8 @@ const solve = async ({ Distinct, Not, Or }: Context, puzzle: Puzzle, cs: Constra
     const grid = new ValueMap(puzzle.points, _ => cs.int(1, puzzle.width));
 
     // Each row and column contains exactly one of each number
-    for (const [p, v] of puzzle.points.entrances()) {
-        cs.add(Distinct(...puzzle.points.sightLine(p.translate(v), v).map(p => grid.get(p))));
+    for (const [line] of puzzle.points.lines()) {
+        cs.add(Distinct(...line.map(p => grid.get(p))));
     }
 
     // A white dot indicates that the two adjacent numbers have a difference of 1

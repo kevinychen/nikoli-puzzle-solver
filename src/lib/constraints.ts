@@ -1,12 +1,13 @@
 import { isEqual, range } from "lodash";
 import { Arith, Bool, Solver } from "z3-solver";
-import { ValueMap } from "./collections";
+import { ValueMap, ValueSet } from "./collections";
 import { Lattice } from "./geometry/lattice";
 import { Point } from "./geometry/point";
 import { PointSet } from "./geometry/pointset";
 import { Vector } from "./geometry/vector";
-import { Network } from "./network";
+import { LoopNetwork, Network, PathNetwork } from "./network";
 import { Context } from "./solver";
+import { Bearing } from "./geometry/bearing";
 
 export type ChoiceArith<T> = Arith & {
     is(val: T): Bool;
@@ -77,7 +78,7 @@ export interface Constraints {
         lattice: Lattice,
         points: PointSet,
         start: Point,
-        good: (p: Point, v?: Vector) => Bool,
+        good: (p: Point, bearing?: Bearing) => Bool,
         count: number
     ): void;
 
@@ -117,10 +118,11 @@ export class ConstraintsImpl implements Constraints {
 
     NetworkGrid(points: PointSet, network: Network) {
         const { Implies, Or } = this.context;
-        const getIndices = (predicate: (vs: Vector[]) => Boolean) =>
-            range(network.directionSets.length).filter(i => predicate(network.directionSets[i]));
-        const grid = new ValueMap(points, _ =>
-            Object.assign(this.int(0, network.directionSets.length - 1), {
+        const grid = new ValueMap(points, p => {
+            const directionSets = network.directionSets(p);
+            const getIndices = (predicate: (vs: Vector[]) => Boolean) =>
+                range(directionSets.length).filter(i => predicate(directionSets[i]));
+            return Object.assign(this.int(0, network.directionSets(p).length - 1), {
                 hasDirection(v: Vector) {
                     return Or(...getIndices(vs => vs.some(w => w.eq(v))).map(i => this.eq(i)));
                 },
@@ -133,17 +135,16 @@ export class ConstraintsImpl implements Constraints {
                 isStraight() {
                     return Or(
                         ...getIndices(vs =>
-                            points.lattice
-                                .oppositeDirections()
-                                .every(([v, w]) => vs.some(x => x.eq(v)) === vs.some(x => x.eq(w)))
+                            points.lattice.edgeSharingDirections(p)
+                                .every(v => vs.some(w => w.eq(v)) === vs.some(w => w.eq(v.negate())))
                         ).map(i => this.eq(i))
                     );
                 },
                 isTerminal() {
                     return Or(...getIndices(vs => vs.length === 1).map(i => this.eq(i)));
                 },
-            })
-        );
+            });
+        });
         for (const [p, arith] of grid) {
             for (const [q, v] of points.lattice.edgeSharingNeighbors(p)) {
                 this.add(Implies(arith.hasDirection(v), grid.get(q)?.hasDirection(v.negate()) || false));
@@ -154,7 +155,7 @@ export class ConstraintsImpl implements Constraints {
 
     PathsGrid(points: PointSet): [Network, ValueMap<Point, NetworkArith>, ValueMap<Point, Arith>] {
         const { And, If, Implies, Or } = this.context;
-        const network = Network.path(points.lattice);
+        const network = new PathNetwork(points.lattice);
         const grid = this.NetworkGrid(points, network);
         const order = new ValueMap(points, _ => this.int());
         for (const [p, arith] of grid) {
@@ -173,7 +174,7 @@ export class ConstraintsImpl implements Constraints {
 
     SingleLoopGrid(points: PointSet): [Network, ValueMap<Point, NetworkArith>, ChoiceArith<Point>] {
         const { Or } = this.context;
-        const network = Network.loop(points.lattice);
+        const network = new LoopNetwork(points.lattice);
         const grid = this.NetworkGrid(points, network);
         const root = this.choice(points);
         this.addConnected(
@@ -296,15 +297,19 @@ export class ConstraintsImpl implements Constraints {
         lattice: Lattice,
         points: PointSet,
         start: Point,
-        good: (p: Point, v?: Vector) => Bool,
+        good: (p: Point, bearing?: Bearing) => Bool,
         count: number
     ) {
         const { And, Sum } = this.context;
+        const cells = new ValueSet([start]);
         const visible = [good(start)];
-        for (const v of lattice.edgeSharingDirections()) {
-            const line = points.sightLine(start, v);
+        for (const bearing of lattice.bearings()) {
+            const line = points.lineFrom(start, bearing);
             for (let i = 1; i < line.length; i++) {
-                visible.push(And(...line.slice(0, i + 1).map(p => good(p, v))));
+                if (!cells.has(line[i])) {
+                    cells.add(line[i]);
+                    visible.push(And(...line.slice(0, i + 1).map(p => good(p, bearing))));
+                }
             }
         }
         this.add(Sum(...visible).eq(count));

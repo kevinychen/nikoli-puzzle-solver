@@ -6,22 +6,21 @@ const solve = async ({ And, Or, Sum }: Context, puzzle: Puzzle, cs: Constraints,
     const grid = new ValueMap(puzzle.points, _ => cs.int(0, puzzle.width - 2));
 
     // Every row and column has exactly 2 shaded cells
-    for (const [p, v] of puzzle.points.entrances()) {
-        cs.add(Sum(...puzzle.points.sightLine(p.translate(v), v).map(p => grid.get(p).eq(0))).eq(2));
+    for (const [line] of puzzle.points.lines()) {
+        cs.add(Sum(...line.map(p => grid.get(p).eq(0))).eq(2));
     }
 
     // Each row and column contains exactly one of each number
-    for (const [p, v] of puzzle.points.entrances()) {
+    for (const [line] of puzzle.points.lines()) {
         for (let i = 1; i <= puzzle.width - 2; i++) {
-            cs.add(Or(...puzzle.points.sightLine(p.translate(v), v).map(p => grid.get(p).eq(i))));
+            cs.add(Or(...line.map(p => grid.get(p).eq(i))));
         }
     }
 
     // A clue outside the grid indicates the sum of the numbers which appear between the two shaded
     // cells in the corresponding row or column
-    for (const [p, v] of puzzle.points.entrances()) {
+    for (const [line, p] of puzzle.points.lines()) {
         if (puzzle.texts.has(p)) {
-            const line = puzzle.points.sightLine(p.translate(v), v);
             const choices = [];
             for (let i = 0; i < line.length; i++) {
                 for (let j = i + 1; j < line.length; j++) {
@@ -61,7 +60,7 @@ solverRegistry.push({
         },
         // {
         //     puzzle: "m=edit&p=7ZRfb5s8FMbv+RSVr30BOP/gruua3WTZumSqKoQiJ6ENKsSdgXUiynfvOQc6MLCLSe+79WKyfHT4+dh+DDzOvhVSR3wGTcy4zR1oYuRSd22Pul23dZwnkX/BL4v8oDQknH+az/m9TLLIChyabYfWqfT88oaXH/yAOYwzF7rDQl7e+Kfyo18uebmCIcYdYIuqyIX0uklvaRyzqwo6NuTLOof0DtJdrHdJtFlU5LMflGvOcJ93NBtTlqrvEat14PNOpdsYwVbmcJjsED/VI1mxV49FXeuEZ15eVnJXA3JFIxfTSi5mA3LxFP+zXC88n+G1fwHBGz9A7V+bdNakK/8EcemfmDvFqR5oqb4Nc2e0Fnyrn8RDMmmAsDtzhIvAbgFBi7QJLTttwJgWaW0zHb2+8xrMJp0pXiVt3BAHtmhrg0M5dLQ7inOKLsU1nJyXguJ7ijbFMcUF1VxTvKV4RXFEcUI1U3x3v/V2/4CcQHhk1dc2+e+fQitgyyLdRvpiqXQqEwbWZplKNlmh7+UOflRyPvyLwI5UaaBEqackPpp18cNR6WhwCGG0fxiq3yq976z+LJPEANVNZqDKcgbKNfip9Sy1Vs8GSWV+MEDLe8ZK0TE3BeTSlCgfZWe3tDnz2WI/GPVAwM0p/t2bf+nexE9gvzV/vzU59PcqPWh9wAPuBzro8pr3jA68Z2ncsO9qoAPGBtr1NqC+vQH2HA7sFybHVbs+R1Vdq+NWPbfjVm3DB6H1Ag==",
-        //     answer: "m=edit&p=7VVNb5wwEL3vr4h89sHGfJlbmia9pNumSRVFaBWxG5KgsEsKbFOx2v/e8ZgsMNBDpX4dKsR4/PDMPA88XH3ZJmXKQ7hUyAWXcCnXwdsRGm/RXldZnafRET/e1o9FCQ7nH87O+H2SV+kslhgtFrNdo6PmgjfvophJxpkDt2QL3lxEu+Z91Mx5cwmPGJeAndtFDrinnXuNz413YkEpwJ+3Prg34K6ycpWnt+cW+RjFzRVnps4bjDYuWxdfU9byMPNVsV5mBlgmNWymesye2yfV9q542rLXEnveHFu6lxN0VUdXHeiqabrO76erF/s9tP0TEL6NYsP9c+eGnXsZ7faG1445gQnVwMW+G+aEmMvpIdogfgcoQWKUYwDRAxQm6SOYNugAD5P0ygTua89bIPRJiLbUvA6RUgy4waYkbu0G7RlaB+0V7Jw3Cu1btAKth/Yc15yivUZ7gtZF6+OawPQOutvP4Y+iTVMVdgx4Oi1PV7R7OwCy3f0BwI6pHoDtcDvAc0iIN1rhkbKeT8p6Aani07K+R0J8nyT1Q8LD14RH4FHAJ1WCgCQNNCkb0gaFAQVCkkMLUkVLwkMrUkUKQZZIIUkWKZxRlCJcpHAJGSkljZKK1pIuzSNpp6QcturwhduvF4TMXOAHn7/r4eBJOygcfNcOAQ5BiEMo7KBx0DZc25kUNo2UTjua+UFRVkVGIftZrDSeEq+X/+tni1nM5tv1Mi2P5kW5TnIGpwqrivy22pb3yQr+kXjocMQ2uHIA5UXxnGeb4brsYVOU6eQjA6Z3D1Prl0V5R7K/JHk+ACo8RAeQ/dsPoLrMBvOkLIuXAbJO6scB0PvtDzKlm3pIoE6GFJOnhFRbd3vez9g3hnes4NBW/4/sv3Rkm1cgfurg/iMn3b9FB7/eopyUPsAT6gd0UuUtPhI64CNJm4JjVQM6IWxAqbYBGssbwJHCAfuByE1WqnPDikrdlBqp3ZTqCz5ezL4D",
+        //     answer: "",
         // },
     ],
 });

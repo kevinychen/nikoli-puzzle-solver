@@ -1,8 +1,8 @@
-import { Constraints, Context, Puzzle, Solution, Vector } from "../lib";
+import { Bearing, Constraints, Context, Puzzle, Solution } from "../lib";
 
 const solve = async ({ And, Not, Or }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Draw lines through orthogonally adjacent cells to form a loop
-    const [loop, grid, root] = cs.SingleLoopGrid(puzzle.points);
+    const [network, grid, root] = cs.SingleLoopGrid(puzzle.points);
 
     // Optimization: start the loop at a specific circle
     cs.add(root.is([...puzzle.texts.keys(), ...puzzle.points][0]));
@@ -13,28 +13,25 @@ const solve = async ({ And, Not, Or }: Context, puzzle: Puzzle, cs: Constraints,
     }
 
     // Every straight line segment that touches a clue must have a length equal to the clue’s value
+    const bearings = puzzle.lattice.bearings();
     for (const [p, text] of puzzle.texts) {
         const number = parseInt(text);
-        const segmentLens: [Vector, Vector, number, number][] = [];
-        for (const v of puzzle.lattice.edgeSharingDirections()) {
-            for (const w of puzzle.lattice.edgeSharingDirections()) {
-                if (v >= w) {
-                    continue;
+        const segmentLens: [Bearing, Bearing, number, number][] = [];
+        for (const [bearing1, bearing2] of bearings.flatMap((b1, i) => bearings.slice(i + 1).map(b2 => [b1, b2]))) {
+            if (bearing2.eq(bearing1.negate())) {
+                for (let i = 1; i < number; i++) {
+                    segmentLens.push([bearing1, bearing2, i, number - i]);
                 }
-                if (w.eq(v.negate())) {
-                    for (let i = 1; i < number; i++) {
-                        segmentLens.push([v, w, i, number - i]);
-                    }
-                } else {
-                    segmentLens.push([v, w, number, number]);
-                }
+            } else {
+                segmentLens.push([bearing1, bearing2, number, number]);
             }
         }
 
         const choices = [];
-        for (const [v, w, len1, len2] of segmentLens) {
-            const [line1, line2] = [puzzle.points.sightLine(p, v), puzzle.points.sightLine(p, w)];
+        for (const [bearing1, bearing2, len1, len2] of segmentLens) {
+            const [line1, line2] = [puzzle.points.lineFrom(p, bearing1), puzzle.points.lineFrom(p, bearing2)];
             if (len1 < line1.length && len2 < line2.length) {
+                const [v, w] = [bearing1.from(p), bearing2.from(p)];
                 choices.push(
                     And(
                         grid.get(p).is([v, w]),
@@ -53,7 +50,7 @@ const solve = async ({ And, Not, Or }: Context, puzzle: Puzzle, cs: Constraints,
 
     // Fill in solved loop
     for (const [p, arith] of grid) {
-        for (const v of loop.directionSets[model.get(arith)]) {
+        for (const v of network.directionSets(p)[model.get(arith)]) {
             solution.lines.set([p, p.translate(v)], true);
         }
     }

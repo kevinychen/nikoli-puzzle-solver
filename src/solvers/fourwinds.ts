@@ -2,8 +2,7 @@ import { Constraints, Context, Puzzle, Solution, ValueMap } from "../lib";
 
 const solve = async ({ Or }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Draw a horizontal or a vertical line in each white cell
-    const directions = puzzle.lattice.edgeSharingDirections();
-    const grid = new ValueMap(puzzle.points, _ => cs.choice(directions));
+    const grid = new ValueMap(puzzle.points, p => cs.choice(puzzle.lattice.edgeSharingDirections(p)));
 
     // Each number represents the total number of white cells occupied by the lines from that number
     // (A line is represented by an arrow coming out of the number)
@@ -12,7 +11,7 @@ const solve = async ({ Or }: Context, puzzle: Puzzle, cs: Constraints, solution:
             puzzle.lattice,
             puzzle.points,
             p,
-            (q, v) => Or(q.eq(p), v ? grid.get(q).is(v.negate()) : false),
+            (q, bearing) => Or(q.eq(p), bearing ? grid.get(q).is(bearing.negate().from(p)) : false),
             parseInt(text) + 1
         );
     }
@@ -28,7 +27,7 @@ const solve = async ({ Or }: Context, puzzle: Puzzle, cs: Constraints, solution:
     for (const [p, arith] of grid) {
         const value = model.get(arith);
         if (value !== -1) {
-            solution.lines.set([p, p.translate(directions[value])], true);
+            solution.lines.set([p, p.translate(puzzle.lattice.edgeSharingDirections(p)[value])], true);
         }
     }
 };

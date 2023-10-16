@@ -12,41 +12,37 @@ const solve = async ({ And, Not, Or }: Context, puzzle: Puzzle, cs: Constraints,
         cs.add(grid.get(p).neq(0));
     }
 
+    const bearings = puzzle.lattice.bearings();
     for (const [p, symbol] of puzzle.symbols) {
         const choices = [];
-        for (const v of puzzle.lattice.edgeSharingDirections()) {
-            for (const w of puzzle.lattice.edgeSharingDirections()) {
-                if (v >= w) {
-                    continue;
-                }
-                const [line1, line2] = [puzzle.points.sightLine(p, v), puzzle.points.sightLine(p, w)];
-                for (let len1 = 1; len1 < line1.length; len1++) {
-                    for (let len2 = 1; len2 < line2.length; len2++) {
-                        // The straight line segments coming out of a white circle must have equal length
-                        if (!symbol.isBlack() && len1 !== len2) {
-                            continue;
-                        }
-
-                        // The straight line segments coming out of a black circle must have different lengths
-                        if (symbol.isBlack() && len1 === len2) {
-                            continue;
-                        }
-
-                        // Numbers indicate the sum of the length of the line segments
-                        if (puzzle.texts.has(p) && len1 + len2 !== parseInt(puzzle.texts.get(p))) {
-                            continue;
-                        }
-
-                        choices.push(
-                            And(
-                                grid.get(p).is([v, w]),
-                                ...line1.slice(1, len1).map(p => grid.get(p).is([v, v.negate()])),
-                                Not(grid.get(line1[len1]).is([v, v.negate()])),
-                                ...line2.slice(1, len2).map(p => grid.get(p).is([w, w.negate()])),
-                                Not(grid.get(line2[len2]).is([w, w.negate()]))
-                            )
-                        );
+        for (const [b1, b2] of bearings.flatMap((b1, i) => bearings.slice(i + 1).map(b2 => [b1, b2]))) {
+            const [line1, line2] = [puzzle.points.lineFrom(p, b1), puzzle.points.lineFrom(p, b2)];
+            for (let len1 = 1; len1 < line1.length; len1++) {
+                for (let len2 = 1; len2 < line2.length; len2++) {
+                    // The straight line segments coming out of a white circle must have equal length
+                    if (!symbol.isBlack() && len1 !== len2) {
+                        continue;
                     }
+
+                    // The straight line segments coming out of a black circle must have different lengths
+                    if (symbol.isBlack() && len1 === len2) {
+                        continue;
+                    }
+
+                    // Numbers indicate the sum of the length of the line segments
+                    if (puzzle.texts.has(p) && len1 + len2 !== parseInt(puzzle.texts.get(p))) {
+                        continue;
+                    }
+
+                    choices.push(
+                        And(
+                            grid.get(p).is([b1.from(p), b2.from(p)]),
+                            ...line1.slice(1, len1).map(p => grid.get(p).is([b1.from(p), b1.negate().from(p)])),
+                            Not(grid.get(line1[len1]).is([b1.from(p), b1.negate().from(p)])),
+                            ...line2.slice(1, len2).map(p => grid.get(p).is([b2.from(p), b2.negate().from(p)])),
+                            Not(grid.get(line2[len2]).is([b2.from(p), b2.negate().from(p)]))
+                        )
+                    );
                 }
             }
         }
@@ -57,7 +53,7 @@ const solve = async ({ And, Not, Or }: Context, puzzle: Puzzle, cs: Constraints,
 
     // Fill in solved loop
     for (const [p, arith] of grid) {
-        for (const v of network.directionSets[model.get(arith)]) {
+        for (const v of network.directionSets(p)[model.get(arith)]) {
             solution.lines.set([p, p.translate(v)], true);
         }
     }

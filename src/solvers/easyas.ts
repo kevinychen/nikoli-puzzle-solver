@@ -7,16 +7,15 @@ const solve = async ({ And, Or, Sum }: Context, puzzle: Puzzle, cs: Constraints,
 
     // Each row and column contains exactly one of each letter
     // Some cells remain empty
-    for (const [p, v] of puzzle.points.entrances()) {
+    for (const [line] of puzzle.points.lines()) {
         for (const c of letters) {
-            cs.add(Sum(...puzzle.points.sightLine(p.translate(v), v).map(p => grid.get(p).is(c))).eq(1));
+            cs.add(Sum(...line.map(p => grid.get(p).is(c))).eq(1));
         }
     }
 
     // A clue outside the grid represents the first letter seen in the corresponding row or column from that direction (ignoring empty cells)
-    for (const [p, v] of puzzle.points.entrances()) {
+    for (const [line, p] of puzzle.points.lines()) {
         if (puzzle.texts.has(p)) {
-            const line = puzzle.points.sightLine(p.translate(v), v);
             cs.add(
                 Or(
                     ...line.map((q, i) =>

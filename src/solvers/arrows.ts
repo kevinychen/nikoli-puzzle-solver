@@ -1,31 +1,26 @@
-import { Constraints, Context, Puzzle, Solution, Symbol, ValueMap, ValueSet } from "../lib";
+import { Constraints, Context, PointSet, Puzzle, Solution, Symbol, ValueMap, ValueSet } from "../lib";
 
 const solve = async ({ Or, Sum }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Place an arrow in each cell outside the grid
     // Every arrow can go horizontally, vertically or diagonally
-    const directions = puzzle.lattice.vertexSharingDirections();
-    const points = puzzle.points.expandToBorders();
-    const grid = new ValueMap(points, _ => cs.choice(directions));
-    const arrowSpots = new ValueSet(
-        [...puzzle.points].flatMap(p => puzzle.lattice.edgeSharingPoints(p)).filter(p => !puzzle.points.has(p))
-    );
-    cs.add(...Array.from(grid, ([p, arith]) => arith.neq(-1).eq(arrowSpots.has(p))));
+    const arrowSpots = new ValueSet(puzzle.points.lines().map(([_, p]) => p));
+    const grid = new ValueMap(arrowSpots, p => cs.choice(puzzle.lattice.vertexSharingDirections(p)));
 
     // Every arrow points to at least one cell with a number
-    for (const p of arrowSpots) {
-        cs.add(Or(...puzzle.points.vertexSharingNeighbors(p).map(([_, v]) => grid.get(p).is(v))));
+    for (const [p, arith] of grid) {
+        cs.add(Or(...puzzle.points.vertexSharingNeighbors(p).map(([_, v]) => arith.is(v))));
     }
 
     // The numbers indicate the total number of arrows that point to them
+    const allPoints = new PointSet(puzzle.lattice, [...puzzle.points, ...arrowSpots]);
     for (const [p, text] of puzzle.texts) {
         cs.add(
             Sum(
-                ...directions.flatMap(v =>
-                    points
-                        .sightLine(p, v)
-                        .filter(p => arrowSpots.has(p))
-                        .map(p => grid.get(p).is(v.negate()))
-                )
+                ...puzzle.lattice
+                    .vertexSharingDirections(p)
+                    .flatMap(v =>
+                        [...arrowSpots].filter(q => q.directionTo(p).crossProduct(v) === 0).map(p => grid.get(p).is(v))
+                    )
             ).eq(parseInt(text))
         );
     }
@@ -36,7 +31,10 @@ const solve = async ({ Or, Sum }: Context, puzzle: Puzzle, cs: Constraints, solu
     for (const [p, arith] of grid) {
         const value = model.get(arith);
         if (value !== -1) {
-            solution.symbols.set(p, Symbol.fromArrow("arrow_B_W", directions[model.get(arith)]));
+            solution.symbols.set(
+                p,
+                Symbol.fromArrow("arrow_B_W", puzzle.lattice.vertexSharingDirections(p)[model.get(arith)])
+            );
         }
     }
 };

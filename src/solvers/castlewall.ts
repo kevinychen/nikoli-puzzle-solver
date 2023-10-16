@@ -1,6 +1,6 @@
 import { Constraints, Context, Puzzle, Solution, ValueMap, ValueSet } from "../lib";
 
-const solve = async ({ Iff, Not, Or, Sum }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
+const solve = async ({ Iff, Not, Sum }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Draw lines through orthogonally adjacent cells to form a loop
     const [network, grid] = cs.SingleLoopGrid(puzzle.points);
 
@@ -15,17 +15,9 @@ const solve = async ({ Iff, Not, Or, Sum }: Context, puzzle: Puzzle, cs: Constra
     const isInsideGrid = new ValueMap(puzzle.points.vertexSet(), _ => cs.int(0, 1));
     cs.add(isInsideGrid.get([...isInsideGrid.keys()].sort()[0]).eq(0));
     for (const [p, arith] of grid) {
-        const neighbors = puzzle.lattice.edgeSharingNeighbors(p);
-        const vertices = puzzle.lattice.vertices(p);
-        for (const [i, [_, v]] of neighbors.entries()) {
-            cs.add(
-                Iff(
-                    arith.hasDirection(v),
-                    isInsideGrid
-                        .get(vertices[i])
-                        .neq(isInsideGrid.get(vertices[(i + vertices.length - 1) % vertices.length]))
-                )
-            );
+        for (const [q, v] of puzzle.lattice.edgeSharingNeighbors(p)) {
+            const [v1, v2] = puzzle.lattice.edgeVertices(p, q);
+            cs.add(Iff(arith.hasDirection(v), isInsideGrid.get(v1).neq(isInsideGrid.get(v2))));
         }
     }
 
@@ -50,7 +42,11 @@ const solve = async ({ Iff, Not, Or, Sum }: Context, puzzle: Puzzle, cs: Constra
         if (puzzle.texts.has(p) && puzzle.symbols.has(p)) {
             const number = parseInt(puzzle.texts.get(p));
             const [v] = puzzle.symbols.get(p).getArrows();
-            cs.add(Sum(...puzzle.points.sightLine(p, v).map(p => grid.get(p).hasDirection(v))).eq(number));
+            cs.add(
+                Sum(
+                    ...puzzle.points.lineFrom(p, puzzle.lattice.bearing(p, v)).map(p => grid.get(p).hasDirection(v))
+                ).eq(number)
+            );
         }
     }
 
@@ -58,7 +54,7 @@ const solve = async ({ Iff, Not, Or, Sum }: Context, puzzle: Puzzle, cs: Constra
 
     // Fill in solved loop
     for (const [p, arith] of grid) {
-        for (const v of network.directionSets[model.get(arith)]) {
+        for (const v of network.directionSets(p)[model.get(arith)]) {
             solution.lines.set([p, p.translate(v)], true);
         }
     }

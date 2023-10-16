@@ -2,8 +2,7 @@ import { Constraints, Context, Puzzle, Solution, Symbol, ValueMap } from "../lib
 
 const solve = async ({ Distinct }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Place an arrow in every empty cell
-    const directions = puzzle.lattice.edgeSharingDirections();
-    const grid = new ValueMap(puzzle.points, _ => cs.choice(directions));
+    const grid = new ValueMap(puzzle.points, p => cs.choice(puzzle.lattice.edgeSharingDirections(p)));
     for (const [p, symbol] of puzzle.symbols) {
         cs.add(grid.get(p).eq(-1).eq(symbol.isCircle()));
     }
@@ -33,7 +32,10 @@ const solve = async ({ Distinct }: Context, puzzle: Puzzle, cs: Constraints, sol
     // Fill in solved shaded cells
     for (const [p, arith] of grid) {
         if (!puzzle.symbols.has(p)) {
-            solution.symbols.set(p, Symbol.fromArrow("arrow_N_G", directions[model.get(arith)]));
+            solution.symbols.set(
+                p,
+                Symbol.fromArrow("arrow_N_G", puzzle.lattice.edgeSharingDirections(p)[model.get(arith)])
+            );
         }
     }
 };

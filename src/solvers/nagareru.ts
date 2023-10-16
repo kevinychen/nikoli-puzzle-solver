@@ -10,10 +10,10 @@ const solve = async ({ And, Implies, Not, Or }: Context, puzzle: Puzzle, cs: Con
     }
 
     // Pick an orientation of the loop
-    const loopDirection = new ValueMap(puzzle.points, _ => cs.choice(puzzle.lattice.edgeSharingDirections()));
+    const loopDirection = new ValueMap(puzzle.points, p => cs.choice(puzzle.lattice.edgeSharingDirections(p)));
     for (const [p, arith] of loopDirection) {
         cs.add(Implies(arith.eq(-1), grid.get(p).eq(0)));
-        for (const v of puzzle.lattice.edgeSharingDirections()) {
+        for (const v of puzzle.lattice.edgeSharingDirections(p)) {
             cs.add(Implies(arith.is(v), grid.get(p).hasDirection(v)));
         }
     }
@@ -33,7 +33,8 @@ const solve = async ({ And, Implies, Not, Or }: Context, puzzle: Puzzle, cs: Con
             // given direction, up to the next shaded cell
             // The loop cannot travel against the wind (if the loop goes into a lane with a fan, it
             // must move at least once in the direction of the fan)
-            const line = puzzle.points.sightLine(p.translate(v), v, p => !puzzle.shaded.has(p));
+            const bearing = puzzle.lattice.bearing(p, v);
+            const line = puzzle.points.lineFrom(p.translate(v), bearing, p => !puzzle.shaded.has(p));
             cs.add(Or(...line.map(p => grid.get(p).neq(0))));
             for (const q of line) {
                 cs.add(
@@ -50,7 +51,7 @@ const solve = async ({ And, Implies, Not, Or }: Context, puzzle: Puzzle, cs: Con
 
     // Fill in solved loop
     for (const [p, arith] of grid) {
-        for (const v of network.directionSets[model.get(arith)]) {
+        for (const v of network.directionSets(p)[model.get(arith)]) {
             solution.lines.set([p, p.translate(v)], true);
         }
     }

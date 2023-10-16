@@ -1,20 +1,16 @@
 import { range } from "lodash";
-import { Constraints, Context, Network, Point, PointSet, Puzzle, Solution, ValueMap, Vector } from "../lib";
+import { Constraints, Context, FullNetwork, Puzzle, Solution, ValueMap } from "../lib";
 
 const solve = async ({ And, If, Not, Or, Xor }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Draw a path. When the path visits a cell twice, it must travel in a straight line each time
-    const network = Network.all(puzzle.lattice);
-    const points = new PointSet(puzzle.lattice, [
-        ...puzzle.points,
-        ...[...puzzle.junctionSymbols.keys()].flatMap(vs => [...vs]),
-    ]);
-    const grid = cs.NetworkGrid(points, network);
+    const network = new FullNetwork(puzzle.lattice);
+    const grid = cs.NetworkGrid(puzzle.points, network);
     for (const [_, arith] of grid) {
         cs.add(Or(arith.isLoopSegment(), arith.isStraight()));
     }
 
     // Find the order of the path
-    const edges = points.edges().map(([p, _, v]) => [p, v] as [Point, Vector]);
+    const edges = puzzle.points.edges().map(([p, _, v]) => [p, v] as [typeof p, typeof v]);
     const root = cs.int();
     const order = new ValueMap(edges, _ => cs.int());
     for (const [p, v] of edges) {
@@ -29,7 +25,7 @@ const solve = async ({ And, If, Not, Or, Xor }: Context, puzzle: Puzzle, cs: Con
             Or(
                 order.get([p, v]).eq(-1),
                 root.eq(edges.findIndex(([q, w]) => q.eq(p) && w.eq(v))),
-                ...points
+                ...puzzle.points
                     .edgeSharingNeighbors(p)
                     .map(([q, w]) =>
                         And(
@@ -46,17 +42,16 @@ const solve = async ({ And, If, Not, Or, Xor }: Context, puzzle: Puzzle, cs: Con
     // section of the loop that travels horizontally in that row
     // Likewise, the numbers to the top/bottom of the columns indicate the number of cells visited
     // by the nearest section of the loop that travels vertically in that column
-    for (const [p, v] of puzzle.points.entrances()) {
+    for (const [line, p, bearing] of puzzle.points.lines()) {
         if (puzzle.texts.has(p)) {
-            const line = puzzle.points.sightLine(p.translate(v), v);
             const length = parseInt(puzzle.texts.get(p));
             cs.add(
                 Or(
                     ...range(length, line.length + 1).map(i =>
                         And(
-                            ...range(i - length).map(j => Not(grid.get(line[j]).hasDirection(v))),
-                            ...range(i - length, i - 1).map(j => grid.get(line[j]).hasDirection(v)),
-                            Not(grid.get(line[i - 1]).hasDirection(v))
+                            ...range(i - length).map(j => Not(grid.get(line[j]).hasDirection(bearing.from(p)))),
+                            ...range(i - length, i - 1).map(j => grid.get(line[j]).hasDirection(bearing.from(p))),
+                            Not(grid.get(line[i - 1]).hasDirection(bearing.from(p)))
                         )
                     )
                 )
@@ -68,7 +63,7 @@ const solve = async ({ And, If, Not, Or, Xor }: Context, puzzle: Puzzle, cs: Con
 
     // Fill in solved loop
     for (const [p, arith] of grid) {
-        for (const v of network.directionSets[model.get(arith)]) {
+        for (const v of network.directionSets(p)[model.get(arith)]) {
             solution.lines.set([p, p.translate(v)], true);
         }
     }

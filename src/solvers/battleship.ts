@@ -28,7 +28,8 @@ const solve = async ({ And, Or, Sum }: Context, puzzle: Puzzle, cs: Constraints,
                     [Vector.E, [3, 5]],
                     [Vector.S, [4, 6]],
                 ])) {
-                    const points = range(length).map(i => p.translate(v.scale(i)));
+                    const line = puzzle.points.lineFrom(p, puzzle.lattice.bearing(p, v));
+                    const points = range(length).map(i => line[i]);
                     if (points.some(p => !grid.has(p))) {
                         continue;
                     }
@@ -54,10 +55,9 @@ const solve = async ({ And, Or, Sum }: Context, puzzle: Puzzle, cs: Constraints,
     }
 
     // Numbers outside the grid indicate how many cells in the row or column are occupied by ships
-    for (const [p, v] of puzzle.points.entrances()) {
+    for (const [line, p] of puzzle.points.lines()) {
         if (puzzle.texts.has(p)) {
-            const number = parseInt(puzzle.texts.get(p));
-            cs.add(Sum(...puzzle.points.sightLine(p.translate(v), v).map(p => grid.get(p).neq(0))).eq(number));
+            cs.add(Sum(...line.map(p => grid.get(p).neq(0))).eq(parseInt(puzzle.texts.get(p))));
         }
     }
 

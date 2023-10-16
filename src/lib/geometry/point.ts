@@ -25,4 +25,8 @@ export class Point {
             points.reduce((a, b) => a + b.x, 0) / points.length
         );
     }
+
+    static compare(p1: Point, p2: Point) {
+        return p1.y - p2.y || p1.x - p2.x;
+    }
 }

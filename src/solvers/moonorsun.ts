@@ -48,7 +48,7 @@ const solve = async ({ Implies, Sum }: Context, puzzle: Puzzle, cs: Constraints,
 
     // Fill in solved loop
     for (const [p, arith] of grid) {
-        for (const v of network.directionSets[model.get(arith)]) {
+        for (const v of network.directionSets(p)[model.get(arith)]) {
             solution.lines.set([p, p.translate(v)], true);
         }
     }
