@@ -1,4 +1,3 @@
-import { range } from "lodash";
 import { Constraints, Context, Point, Puzzle, Solution, ValueMap, ValueSet } from "../lib";
 
 const solve = async ({ And, Or }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
@@ -15,11 +14,9 @@ const solve = async ({ And, Or }: Context, puzzle: Puzzle, cs: Constraints, solu
                 bearing1.from(p).dotProduct(bearing2.from(p)) === 0 &&
                 bearing1.from(p).crossProduct(bearing2.from(p)) > 0
             ) {
-                const line1 = puzzle.points.lineFrom(p, bearing1);
-                const line2 = puzzle.points.lineFrom(p, bearing2);
                 for (let len1 = 1; len1 < maxLength; len1++) {
                     for (let len2 = len1; len2 < maxLength; len2++) {
-                        lShapes.push([...range(len1 + 1).map(i => line1[i]), ...range(1, len2 + 1).map(i => line2[i])]);
+                        lShapes.push([...bearing1.line(p, len1 + 1), ...bearing2.line(p, len2 + 1).slice(1)]);
                     }
                 }
             }

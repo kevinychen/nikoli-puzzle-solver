@@ -9,6 +9,9 @@ export interface Bearing {
     /** The vector from p to the next point along the bearing direction */
     from(p: Point): Vector | undefined;
 
+    /** The next n points along the bearing direction */
+    line(p: Point, n: number): Point[];
+
     /** The bearing representing the opposite direction */
     negate(): Bearing;
 

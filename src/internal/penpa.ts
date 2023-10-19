@@ -68,11 +68,15 @@ export function fromPenpaUrl(url: string, parameters: string): Penpa {
             lattice = Lattices.HEXAGONAL;
             w = width * 3 + 1;
             h = height * 3 + 1;
+            width = 2 * width + 1;
+            height = 2 * height + 1;
             break;
         case "tri":
             lattice = Lattices.TRIANGULAR;
             w = div(width * 4, 3) + 4;
             h = div(height * 4, 3) + 4;
+            width = 2 * width + 1;
+            height = 2 * height + 1;
             break;
         case "pyramid":
             lattice = Lattices.PYRAMID;
@@ -82,18 +86,26 @@ export function fromPenpaUrl(url: string, parameters: string): Penpa {
         case "tetrakis_square":
             lattice = Lattices.TETRAKIS_SQUARE;
             h = height + 1;
+            width *= 4;
+            height *= 4;
             break;
         case "truncated_square":
             lattice = Lattices.TRUNCATED_SQUARE;
             w = width + 2;
+            width *= 2;
+            height *= 2;
             break;
         case "snub_square":
             lattice = Lattices.SNUB_SQUARE;
             w = width + 2;
+            width *= 2;
+            height *= 2;
             break;
         case "cairo_pentagonal":
             lattice = Lattices.CAIRO_PENTAGONAL;
             w = width + 2;
+            width *= 2;
+            height *= 2;
             break;
         default:
             throw new Error("Board type not supported");

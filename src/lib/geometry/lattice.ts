@@ -320,6 +320,15 @@ class BearingImpl {
         return p.directionTo(this.next(p));
     }
 
+    line(p: Point, n: number) {
+        const line = [];
+        for (let i = 0; i < n; i++) {
+            line.push(p);
+            p = this.next(p);
+        }
+        return line;
+    }
+
     negate() {
         return new BearingImpl(this.lattice, this.v.negate());
     }

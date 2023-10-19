@@ -1,4 +1,3 @@
-import { range } from "lodash";
 import { Constraints, Context, Puzzle, Solution, Symbol, ValueMap, Vector } from "../lib";
 
 const solve = async ({ Or, Sum }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
@@ -12,8 +11,8 @@ const solve = async ({ Or, Sum }: Context, puzzle: Puzzle, cs: Constraints, solu
             [Vector.E, 1],
             [Vector.S, 2],
         ])) {
-            const line = puzzle.points.lineFrom(p, puzzle.lattice.bearing(p, v));
-            cs.add(Or(...range(3).map(i => grid.get(line[i])?.neq(num) || true)));
+            const bearing = puzzle.lattice.bearing(p, v);
+            cs.add(Or(...bearing.line(p, 3).map(p => grid.get(p)?.neq(num) || true)));
         }
     }
 

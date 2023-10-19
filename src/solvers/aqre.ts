@@ -1,4 +1,3 @@
-import { range } from "lodash";
 import { Constraints, Context, Puzzle, Solution, ValueMap } from "../lib";
 
 const solve = async ({ Or, Sum }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
@@ -14,8 +13,7 @@ const solve = async ({ Or, Sum }: Context, puzzle: Puzzle, cs: Constraints, solu
     // There may not be a horizontal or vertical run of 4 or more consecutive shaded or unshaded cells
     for (const [p, arith] of grid) {
         for (const bearing of puzzle.lattice.bearings()) {
-            const line = puzzle.points.lineFrom(p, bearing);
-            cs.add(Or(...range(4).map(i => arith.neq(grid.get(line[i]) || -1))));
+            cs.add(Or(...bearing.line(p, 4).map(p => arith.neq(grid.get(p) || -1))));
         }
     }
 

@@ -1,4 +1,3 @@
-import { range } from "lodash";
 import { Constraints, Context, Point, Puzzle, Solution, ValueMap } from "../lib";
 
 const solve = async ({ And, Or }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
@@ -26,9 +25,9 @@ const solve = async ({ And, Or }: Context, puzzle: Puzzle, cs: Constraints, solu
     const maxLength = Math.max(puzzle.height, puzzle.width);
     const strips: Point[][] = [];
     for (const p of puzzle.lattice.representativeCells()) {
-        const line = puzzle.points.lineFrom(p, puzzle.lattice.bearings()[0]);
+        const bearing = puzzle.lattice.bearings()[0];
         for (let len = 1; len <= maxLength; len++) {
-            strips.push(range(len).map(i => line[i]));
+            strips.push(bearing.line(p, len));
         }
     }
     const placements = puzzle.points.placements(strips);
