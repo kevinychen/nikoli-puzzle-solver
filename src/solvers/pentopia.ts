@@ -39,8 +39,8 @@ const solve = async ({ And, Or }: Context, puzzle: Puzzle, cs: Constraints, solu
     for (const [p, symbol] of puzzle.symbols) {
         const arrows = symbol.getArrows();
         const lines = puzzle.lattice
-            .edgeSharingDirections()
-            .map(v => [v, puzzle.points.sightLine(p.translate(v), v)] as [Vector, Point[]]);
+            .bearings()
+            .map(bearing => [bearing.from(p), puzzle.points.lineFrom(p, bearing).slice(1)] as [Vector, Point[]]);
         const choices = [];
         for (let i = 0; i <= Math.min(...lines.map(([_, line]) => line.length)); i++) {
             choices.push(

@@ -10,8 +10,16 @@ export class Vector {
 
     constructor(readonly dy: number, readonly dx: number) {}
 
+    angle(): number {
+        return Math.atan2(this.dy, this.dx);
+    }
+
     crossProduct(v: Vector): number {
         return this.dx * v.dy - this.dy * v.dx;
+    }
+
+    dotProduct(v: Vector): number {
+        return this.dx * v.dx + this.dy * v.dy;
     }
 
     eq(v: Vector): boolean {

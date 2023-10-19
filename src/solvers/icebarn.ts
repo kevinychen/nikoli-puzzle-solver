@@ -1,8 +1,8 @@
-import { Constraints, Context, Network, Point, PointSet, Puzzle, Solution, UnionFind, ValueMap, Vector } from "../lib";
+import { Constraints, Context, FullNetwork, Point, PointSet, Puzzle, Solution, UnionFind, ValueMap } from "../lib";
 
 const solve = async ({ And, If, Not, Or, Xor }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Draw a path. When the path visits a cell twice, it must travel in a straight line each time
-    const network = Network.all(puzzle.lattice);
+    const network = new FullNetwork(puzzle.lattice);
     const points = new PointSet(puzzle.lattice, [
         ...puzzle.points,
         ...[...puzzle.junctionSymbols.keys()].flatMap(vs => [...vs]),
@@ -13,7 +13,7 @@ const solve = async ({ And, If, Not, Or, Xor }: Context, puzzle: Puzzle, cs: Con
     }
 
     // Find the order of the path
-    const edges = points.edges().map(([p, _, v]) => [p, v] as [Point, Vector]);
+    const edges = points.edges().map(([p, _, v]) => [p, v] as [typeof p, typeof v]);
     const root = cs.int();
     const order = new ValueMap(edges, _ => cs.int());
     for (const [p, v] of edges) {
@@ -72,7 +72,7 @@ const solve = async ({ And, If, Not, Or, Xor }: Context, puzzle: Puzzle, cs: Con
 
     // Fill in solved paths
     for (const [p, arith] of grid) {
-        for (const v of network.directionSets[model.get(arith)]) {
+        for (const v of network.directionSets(p)[model.get(arith)]) {
             solution.lines.set([p, p.translate(v)], true);
         }
     }

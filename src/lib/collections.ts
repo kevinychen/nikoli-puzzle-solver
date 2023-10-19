@@ -92,11 +92,11 @@ export class ValueMap<K, V> {
     }
 
     get(key: K): V | undefined {
-        return this.map.get(key.toString());
+        return this.map.get(key?.toString());
     }
 
     has(key: K): boolean {
-        return this.map.has(key.toString());
+        return this.map.has(key?.toString());
     }
 
     keys(): IterableIterator<K> {

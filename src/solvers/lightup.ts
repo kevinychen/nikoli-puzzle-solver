@@ -12,8 +12,8 @@ const solve = async ({ And, Implies, Or, Sum }: Context, puzzle: Puzzle, cs: Con
             // Lights illuminate the cell they’re in as well as all cells seen in a straight line
             // horizontally or vertically, until obstructed by a black cell
             const visibleCells = [];
-            for (const [q, v] of puzzle.points.edgeSharingNeighbors(p)) {
-                visibleCells.push(...puzzle.points.sightLine(q, v, r => !puzzle.shaded.has(r)));
+            for (const bearing of puzzle.lattice.bearings()) {
+                visibleCells.push(...puzzle.points.lineFrom(p, bearing, r => !puzzle.shaded.has(r)).slice(1));
             }
 
             // Lights may not illuminate each other

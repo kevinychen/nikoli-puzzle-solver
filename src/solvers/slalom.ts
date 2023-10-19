@@ -5,10 +5,10 @@ const solve = async ({ And, Implies, Not, Or, Sum }: Context, puzzle: Puzzle, cs
     const [network, grid] = cs.SingleLoopGrid(puzzle.points);
 
     // Pick an orientation of the loop
-    const loopDirection = new ValueMap(puzzle.points, _ => cs.choice(puzzle.lattice.edgeSharingDirections()));
+    const loopDirection = new ValueMap(puzzle.points, p => cs.choice(puzzle.lattice.edgeSharingDirections(p)));
     for (const [p, arith] of loopDirection) {
         cs.add(Implies(arith.eq(-1), grid.get(p).eq(0)));
-        for (const v of puzzle.lattice.edgeSharingDirections()) {
+        for (const v of puzzle.lattice.edgeSharingDirections(p)) {
             cs.add(Implies(arith.is(v), grid.get(p).hasDirection(v)));
         }
     }
@@ -79,7 +79,7 @@ const solve = async ({ And, Implies, Not, Or, Sum }: Context, puzzle: Puzzle, cs
 
     // Fill in solved loop
     for (const [p, arith] of grid) {
-        for (const v of network.directionSets[model.get(arith)]) {
+        for (const v of network.directionSets(p)[model.get(arith)]) {
             solution.lines.set([p, p.translate(v)], true);
         }
     }

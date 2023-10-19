@@ -11,28 +11,36 @@ const solve = async ({ And, Implies, Or, Sum }: Context, puzzle: Puzzle, cs: Con
 
     // Symbols outside the grid indicate a light source
     // The light travels as a beam into the grid and is reflected by the mirrors
-    let lasers = new ValueMap(puzzle.points.entrances(), _ => cs.choice([]));
+    let lasers = new ValueMap(
+        puzzle.points.lines().map(([_, p, bearing]) => [p, bearing]),
+        _ => cs.choice([])
+    );
     for (const [p] of grid) {
-        for (const v of puzzle.lattice.edgeSharingDirections()) {
-            lasers.set([p, v], cs.choice([]));
+        for (const bearing of puzzle.lattice.bearings()) {
+            lasers.set([p, bearing], cs.choice([]));
         }
     }
     const labels = [...new Set(puzzle.texts.values())];
     for (let i = 0; i < grid.size(); i++) {
         const newLasers = new ValueMap(lasers.keys(), _ => cs.choice(labels));
-        for (const [p, v] of puzzle.points.entrances()) {
+        for (const [_, p, v] of puzzle.points.lines()) {
             cs.add(newLasers.get([p, v]).is(puzzle.texts.get(p)));
         }
         for (const [p, arith] of grid) {
-            for (const v of puzzle.lattice.edgeSharingDirections()) {
+            for (const bearing of puzzle.lattice.bearings()) {
                 // laserGrid.get(p, v) is the source of the laser (if any) coming into p from direction v
                 // For each possibility (empty, or diagonal mirror), find the next place the laser goes
-                let w;
-                cs.add(Implies(arith.eq(-1), newLasers.get([p, v]).eq(lasers.get([p.translate(v.negate()), v]))));
-                w = new Vector(v.dx, v.dy);
-                cs.add(Implies(arith.eq(0), newLasers.get([p, v]).eq(lasers.get([p.translate(w.negate()), w]))));
+                const v = bearing.from(p);
+                const next = newLasers.get([p, bearing]);
+                cs.add(Implies(arith.eq(-1), next.eq(lasers.get([p.translate(v.negate()), bearing]))));
+                let w = new Vector(v.dx, v.dy);
+                cs.add(
+                    Implies(arith.eq(0), next.eq(lasers.get([p.translate(w.negate()), puzzle.lattice.bearing(p, w)])))
+                );
                 w = new Vector(-v.dx, -v.dy);
-                cs.add(Implies(arith.eq(1), newLasers.get([p, v]).eq(lasers.get([p.translate(w.negate()), w]))));
+                cs.add(
+                    Implies(arith.eq(1), next.eq(lasers.get([p.translate(w.negate()), puzzle.lattice.bearing(p, w)])))
+                );
             }
         }
         lasers = newLasers;
@@ -41,13 +49,13 @@ const solve = async ({ And, Implies, Or, Sum }: Context, puzzle: Puzzle, cs: Con
     // Every mirror must be used at least once
     for (const [p, arith] of grid) {
         cs.add(
-            Implies(arith.neq(-1), Or(...puzzle.lattice.edgeSharingDirections().map(v => lasers.get([p, v]).neq(-1))))
+            Implies(arith.neq(-1), Or(...puzzle.lattice.bearings().map(bearing => lasers.get([p, bearing]).neq(-1))))
         );
     }
 
     // A light beam that starts from a letter must finish at another instance of the same letter
-    for (const [p, v] of puzzle.points.entrances()) {
-        cs.add(lasers.get([p.translate(v), v.negate()]).is(puzzle.texts.get(p)));
+    for (const [_, p, bearing] of puzzle.points.lines()) {
+        cs.add(lasers.get([bearing.next(p), bearing.negate()]).is(puzzle.texts.get(p)));
     }
 
     // Numbers indicate how many times the light beam is reflected by a mirror
@@ -58,7 +66,7 @@ const solve = async ({ And, Implies, Or, Sum }: Context, puzzle: Puzzle, cs: Con
                 ...Array.from(grid, ([p, arith]) =>
                     And(
                         arith.neq(-1),
-                        Or(...puzzle.lattice.edgeSharingDirections().map(v => lasers.get([p, v]).is(label)))
+                        Or(...puzzle.lattice.bearings().map(bearing => lasers.get([p, bearing]).is(label)))
                     )
                 )
             ).eq(number)

@@ -29,8 +29,9 @@ const solve = async ({ And, Implies, Or }: Context, puzzle: Puzzle, cs: Constrai
         if (puzzle.texts.get(p) !== "H") {
             for (let distance = 1; distance <= maxNumber; distance++) {
                 const choices = [];
-                for (const v of puzzle.lattice.edgeSharingDirections()) {
-                    const line = puzzle.points.sightLine(p, v);
+                for (const bearing of puzzle.lattice.bearings()) {
+                    const line = puzzle.points.lineFrom(p, bearing);
+                    const v = bearing.from(p);
                     if (distance >= line.length) {
                         continue;
                     }
@@ -58,7 +59,7 @@ const solve = async ({ And, Implies, Or }: Context, puzzle: Puzzle, cs: Constrai
 
     // Fill in solved paths
     for (const [p, arith] of grid) {
-        for (const v of network.directionSets[model.get(arith)]) {
+        for (const v of network.directionSets(p)[model.get(arith)]) {
             solution.lines.set([p, p.translate(v)], true);
         }
     }

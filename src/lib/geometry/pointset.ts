@@ -1,5 +1,6 @@
-import { ValueMap, ValueSet } from "../collections";
-import { Lattice, TransformationType } from "./lattice";
+import { ValueMap } from "../collections";
+import { Bearing } from "./bearing";
+import { Lattice } from "./lattice";
 import { Point } from "./point";
 import { Vector } from "./vector";
 
@@ -46,31 +47,6 @@ export class PointSet {
         return this.lattice.edgeSharingNeighbors(p).filter(([q]) => this.has(q));
     }
 
-    /**
-     * @returns all [p, v] where p is a point right outside this point set, neighboring a point q in
-     * this point set, and v is the direction from p to q.
-     */
-    entrances(): [Point, Vector][] {
-        const entrances = new ValueSet([]);
-        for (const v of this.lattice.edgeSharingDirections()) {
-            for (let p of this) {
-                while (this.has(p)) {
-                    p = p.translate(v);
-                }
-                entrances.add([p, v.negate()]);
-            }
-        }
-        return [...entrances.keys()];
-    }
-
-    /** @returns a new point set that contains all vertex adjacent points of points in this set */
-    expandToBorders(): PointSet {
-        return new PointSet(
-            this.lattice,
-            Array.from(this.map.keys()).flatMap(p => this.lattice.vertexSharingPoints(p))
-        );
-    }
-
     has(p: Point): boolean {
         return this.map.has(p);
     }
@@ -84,25 +60,52 @@ export class PointSet {
         return this.map.keys();
     }
 
+    /** @returns a list of all points in this set, starting from p and in the given bearing */
+    lineFrom(p: Point, bearing: Bearing, good: (q: Point) => boolean = () => true): Point[] {
+        const line = [];
+        while (this.has(p) && good(p)) {
+            line.push(p);
+            p = bearing.next(p);
+        }
+        return line;
+    }
+
+    /**
+     * @returns all [line, p, bearing] where line consists of a straight line of cells aligned with
+     * the lattice, p is the point right before the first cell of the line, and v is the bearing of
+     * the line starting from p.
+     */
+    lines(): [Point[], Point, Bearing][] {
+        const lines = [];
+        for (const p of this) {
+            for (const bearing of this.lattice.bearings()) {
+                const q = bearing.negate().next(p);
+                if (!this.has(q)) {
+                    lines.push([this.lineFrom(p, bearing), q, bearing] as [Point[], Point, Bearing]);
+                }
+            }
+        }
+        return lines;
+    }
+
     /**
      * @returns a map from each point to a list of [placement, instance, type]. This represents all
      * different placements of one of the given shapes in this point set. Instance is the index of
      * which shape is used, and type is a unique number for each placement.
      */
-    placements(
-        shapes: Vector[][],
-        transformationType = TransformationType.ALLOW_ROTATIONS_AND_REFLECTIONS
-    ): ValueMap<Point, [Point[], number, number][]> {
-        const pointCompare = (p1: Point, p2: Point) => p1.y - p2.y || p1.x - p2.x;
-
-        const transforms = this.lattice.transformationFunctions(transformationType);
+    placements(shapes: Point[][], includeRotationsAndReflections = true): ValueMap<Point, [Point[], number, number][]> {
+        const transforms = includeRotationsAndReflections ? this.lattice.pointGroup() : [(p: Point) => p];
         const placements = new ValueMap<Point[], number>([]);
         for (const [instance, shape] of shapes.entries()) {
-            for (const p of this) {
-                for (const transform of transforms) {
-                    const placement = shape.map(v => p.translate(transform(v))).sort(pointCompare);
-                    if (placement.every(p => this.has(p))) {
-                        placements.set(placement, instance);
+            for (const transform of transforms) {
+                const transformed = shape.map(transform).sort(Point.compare);
+                for (const p of this) {
+                    const v = transformed[0].directionTo(p);
+                    if (this.lattice.inBasis(v)) {
+                        const placement = transformed.map(p => p.translate(v));
+                        if (placement.every(p => this.has(p))) {
+                            placements.set(placement, instance);
+                        }
                     }
                 }
             }
@@ -114,16 +117,6 @@ export class PointSet {
             }
         }
         return placementsMap;
-    }
-
-    /** @returns a list of all points in this set, starting from p and in the direction of v */
-    sightLine(p: Point, v: Vector, good: (q: Point) => boolean = () => true): Point[] {
-        const line = [];
-        while (this.has(p) && good(p)) {
-            line.push(p);
-            p = p.translate(v);
-        }
-        return line;
     }
 
     /** @returns a new point set that contains all vertices of points in this set */

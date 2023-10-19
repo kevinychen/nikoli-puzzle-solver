@@ -10,28 +10,28 @@ const solve = async ({ And, Not, Or }: Context, puzzle: Puzzle, cs: Constraints,
         cs.add(grid.get(p).eq(0));
     }
 
-    // If a ring is drawn around a region, then the "ring direction" is the direction of the loop
-    // shape at the cell in that direction. For example, the cell east of a number clue has a ring
-    // direction going north, and the cell northeast has a ring direction going west.
-    const directions = puzzle.lattice.vertexSharingDirections();
-    const ringDirections = directions.map(v => {
-        const edgeDirections = new ValueMap(
-            puzzle.lattice.edgeSharingDirections(),
-            w =>
-                (directions.findIndex(x => x.eq(v.negate())) -
-                    directions.findIndex(x => x.eq(w)) +
-                    directions.length -
-                    1) %
-                directions.length
-        );
-        return puzzle.lattice
-            .edgeSharingDirections()
-            .reduce((min, v) => (edgeDirections.get(v) < edgeDirections.get(min) ? v : min));
-    });
-
     // Clues represent the numbers of consecutive cells occupied by the loop each time it enters
     // the (up to) eight cells surrounding the clue
     for (const [p, text] of puzzle.texts) {
+        // If a ring is drawn around a region, then the "ring direction" is the direction of the loop
+        // shape at the cell in that direction. For example, the cell east of a number clue has a ring
+        // direction going north, and the cell northeast has a ring direction going west.
+        const directions = puzzle.lattice.vertexSharingDirections(p);
+        const ringDirections = directions.map(v => {
+            const edgeDirections = new ValueMap(
+                puzzle.lattice.edgeSharingDirections(p),
+                w =>
+                    (directions.findIndex(x => x.eq(v.negate())) -
+                        directions.findIndex(x => x.eq(w)) +
+                        directions.length -
+                        1) %
+                    directions.length
+            );
+            return puzzle.lattice
+                .edgeSharingDirections(p)
+                .reduce((min, v) => (edgeDirections.get(v) < edgeDirections.get(min) ? v : min));
+        });
+
         const neighbors = puzzle.lattice.vertexSharingPoints(p);
         const expectedLoopLens = [...text].map(i => parseInt(i)).sort();
         cs.add(
@@ -84,7 +84,7 @@ const solve = async ({ And, Not, Or }: Context, puzzle: Puzzle, cs: Constraints,
 
     // Fill in solved loop
     for (const [p, arith] of grid) {
-        for (const v of network.directionSets[model.get(arith)]) {
+        for (const v of network.directionSets(p)[model.get(arith)]) {
             solution.lines.set([p, p.translate(v)], true);
         }
     }

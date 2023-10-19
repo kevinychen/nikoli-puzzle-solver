@@ -2,7 +2,7 @@ import { Constraints, Context, Puzzle, Solution } from "../lib";
 
 const solve = async ({}: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Draw a loop that goes through every unshaded cell
-    const [loop, grid, root] = cs.SingleLoopGrid(puzzle.points);
+    const [network, grid, root] = cs.SingleLoopGrid(puzzle.points);
 
     // Optimization: start the loop at one of the empty cells
     cs.add(root.is([...puzzle.points].find(p => !puzzle.shaded.has(p))));
@@ -16,7 +16,7 @@ const solve = async ({}: Context, puzzle: Puzzle, cs: Constraints, solution: Sol
 
     // Fill in solved loop
     for (const [p, arith] of grid) {
-        for (const v of loop.directionSets[model.get(arith)]) {
+        for (const v of network.directionSets(p)[model.get(arith)]) {
             solution.lines.set([p, p.translate(v)], true);
         }
     }

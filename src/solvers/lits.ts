@@ -6,17 +6,17 @@ const solve = async ({ And, Or }: Context, puzzle: Puzzle, cs: Constraints, solu
     const grid = new ValueMap(puzzle.points, _ => cs.int());
 
     // Place a tetromino (a block of 4 cells) in every outlined region
-    const placements = puzzle.points.placements(puzzle.lattice.polyominoes(4));
     const regions = puzzle.regions();
+    const placements = puzzle.points.placements(puzzle.lattice.polyominoes(4));
     for (const region of regions) {
         cs.add(
             Or(
                 ...region
                     .flatMap(p => placements.get(p))
                     .filter(([placement]) => placement.every(p => regions.get(p) === region))
-                    .map(([placement, i]) => {
+                    .map(([placement, instance]) => {
                         const placementSet = new ValueSet(placement);
-                        return And(...region.map(p => grid.get(p).eq(placementSet.has(p) ? i : -1)));
+                        return And(...region.map(p => grid.get(p).eq(placementSet.has(p) ? instance : -1)));
                     })
             )
         );

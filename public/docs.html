@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Nikoli Puzzle Solver Documentation</title>
+    <meta charset="utf-8" />
+    <style>
+        body {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        object {
+            display: block;
+            margin: 0 auto;
+        }
+
+        aside {
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Penpa encoding for board types</h1>
+
+    <p>All current board types are 2D. The origin is at the top left. The x-coordinate increases when moving right, and
+        the y-coordinate increases when moving down.</p>
+
+
+
+
+
+    <h2>Rectangular grids</h2>
+
+    <p>For rectangular grids, the top left square in Penpa is (2, 2), which is translated to (0, 0) for convenience in
+        the puzzle solvers. (However, many solvers do not rely on this, relying only on generic lattice functions like
+        <code>getEdgeSharingNeighbors</code> that work for all board types.)</code>
+    </p>
+
+    <p>There are 2 empty rows and columns on each side of the grid, so there are 4 more cells in each row and column
+        than are visible in the Penpa grid. We denote these larger values as <code>h</code> and <code>w</code>. </p>
+
+    <!-- https://swaroopg92.github.io/penpa-edit/#m=edit&p=7VZNj9s2EL37VxQ6tQAP4odESUAPaZrtZbttulsEgWAsZK+SNSKvUtnuBjL83/OGHNaU7R4KNEUOhSBy9MSZeTOcEbX5Y9cMrShw6UKkQuLSRrlbpaW7U77uVtuurb4RL3bbx36AIMQvV1fiXdNt2lktnXY6n+3Hshpfi/Gnqk5kItytkrkYX1f78edqvBHjLV4lQgK79osUxFcQMy++ce9JeunfyxTyDeTcq72FuFwNy669v/bIr1U93omE/PzgtElM1v2fbcI86HnZrxcrArrVU/uJwc3uof+w42VyfhDjC8/09gJTzUxZ9ExJOmXKUX05puX8cECyfwPX+6om2r8fxeIo3lZ7jDfVPtEpqT5/b0FEIJWwmGcEfYvN/i4CcwfqCWgNgY+xsrWsrP9aB0/S+Xvrxis3KjfegY4YtRt/dGPqxsyN127NKze+ceNLNxrwlhalVaikgg/MQpbgQnJpUKAgCxmzULLwsiyEomBJ1qlQhnUtyrvQbEfDDqJ3djLYQTDOjoWdku2gAbRkOxJ2vC5moTKvC9uQPR/MRzyDzYy5ZeCWsf0M9jPmmYFnxr4y+MqZcw7OOfs1hAcO0DW8XsG+ZpsSfBT7TcFThhipgb2utBaxe11pc4FnljPInqe0BjLnxCI/tOdORs4t26Qc2pBP7Itl+7QvcW4L1i1gs2CbBXwV7KsAh4I5FMTN5wTzkSdklXJOUuREer+YES/nXCHnmvOskWfDuTXQ5Xy6eIN9ijf2W4acEM+IWxnWUywR/zLkjeKNYixZF7V0lAkP+wJucY2lUa3G9aaiuo1rT3PsVG9xHRrOg0EeTKhJ1IbhnBjKCfs1VD9RfkItaaqlKIehrhTVVZTnUGOSaizai1BvJdVbtF9ce85+zCHUvCbOEc/QF5riimIJvaMp9ihe11/4SOTuE2Lpe/ePvohf4mt1QqfWpTtUw4XK+ref5rMap26y6bv7zW541yxxkLhDGQcGsKfdetEOE6jr+490rkzA1funfmgvviKwfXh/af2iHx5OrD83XTcB/E/GBPJH4gTaDjjvoudmGPrnCbJuto8TYNFs8UuyeVx9nFpqn7ZTAttmSrH50Jx4Wx9jPsyST4m7a42fmvL/X5r/9JeGEp9+bW38tdFxNdsPFxse8IWeB3qxtxk/a2/gZ41MDs97GeiFdgZ62tGAzpsa4FlfA/ub1iarp91NrE4bnFyd9Ti5itu8ns8+Aw== -->
+    <object type="image/svg+xml" data="svgs/rectangular-grid.svg"></object>
+
+    <p>Each cell <code>(x, y)</code> in the grid is encoded in Penpa as the integer <code>w*y + x</code>. In the example
+        above, the top-left cell is encoded as <code>7*2 + 2 = 16</code>.</p>
+
+    <p>Vertices and midpoints of edges are also encoded in Penpa as integers. Vertices are encoded as
+        <code>w*h + w*y + x</code>, using the <code>(x, y)</code> of the cell to its top left. So in the example, the
+        top-left vertex of the grid is encoded using the cell <code>(1, 1)</code>, so its integer value is
+        <code>7*7 + 7*1 + 1 = 57</code>.
+    </p>
+
+    <p>Midpoints of edges are encoded similarly, with horizontal edges encoded as <code>2*w*h + w*y + x</code> using the
+        cell above, and vertical edges encoded as <code>3*w*h + w*y + x</code> using the cell to the left.</p>
+
+    <p>For other grids, it'll be useful to generalize this by associating each object with a <em>type</em>. Every
+        encodable object is encoded as <code>w*h*type + w*y + x</code> using a particular <em>base cell</em>
+        <code>(x, y)</code>. For the rectangular grid, normal cells have type 0, vertices have type 1, horizontal edges
+        have type 2, and vertical edges have type 3. This is shown in the following diagram, where the base cell lies at
+        the origin (the intersection of the dotted lines):
+    </p>
+
+    <!-- https://swaroopg92.github.io/penpa-edit/#m=edit&p=7VTPb5tMEL37r6j2PAd2MQ7mlqZpL67bfHYVRQhZ2CYxCjYpP5oKy/97ZmahZoFKqfRJzaHCjJ7fzs6+2d1H/r0MswgUPrYLFkh65Jhfx6Jf8yzjIom8d3BZFrs0QwDwZQ73YZJHI79OCkbHaupVN1B98nxhCxASXyUCqG68Y/XZq+ZQLXBIgERuhggTFMJrnS8J33ICoSudIC3Ec8QTPe8O4SbONkm0WujEr55fLUHQQu95NkGxT39EQpfg/5t0v46JWIcFNpPv4qd6JC+36WNZ58rgBNWl1rsY0GvXemuo5RLqyq17a8md6UL/q9xpcDrhvv+HgleeT9q/naF7hgvviHHuHYWSTaeAW4r1HIsI60y4F0TQgdSEVC4xqmGwkuR6d0095I0z0UV7LFfusbp8h8bqH3kNhWuMXXCU8KQCgRd1whCHltgbVDbHDxwtjg7HGU7Ei6xQCc5zQY4ZKAvUhNEUpMNAOkBd0KAEhRqJs5sJZIhfeVJPldOmLpU7z0VlJOyald9yvOI45jhhYRd0JH90aO0Nb2/Ma/bglXJ8ahOwwWDko5NFniarvMzuww1eSzY63jzkDuV+HWUGlaTpUxIfzLz44ZBm0eAQkdH2YSh/nWbbTvXnMEkMQn+1DEpfHIMqMnRP63+YZemzwezDYmcQLacZlaJDYQooQlNi+Bh2Vtufez6NxE/Br2/jZ3L67zP5tz6TdAbWW/PdW5PD1zfNBr2P9ID9kR20ec33nI58z9O0YN/WyA44G9muuZHq+xvJnsWR+43LqWrX6KSq63Vaqmd3WqrteD8YvQA= -->
+    <object type="image/svg+xml" data="svgs/rectangular-types.svg"></object>
+
+
+
+
+
+    <h2>Hexagonal grids</h2>
+
+    <p>Penpa supports pointy-topped hexagonal grids. The Penpa coordinate system looks like the following:</p>
+    <!-- https://swaroopg92.github.io/penpa-edit/#m=edit&p=7ZTPb9owFMfv/BWTT5vkSfkFlNy6ruzC2DqYqipCyIBbogbcOcmKjPjf+96LJeIkO+ywqocp5PH4+Nn+2vjrrTzwAJ7I4x738RnAN7xBhB+k+MzTIpPxO35ZFlulIeH823jM70WWy17iLXpHM4rNDTdf4oT5jNMbsAU3N/HRfI3NlJsZNDHuA5tURQGk15D2q/SW2jG7qtp9D/Ip5IOq2x2k61SvM7mcVOR7nJg5ZzjPJ+qNKdup35JZHfh7rXarFEGW7uXBwrzcqMfSlvmLEzeXldJZh9LQKrVppRSzplK7qn+ndLQ4nWCzf4DWZZyg7J/n9OKczuIjxGl8ZP4Qu74PefABpHDYTBjTvyAI/3ENBiHBgId1GNnuDuzb7nUY+rYyqsPAVp4h6PJJ3R3FMcWA4hzEcxNS/EzRo9inOKGaa4q3FK8oRhQHVDPE5f/VBr2CnASc9HEIy++D0wZwHnoJOIblKlvmpb4XazgEZCX4s4Hty91KagdlSj3hmXBg+rBXWnY2IZSbh676ldKbxujPIssckP8qhXY7V8fZQYWGs1r7LbRWzw7ZiWLrgJUo4CLJt+mTO5LcF66AQrgSxaNozLY7r/nUYwdGbxLCZTX6fx296nWEG++9Nc+9NTl0ZpXuNDzgDs8D7fS25S17A28ZGSdsexloh52BNh0NqG1qgC1fA/uDtXHUprtRVdPgOFXL4zhV3ebJovcC -->
+    <object type="image/svg+xml" data="svgs/hexagonal-grid.svg"></object>
+
+    <p>Just like with rectangular grids, each item is encoded as <code>w*h*type + w*y + x</code> using the coordinates
+        <code>(x, y)</code> of the base cell. For hexagonal grids, <code>w = h = 3*size+1</code>, where
+        <code>size</code> is the value specified in the Penpa UI when creating the grid, or equivalently the number of
+        cells from the center to the border inclusive. In the above example, <code>size = 2</code>, so
+        <code>w = h = 7</code>. The cell labeled <code>(3, 2)</code> is encoded as <code>7*2 + 3 = 17</code>.
+    </p>
+
+    <p>For our solvers, we want the coordinates as if the grid is embedded in a normal Cartesian plane, so that we can
+        assert things like "three cells in the grid are linear if their coordinates lie in a line", or "rotations and
+        reflections can be computed by matrix multiplication". So we use <a
+            href="https://www.redblobgames.com/grids/hexagons/#coordinates-doubled">doubled coordinates</a>.
+        Additionally, we triple all y-coordinates, so that the coordinates of the vertices, located at the centroid
+        of the centers of its surrounding cells, don't involve non-terminating binary floating point numbers. We
+        transform the Penpa coordinates with <code>(x, y) -> (2*x + y%2, 3*y)</code>.</p>
+
+    <!-- https://swaroopg92.github.io/penpa-edit/#m=edit&p=7ZTPb9owFMfv/BWTT5vkSXH4mdy6ruzC2DqYqiqKkAG3RA24c5K1MuJ/73svkYiT7LDDqh4mk8fj4x/vG+Ovd+qZ+9AGHve4wDaCb3j8AX6QYlsmearCd/yiyHfaQML5t+mU38k0U73Ii3tHG4T2mtsvYcQE4/T4LOb2Ojzar6Gdc7uALsYFsFk5yIf0CtJhmd5QP2aXZb/wIJ9DPiqn3UK6ScwmVatZSb6HkV1yhnU+0WxM2V7/VqzSgb83er9OEKTJQT1XMCu2+qGohon4xO1FqXTRobRfKa3SUilmTaXVW/07pUF8OsFm/wCtqzBC2T/P6eScLsIjxHl4ZGKMU9+P+OgDSOGwmbCmmBCcONDvExzyoA4HBMcuHBIMHNgXVSHh16lfVapRUCZI3y3FKUWf4hLkc9un+JmiR3FIcUZjrijeULykOKA4ojFj3IC/2qJXkBOBlz6O4fWH4DXYobgXgWdYptNVVpg7uYFjQGaCvxvYodivlXFQqvUjngoHJvcHbVRnF0K1ve8av9Zm21j9SaapA7JfhTTu5PJAOyg3cFprv6Ux+skhe5nvHLCWOVwl2S55dFdSh9wVkEtXonyQjWr78zufeuyZ0RP14boK/l9Ir3oh4cZ7b81zb00OnVltOg0PuMPzQDu9XfGWvYG3jIwF214G2mFnoE1HA2qbGmDL18D+YG1cteluVNU0OJZqeRxL1W0exb0X -->
+    <object type="image/svg+xml" data="svgs/hexagonal-grid-2.svg"></object>
+
+    <p> Here's a diagram of the hexagonal grid when converted to our coordinates, and the types for the various possible
+        objects relative to the base cell at the origin. So the bottom vertex of the cell labeled <code>(3, 2)</code>
+        would be encoded as <code>7*7*1 + 7*2 + 3 = 66</code>.
+    </p>
+
+    <!-- https://swaroopg92.github.io/penpa-edit/#m=edit&p=7ZRLb9NAEMfv+RRoz3Pw+vm4lVK4lEJJUVVZVuSkbmvViYsfFDnKd+/M7EZ+IgRCogeUZDX5eXbmv7v+b/WtScoUTLDB8sEASR9pgwwMcH36GvpzldV5Gr6Bk6Z+KEoMAD5dwF2SV+ki0knxYt8GYXsJ7YcwEpYAIfFnihjay3DffgzbM2iX+EiARHaOESaYGJ5haCKl+JoTKDpVCdLA+AJjV827wXCTlZs8XS1V4ucwaq9AUKO3PJtCsS2+p0KV4P+bYrvOCKyTGhdTPWRP+knV3BaPjc6V8QHaE6V3OaPX0np1qORSNJar19aTe64K/VW5QXw44L5/QcGrMCLtX7vQ78JluMfxItwLy6SpeDwScEuxnmURsDvg+gSMHggIOB3weAodmQa+cdw+BthKcsObY0Pkg0NTXSeUW08p9Z9QFjGhrGREUch7lmPyeIVbAq3F4zseDR4dHs855wyFOy64qF2aqMBEN+jQB89WoWcDtaPQN8B3RUjPvX4qSecwAE+nUlmpUiW43nESLYdqWlxT5ynmWlxHl3FUnnPMowhl0gzsp2Y49rEH1vNQDjEDHC0RK2NfaeJCr3m5pzzaPLq8DR69N7/1ZvUP/c92/JdyIrqcwOl+8SLCa0dURb6qmvIu2aCH+FZCmyDbNdt1Wg5QXhRPebYb5mX3u6JMZx8RTG/v5/LXRXk7qv6c5PkAqCt2gNSbOUB1iVbv/U/KsngekG1SPwxA71oYVEp39VBAnQwlJo/JqNu2W/NhIX4I/kUW3unB/zv9X93pdAbGa/Pfa5PDr29Rznof8Yz9kc7aXPOJ05FPPE0Np7ZGOuNspGNzI5r6G+HE4sh+4nKqOjY6qRp7nVpN7E6t+o6P4sUL -->
+    <object type="image/svg+xml" data="svgs/hexagonal-types.svg"></object>
+
+
+
+
+
+    <h2>Triangular grids</h2>
+
+    <p>Here's the Penpa coordinate system for triangular grids. Only the upward-facing triangles are labeled. Each
+        downward-facing triangle is labeled with the coordinate of its base cell, which as we'll see below is the
+        upward-facing triangle to its right.</p>
+
+    <!-- https://swaroopg92.github.io/penpa-edit/#m=edit&p=7ZTBb5swFMbv/BWTT5v0NmFICHDrum6XNFuXTFWFUEQS2qCSuDOwVo7yv/f5wRQM7DBpqnqYEE9ffjzbHw6fS5mBi5dngw0cL2dkg8PHH3x/NJ44ns954AceBL5N9+9rkZV5Gr6Bs6rcCokC4OsMbpO8SK3Ijq2DCkJ1BepLGDHOgG6HxaCuwoO6DNUM1BwfMeDIpnWTg/ICpVPLa3qu1Xn9nNuoZ6jH9bAblOtMrvN0eVk3fgsjtQCm1/lIo7VkO/ErZY0P/XstdqtMgzzbp08NLKqNuK+aNh4fQZ3VTucDTt3GaSNrp1p1nTZv1XI6rSf6V06D+HjEzf6OXpdhpG3/OEn/JOfhAessPDDf1UPfuuC8QyuAm4lzBjZBB9w25E2nAf2mc9SGQdPZhtyuJx21KHrg5OSG6meqDtUFGgXlUv1E1aY6pjqlnguq11TPqY6oetQz0a/6V5vxAnYi34WJA++9MW4BCo7S00mLrQhjwgqRL4tK3iZr/OcpP/gPI9tXu1UqDZQL8aA/BANmd3sh08FHGqabu6H+lZCbzuyPSZ4boPhZJdIcXH/DBsIDxPidSCkeDbJLyq0BVkmJh0exzR7MmdJ9aRooE9Nicp90Vtud3vlosSdGd+TiARX8P4Ne9AzSG2+/tvC9Njv0zQo5GHjEA5lHOpjthvfijbwXZL1gP8tIB+KMtJtoRP1QI+zlGtkfoq1n7aZbu+oGXC/Vy7heqh3zKLaeAQ== -->
+    <object type="image/svg+xml" data="svgs/triangular-grid.svg"></object>
+
+    <p>Just like with the previous grids, each item is encoded as <code>w*h*type + w*y + x</code> using the coordinates
+        <code>(x, y)</code> of the base cell. For triangular grids, <code>w = h = ⌊4*size/3⌋+4</code>, where
+        <code>size</code> is the value specified in the Penpa UI when creating the grid, or equivalently the number of
+        rows of triangles. In the above example, <code>size = 3</code>, so <code>w = h = 8</code>.
+    </p>
+
+    <p>Similarly with hexagonal grids, we convert the coordinates so that the grid can be embedded in a Cartesian plane.
+        We use the same transformation <code>(x, y) -> (2*x + y%2, 3*y)</code>.
+    </p>
+
+    <!-- https://swaroopg92.github.io/penpa-edit/#m=edit&p=7ZRfb5swFMXf8ykmP23S3YQhEMNb13V7SbN1yVRVKIpIQhtUEncG1spRvnuvL0yJgT1Mmqo+TIirk5//HRwflyoDD5/AAQc4Pu7QAZf7H4QY+iM3EJyHIgwgFA69v59ZVuZp9AbOqnIjFQqArxO4TfIiHcTOfLDXYaSvQH+JYsYZ0OuyOeiraK8vIz0BPcUmBhzZuO7korxA6dbymtqNOq/buYN6gtqvh92gXGVqlaeLy7rjtyjWM2BmnY802ki2lb9S1vgwv1dyu8wMyLNd+tTAolrL+6rpxucH0Ge102mPU69x2sjaqVFtp81XnTgd1xP9K6fh/HDAzf6OXhdRbGz/OEpxlNNoj3US7ZnwzNC3AQTv0ArgZuKcoUPQh/AUcoIjGwqCQ+DuKQ2bSS3KnXpacYrRBiczN1Q/U3WpztAraI/qJ6oOVZ/qmPpcUL2mek51SDWgPiPztX+1Hy9gJxYejFx4H/i4BSg4StwpPAeDGJPCCpkvikrdJiv88ylC+Ccj21XbZaoslEv5YM6CBbO7nVRpb5OB6fqur/9SqnVr9sckzy1Q/KwSZQ+uj7GF8A6xfidKyUeLbJNyY4FlUuL9UWyyB3umdFfaBsrEtpjcJ63VtsdvPgzYE6M39vCOCv9fQy96DZmNd15b+F6bHTqzUvUGHnFP5pH2ZrvhnXgj7wTZLNjNMtKeOCNtJxpRN9QIO7lG9odom1nb6Tau2gE3S3UybpY6jXk8HzwD -->
+    <object type="image/svg+xml" data="svgs/triangular-grid-2.svg"></object>
+
+    <p>Here's the diagram of the triangular grid when converted to our coordinates, and the types for the various
+        possible objects. So the cell labeled <code>(3, 2)</code> would be encoded as <code>8*8*1 + 8*2 + 3 = 83</code>.
+        The downward-facing trianglular cell right below it has type 2 and its base cell is the one labeled
+        <code>(3, 3)</code>, so it would be encoded as <code>8*8*2 + 8*3 + 3 = 155</code>.
+    </p>
+
+    <!-- https://swaroopg92.github.io/penpa-edit/#m=edit&p=7ZTNb5tMEMbv/iuqPc+B5cs2t7xp2ovrNq9dRRFCEbZJjIK9KR9NheX/PTOzOGaBHipFag6Vxerxj9mdB5Znix9VnCdggwPOBCyQ9JMuSM8G6fp8Wc1vmZZZEnyAi6rcqhwFwNc53MdZkYzCpigaHeppUF9D/TkIhSNASLxsEUF9HRzqL0E9h3qBtwRIZDNUWGCjvNL1kvQNF5C61AXSQj1H7et5tyjXab7OkruFLvwWhPUSBDX6j2eTFDv1MxF6Cf6/VrtVSmAVl/gwxTZ9au4U1UY9Vk2tjI5QX2i/iwG/TuO3kdouqa7d5tladmd6oTe1O42OR3zv/6PhuyAk79/PcnKWi+CA4zw4CNuiqfS6AV8prmdLAu4ZeFxhtQBXeC3gEbDPwLdPr48BtpLc8PbUELmxabprj3LrPh2uJRM9yk46FI18Yjs22vEs8McisLF0DP6UFbFX5eEKpOwTcyenGajIIc31X1eZwlgzWmUiAkmFLoxdLX2kLLH/EjcDaofHjzxaPHo8ztjjFY83PF7y6PLoc82YtvOPNry9F+0X8YZ2Qjo1wNNXNArxJBCFyu6KKr+P1/hZ80GBXy6yfbVbJbmBMqWesnRv1qUPe5Ung7cIJpuHofqVyjed1Z/jLDOAPvcMpD8WA5U5pq/1P85z9WyQXVxuDdBKqrFSsi9NA2VsWowf40633fmZjyPxS/AVOnjMTv8ds3/rmKU9sN5b9t6bHf58VT6YfcQD8Uc6GPOG95KOvJdpatiPNdKBZCPthhtRP98IexFH9puU06rdoJOrbtapVS/u1Kqd+DAavQA= -->
+    <object type="image/svg+xml" data="svgs/triangular-types.svg"></object>
+
+
+
+
+
+    <h2>Pyramid</h2>
+
+    <p>Here's the Penpa coordinate system for the pyramid:</p>
+
+    <!-- https://swaroopg92.github.io/penpa-edit/#m=edit&p=7ZTBb5swFMbv+SsmnzbpHTCkycKt67pd0mxdMlUVQpGT0AYV4szA2jnK/97nZ6ZgYIdJU9XDhPz0+PnZ/mz4vP+lRJ5uIMDnzAMPOD6+51HjY9t+P4u0zJLwDZxX5VYqTAC+zOBOZEUyiLx4cNCTUF+D/hxGjDOg5rMY9HV40FehnoGeYxcDjmxqi3xMLzH1bXpD/Sa7sP3cw3yG+cgOu8V0nap1liyvbOHXMNILYGadDzTapCyXPxNW6zDva5mvUgOydJc81bCoNvKhqst4fAR9bpXOe5QGtdI6tUpN1lZa76qhdGon+ldKJ/HxiIf9DbUuw8jI/n5K35/SeXjAOAsPjI/N0LcB+O9QCuBh4px+QNCHoAmHdWUTBl5dOWxCXlc60Cc4bECUwEnILcVPFH2KC9QJOqD4kaJH8YzilGouKd5QvKA4pDiimrHZ6V+dxQvIifgYRrh703g8iNAZrJDZsqjUnVjjxybL4EdFtqvyVaIclEm5N9/egen9Tqqkt8vAZHPfV7+SatOa/VFkmQOKH5VQ7mD72zqoVPhPNt6FUvLRIbkotw5YiRLvi2Kb7t2Zkl3pCiiFK1E8iNZq+WnPxwF7YtSiAO+kyf9r50WvHXPw3msz3GuTQ/+sVL2GR9zjeaS93q55x97IO0Y2C3a9jLTHzkjbjkbUNTXCjq+R/cHaZta2u42qtsHNUh2Pm6WaNo/iwTM= -->
+    <object type="image/svg+xml" data="svgs/pyramid-grid.svg"></object>
+
+    <p>For <code>0 ≤ type ≤ 3</code>, each item is encoded as <code>w*h*type + w*y + x</code>, but for
+        <code>4 ≤ type ≤ 5</code>, each item is encoded as <code>4*w*h + 2(w*y + x) + (type-1)</code>. Here,
+        <code>w = h = size + 4</code>, where <code>size</code> is the value specified in the Penpa UI when creating the
+        grid, or equivalently the number of rows of squares. In the above example, <code>size = 3</code>, so
+        <code>w = h = 7</code>.
+    </p>
+
+    <p>For this grid we apply the transformation <code>(x, y) -> (2*x + y%2, 2*y)</code> to obtain our coordinates.
+        Doubling the y-coordinate isn't necessary, but it allows the resulting cells to remain as squares.
+    </p>
+
+    <!-- https://swaroopg92.github.io/penpa-edit/#m=edit&p=7ZRfb5s8FMbv+RSTrzbpXGDIX+66rntv0mxdMlUVQpGT0AYV4szA2jnKd+/xgSkYeC8mTVUvJuSjw8/H9mPD48MvJbJkCz4+Qxdc4Ph4rkuNj6v2+1kmRRoH7+CiLHZSYQLwZQ73Is1jJ3Qj56ingb4B/V8QMs6Amsci0DfBUV8Heg56gV0MOLJZVeRheoWpV6W31G+yy6qfu5jPMR9Vw+4w3SRqk8ar66rwaxDqJTCzzkcabVKWyZ8xq3WY943M1okBabKPn2uYl1v5WNZlPDqBvqiULnqU+rXSOq2UmqyttN5VQ+msmuhvKZ1GpxMe9jfUugpCI/v7OZ2c00VwxDgPjoyPzdD3Ixh8QCmAh4lzej7BIYyacEBwbEHfJTiASRPyek4LegQnDYgSOAm5o/iZokdxiTpB+xQ/UXQpDinOqOaK4i3FS4oDiiOqGZud/tFZvIKckOPx4e5N45ETojNYLtNVXqp7scGPTZbBj4psX2brWFkolfJgvr0Fk4e9VHFvl4Hx9qGvfi3VtjX7k0hTC+Q/SqHswdVva6FC4T/ZeBdKySeLZKLYWWAtCrwv8l1ysGeK94UtoBC2RPEoWqtl5z2fHPbMqIU+3knTf9fOq1475uDdt2a4tyaH/lmpeg2PuMfzSHu9XfOOvZF3jGwW7HoZaY+dkbYdjahraoQdXyP7H2ubWdvuNqraBjdLdTxulmraPIycFw== -->
+    <object type="image/svg+xml" data="svgs/pyramid-grid-2.svg"></object>
+
+
+    <p>Here's the diagram of the converted grid and the types for the various possible objects. So the edge between the
+        cells labeled <code>(3, 2)</code> and <code>(3, 3)</code> would be encoded as
+        <code>4*7*7 + 2(7*2 + 3) + (5-4) = 231</code>.
+    </p>
+
+    <!-- https://swaroopg92.github.io/penpa-edit/#m=edit&p=7ZTLb5tMFMX3/iuqWd8FTyewy5e63aRpU6eKImRZ2CYJCjYpj6bC8v+ec+9Azav61KpSs6gwo+Mfl7lngDP51zLMIrJw2KdkkMmH6cjpGvxrjuu4SCL/DZ2VxUOaQRB9vKS7MMmjSVAXLSb7yvOrK6re+4GyFSkTp6UWVF35++qDX82omuOSIhPsAgoFFuQM0gJlfSMFrM51gWlAX0JP9X23kOs4WyfRcq4LP/lBdU2KG/0nd7NU2/RbpPQU8n+dblcxg1VYYDH5Q/xUX8nLTfpY1rXm4kDVmfY7H/Fr135rqe2y6tut19aye6En+qN2vcXhgOf+GYaXfsDevxzl6VHO/T3GS3+vHLdZKeGRYj7XYGC0gMkAL/AHOGHAb6gGnsXAaQGbgdsAtDKl4W3TELzz0nTXIeXWQ8r9B1RMDCk76VEYeSd2LBmv8UiosmV8K6MhoyvjhdTM2LhNjqd8i5TjkYtVsAJztHKIV8bKJfYN5ZrEXlmBTbWaNgx1Ts1OyD0Vhdw181nkwDtfRfr0zLh3ilXqbvzETIZIJqZh6eBuOBQJi60C+BEJQ5jAtLCkG1nYuYyOjFNZ8Al/Ib/0DbVf7+892/+1E/A2RC4CMwmwsag8TZZ5md2Fa6RE9h0EAWxXbldR1kFJmj4l8a5bF9/v0iwavcQw2tyP1a/SbNOb/TlMkg7Qm2gH6W+vg4oMYW79D7Msfe6QbVg8dEAr+J2Zol3RNVCEXYvhY9jrtj2u+TBR35WcgY1d2/u3a/+tXZvfgfHacvfa7Mjnm2aj2QceiT/oaMxrPkg6+CDT3HAYa9CRZIP2ww00zDfgIOJgP0k5z9oPOrvqZ51bDeLOrdqJDxaTFw== -->
+    <object type="image/svg+xml" data="svgs/pyramid-types.svg"></object>
+
+
+
+
+
+    <h2>Tetrakis square</h2>
+
+    <p>Here's the Penpa coordinate system for the tetrakis square. Just like for triangular grids, each empty cell is
+        labeled with the coordinate of its base cell.</p>
+
+    <!-- https://swaroopg92.github.io/penpa-edit/#m=edit&p=7ZTBa9swFMbv+SuGThuIYctOZ/vWdd0ubbYuGaUYE5REbUzsqJPttSjkf+/Tk0si22MMRulhCD1efnqWPin6VIta8U1ezaufDVeCMmhBRD3qQ2OB/56N4ygKT1gcMRaGQygMxti9ts3yuhDJG3ra1GupIKH064Te8qISozQb7XSc6CuqvyQp8QnFzkhG9VWy05eJnlA9hSFCfWAXtohBeg4ps+k1jpvszI77HuQTyMf2sxtIl7laFmJ+aQu/JameUWLW+Yhfm5SU8pcgrQ7zeynLRW5AkW/FYwurZiU3TVvmZ3uqT63S6YDSoFXaplapybpK210dKb2wE/0rpXG238Nhfwet8yQ1sn8c0uiQTpMdxEmyIyxk5tu38Ne/Ay0UThMmDbxnyo5oyCxlTm0YPdNDLUzu4xI3GD9jZBhnoIDqAOMnjB7GMcYLrDnHeI3xDGOI8QRrPpg9/NUuX0BOynw4Fmhj6AH1YxpR1iPRn2sy9AupZDGvGnXLl3AF0EfwVwPbNuVCKAcVUt6bG+HA/G4rlRgcMlCs7obqF1KtOrM/8KJwgH00HGQvs4NqBTf16DdXSj44pOT12gELXsMjUq3ze3cmsa1dATV3JfIN76xWHva8H5FHgj0N4KGK/z9GL/oYmYP3XptZX5scvLNSDRoe8IDngQ56u+U9ewPvGdks2Pcy0AE7A+06GlDf1AB7vgb2G2ubWbvuNqq6BjdL9Txuljq2eZqNngA= -->
+    <object type="image/svg+xml" data="svgs/tetrakis-square-grid.svg"></object>
+
+    <p>For this grid, each item is encoded as <code>60(h*x + y) + type</code>. Here, <code>h = size + 1</code>, where
+        <code>size</code> is the value specified in the Penpa UI when creating the grid, or equivalently the number of
+        labeled cells in a row with at least one labeled cell. In the above example, <code>size = 2</code>, so
+        <code>h = 3</code>.
+
+    <p>To avoid non-terminating floating point numbers and non-integers for cell coordinates, we apply the
+        transformation <code>(x, y) -> (6*y, 6*x)</code> to obtain our coordinates.</p>
+
+    <p>Here's the diagram of the converted grid and the types for the various possible objects. So the cell labeled
+        <code>(2, 2)</code> would be encoded as <code>60(3*2 + 2) + 2 = 482</code>. The triangle immediately above it
+        has type 34 and its base cell is <code>(2, 1)</code>, so it would be encoded as
+        <code>60(3*2 + 1) + 34 = 454</code>.
+    </p>
+
+    <!-- https://swaroopg92.github.io/penpa-edit/#m=edit&p=7VdLb9tGEL7rVxQ874G7fOuWpmkvjtvULoJAEAzaVmIhkplSUlPQ8H/PN4+VluIWRYuizaEQRM1+mp355rUkd78e2n5lanyy2qTG4pPljr8ubfib6ud6vd+s5t+YF4f9Q9dDMObHS/O+3exWs4UqLWdPQzMf3pjhh/kiyRKTWHxdsjTDm/nT8Ho+XJrhCn8lxgK7gAQFB/EVRCfiW/6fpJfyv00hX0IuZds7iHfr/m6zunktij/NF8O1ScjPt7ybxGTb/bZKxASv77rt7ZqA23aPWHYP60/6z+5w3308qK5dPpvhhdC9itDNlK6KQpekc7oaWkD3Qgz9o3Sb5fMz0v4zCN/MF8T9l5NYn8Sr+ROul/OnpMx4awEyBjmFwbIkpCDyijQNIXl1QmzqGAq22doSlIZI7rPokaYgBLU9IRXrBNscFtQwTQiJOzTREXKiFW50HEsWOHQZU8gCjy7j+PJwIwyTVh5CzDQLPGaOqbo6gOCeIOpFD2n6Qq2S81cEWnkpG4MY84Y3wkkAycZAq8iYV3HUQhktF/OdLybw0UBIQSco256gUtgpzMWNwJTeKcxljsCUwAks9Y7AUSZS9wgcDV3qH4GjKZE+iMDRcKQfpjD3xBSOV0F6YwJLf0xh7pEIHDUivXIGo1O+535xfL3GeWCGjK/f8TXla8HXC9Z5hc6yeW0skXLIR1obLgNkYMZWqBTJlTPcESTXubHEluSmxM2jlr0uNQ7jyHKGG0su+vg1DhPCsoW+RXJZriDrXgu/FqGyjBuScmCbDg3KsoWs9h3sU1+wnEFWXw6+HHLDcgFZeZaIkRqd+eP212gsDfRT5ZOCT+gXJ4TEAvu58s/BH0MrdirYEf74pZuo2jnjj1NL7IB/rvzpxluIfVuV4CYcbFkg58oZ9l3q6wI7VvlYivekY6lFmAP8WvVlKVdBfqhfmANygtNeOMC+xgJ70FE8A55rXdAbRx2qF4410YevXH3l8OVj4dyq3MBvqn5T+NW6s06tfVVTX/m92bjHatmLX8g+3iBXFen4vMFmpXu5n7XWJPt6FQ10tLcr9LbvhwJ76XhlO+BQqd+K/Kr9HDJOZtFHzmm2WR82R33l64t6+ZwU4Fn6WLC31p6pqSd9L8FOo9xQF+Zsj6ThgBcVZQ5WeUHpotOYFw3yS31MC25kGiZe0DRRB/KCW1ANQADHowEUggonCzKNbMqCxj3ww7MvCxSDDn5Z6DTIAqFRW8qCHjARm3BDYlJPJwUduivxokAIpQ+hADfNmcg6fyQXOuvIK/P3m/0ZU9CMai+jVg43bJGDXkZanT/zcM457RdXnOYSGHCtJ9ksvR3s1T4S2e8lmfRxsL7l4/UlX3O+lnzsVvSQ9pce48KngL93wv8pnQWmn14JTh9U+d9cL2cLvFIku25zszv079s7PCDzGweegYE9Hra3q34Ebbru02b9ONZbf3js+lX0LwJX9x9i+rddf39m/XO72YwAeYEaQXLnHUH7Hs/xwbrt++7zCNm2+4cREDzzjyytHvdjAvt2TLH92J55255ifp4lvyf8XWR4X2v+f1/7j97XqATp1zbuXxsd7t6uj44+4Mj0A41OueKTQQc+GWlyOJ1qoJHBBno+24Cm4w1wMuHA/mDIyer5nBOr81EnV5NpJ1fhwC+Wsy8= -->
+    <object type="image/svg+xml" data="svgs/tetrakis-square-types.svg"></object>
+
+    <p>
+    <aside>You may be wondering why these type values seem arbitrary, and skip over some numbers. The type values
+        correspond to the value of <code>k</code> in the Penpa code <a
+            href="https://github.com/swaroopg92/penpa-edit/blob/e37d1f0467dd8934aecf139061d182cc648cb22b/docs/js/class_uniform.js#L2726-L2787">
+            here</a> (and similarly for the other board types). The type values are assigned by iterating over each cell
+        in the tiling, assigning numbers to each edge and vertex for each cell. Since multiple cells can share the same
+        edge or vertex, this may result in multiple type values per item, and only one of those numerical values being
+        used. There are probably better encodings, but I have to work with the Penpa implentation.</aside>
+    </p>
+
+
+
+
+
+    <h2>Truncated square</h2>
+
+    <p>Here's the Penpa coordinate system for the trunated square.</p>
+
+    <!-- https://swaroopg92.github.io/penpa-edit/#m=edit&p=7ZRBb5swFMfv+RSTT5vkAxhCGm5d1+2SZuuSqaoQihziNqgk7gysFVG+e5+fLQUDmzRpqnqYEE+Pnx/Pf4z/rlS9z3glNqvyZ82VoAyu4Ix61IeLhRPKvCllkwhvz17LvCpE/I6e19VWKkgo/Tqnd7woxShJR4dmGjfXtPkSJ8QnFG9GUtpcx4fmKm7mtFnAEKE+sJkpYpBeQspMeoPjOrsw474H+RzyyLx2C2mWq6wQqytT+C1OmiUlep6P+LZOyU7+EsTq0M+Z3K1zDYp8L54tLOuNfKhtmZ8eaXNulC4GlAZWqU2NUp11ldqvaimdmUb/Suk0PR5hsb+D1lWcaNk/TunZKV3EB4jz+ED8wNPvvoef+wG0UFhNaOqPI6TMoSwIbS1r08h0gH3SokFwZmuDNo1MB9hRLRqGzNaGbRqZDqxFQbSP0m8xfsbIMC7hy2gTYPyE0cM4xjjDmkuMNxgvMIYYI6yZ6LX5q9V7BTkJ/CDtuzGEyeQPWYo+I6UsVmWt7ngGWwf9B1sE2L7erYVyUCHlo95JDszv91KJwSENxeZ+qH4t1abT/YkXhQPMceIgYwIHVQp2eOuZKyWfHLLj1dYBa17B4VNu80e3k9hXroCKuxL5A+/Mtjt983FEngneSQAH3PT/Ifaqh5heeO+tmfGtycE9K9Wg4QEPeB7ooLct79kbeM/IesK+l4EO2Blo19GA+qYG2PM1sN9YW3ftulur6hpcT9XzuJ6qbfMkHb0A -->
+    <object type="image/svg+xml" data="svgs/truncated-square-grid.svg"></object>
+
+    <p>For this grid, each item is encoded as <code>26(w*y + x) + type</code>. Here, <code>w = size + 2</code>, where
+        <code>size</code> is the value specified in the Penpa UI when creating the grid, or equivalently the number of
+        octagons in each row. In the above example, <code>size = 2</code>, so <code>w = 4</code>.
+
+    <p>We apply the transformation <code>(x, y) -> (6*x + 3*(y%2), 3*y)</code> to obtain our coordinates.</p>
+
+    <!-- https://swaroopg92.github.io/penpa-edit/#m=edit&p=7VRRb5swEH7Pr5j8tEl+ABtM4K3rur202bpkqiqEIpLQFpWEzsBaEeW/93x2FQxs0qSp6sOEOF0+f9x9sf1dLZvdOq2zzbL62aQyowwePqUOdeFhXkCZE1IWCHwd8yzyusiid/Skqe9KCQmlX2f0Ji2qbBInk30bRu0lbb9EMXEJxZeRhLaX0b69iNoZbeewRKgL2LkmMUjPIGU6vcJ1lZ3qddeBfAa5rz+7hnSdy3WRLS808VsUtwtKVJ+P+LVKybb8lRGjQ/1el9tVroAi32VPBqyaTXnfGJqbHGh7opXOR5Ryo9SkWqnK+krNv+ooPdeF/pXSMDkcYLO/g9ZlFCvZP47p9JjOoz3EWbQnLnfUt+9Dyj+AFkqEKupyF1EXjl7DPsK+0LBvs/1Aw1OLzbiHsKCiQ2bcNw0NqrlCy4CGFlkYHb7F5nxqaoQdMufhSw0Da7LQMqCGxRZaB4jusj2PGdEu67A9j5uOL7BmCy0EWtp0YaT4XT5suYsbf43xM0aGcQHnQluO8RNGB6OP8Rw5ZxivMJ5i9DAK5ATqZP/q7F9BTgzXS00N2AYaBH/IEpwSpCqLZdXIm3QNFx+nB1xwwHbNdpVJCyrK8kH5wALz210ps9ElBWab2zH+qpSbXvXHtCgsQA9DC9IWtqBagj87v1Mpy0cL2ab1nQWs0hpGZ3WXP9iVsl1tC6hTW2J6n/a6bY//+TAhTwTfmMN4Dv+P4FcdwWrjnbdmxrcmB+9sKUcND/CI5wEd9bbBB/YGfGBk1XDoZUBH7Axo39EADU0N4MDXgP3G2qpq391KVd/gqtXA46pV1+ZxMnkG -->
+    <object type="image/svg+xml" data="svgs/truncated-square-grid-2.svg"></object>
+
+    <p>Here's the diagram of the converted grid and the types for the various possible objects. So the cell labeled
+        <code>(2, 1)</code> would be encoded as <code>26(4*1 + 2) + 0 = 156</code>. The square immediately to its left
+        has type 1 and its base cell is <code>(1, 1)</code>, so it would be encoded as
+        <code>26(4*1 + 1) + 1 = 131</code>.
+    </p>
+
+    <!-- https://swaroopg92.github.io/penpa-edit/#m=edit&p=7ZVBb9pMEIbv/Ipqz3vwrg3YvqVp2ktCmy+poshCkSFOgmJwauBLZcR/zzuzBtb2RlWkqO2hQqxeHmZnZ8ae2eWPdVpmciAD6YfSkwofPRhIFUGrgL9e/bmcrfIs/iCP1quHooSQ8utI3qX5MusltdG4t6miuDqX1Zc4Eb6QQuGrxVhW5/GmOourkawu8JeQCuwUCgYa8sTYK9JXbEDq2BgoD3oEPTD7riGns3KaZzdnxvBbnFSXUtBBH3k3STEv/s+EccG/p8V8MiMwSVdIZvkwe6r/Wa5vi8d1bavGW1kdmXgvHPH6dby1NOGSaodb52aFe2ocvWu40Xi7Rd3/Q8A3cUKxfz/I8CAv4g3WUbwRfc1bhwhGoqZw2O8z6R+IUj4hzybGKLDRYFezPRkS0dpCmvc1CG/T9MD3iPcp+zyfw7SP8zkmHGqhgNDeEzJUnOf1Lk/wxrticu1Qk68Dv2JNGTgwZdHFXAEHdjvhUnQxl8OB3XFzXVoYZfnMxdEoTqTxoioRaxh7aHxdaw1NR5H2YUOOmPcP2oOmnKAjTAmvllpGloGHNFgPYVxrcrLX4H5odoZ78zDYOQnhzooj2GkcGOyOwZja5aCh6xxCHyYoiyKuaJThGKWR+CVaQVY+r5949Xjt83rKxTnh9YrXY14DXgdsM6RmelO72a+k/QTeMZxEo0D7D2r8Kz3uJZjVYlnkN8t1eZdOMXh4lGO2gC3W80lWNlBeFE/5bNG0m90vijJz/kUwu7132U+K8rbl/TnN8wYwN1MDmTe5gVYl5qP1Oy3L4rlB5unqoQGsWdrwlC1WzQBWaTPE9DFtnTY/5LztiZ+Cv4mPizD6dxH+qYuQnoH3tuuwc7H9ho79ywaIGQVF6ZwGwI6BAOps/Jp3eh+80+V0YLfRQR29Dtpud6BuxwN2mh7slb4nr+3Wp6ja3U9HdQYAHWXPgGTcewE= -->
+    <object type="image/svg+xml" data="svgs/truncated-square-types.svg"></object>
+
+
+
+
+
+    <h2>Snub square</h2>
+
+    <p>Here's the Penpa coordinate system for the snub square.</p>
+
+    <!-- https://swaroopg92.github.io/penpa-edit/#m=edit&p=7VRdb9owFH3nV0x+WiWrSuwAIW9d1+2FsnUwVVUUoQBpiRpw5yRrZcR/7/W1V3CSPkyaqj5MVq4Ox5d7jz+Oy229mJe/6lRmlMHgIfWoD4Ox0Wk44EEQen5/6HPKguA0DEI27PeH3PODPjAj/Dw7ZnlVZNEHelZXayEBUPptQm/Tosx6cdLbqVGkrqj6GsXEJxQ/RhKqrqKduozUhKopTBHKgBubJA0vADIDr1/mz8287wGeAB4ABngDcJnLZZHNL03i9yhWM0p0n0/4bw3JRvzOiNWhfy/FZpFrosi32ZMly3ol7mub5id7qs6M0ukfpbqlVcqtUguNUo2aSu2qjpSOTaF/pXSU7Pew2T9A6zyKteyfBxge4DTaQZxEO8K4p//7Ec79BLRQ2E0oyoYDZJnDBn5gc9kxOzAV4Aq9sFDcxxY3GL9gZBhnoIAqjvEzRg9jH+MYcy4wXmM8xxhgHGDOUK/hr1b5BnJi2Eg0jxnBAcLg/JWpBM1BSlHMy1repks4bzQNnCtw23qzyKRDFUI86ON3yPxuK2TWOaXJbHXXlb8QctWo/pgWhUOY58GhzM11qErCtTz6nUopHh1mk1Zrh1ikFbwY5Tp/cCtl28oVUKWuxPQ+bXTbHNa875Engl/M4VUa/X953vTl0RvvvTdnvjc5eGeF7DQ80B2eB7bT25Zv2Rv4lpF1w7aXge2wM7BNRwPVNjWQLV8D94q1ddWmu7WqpsF1q5bHdatjm8dJ7xk= -->
+    <object type="image/svg+xml" data="svgs/snub-square-grid.svg"></object>
+
+    <p>For this grid, each item is encoded as <code>46(w*y + x) + type</code>. Here, <code>w = size + 2</code>, where
+        <code>size</code> is the value specified in the Penpa UI when creating the grid, or equivalently the number of
+        squares in each row. In the above example, <code>size = 2</code>, so <code>w = 4</code>.
+
+    <p>We apply the transformation <code>(x, y) -> (14*(x+y), 14*(y-x))</code> to obtain our coordinates. Note that this
+        includes a small counterclockwise rotation from the Penpa grid.</p>
+
+    <p>Here's the diagram of the converted grid and the types for the various possible objects. So the cell labeled
+        <code>(2, 1)</code> would be encoded as <code>46(4*1 + 2) + 0 = 276</code>. The triangle immediately to its left
+        has type 5 and its base cell is <code>(1, 1)</code>, so it would be encoded as
+        <code>46(4*1 + 1) + 5 = 235</code>.
+    </p>
+
+    <!-- https://swaroopg92.github.io/penpa-edit/#m=edit&p=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 -->
+    <object type="image/svg+xml" data="svgs/snub-square-types.svg"></object>
+
+
+
+
+
+    <h2>Cairo pentagonal</h2>
+
+    <p>Here's the Penpa coordinate system for the cairo pentagonal.</p>
+
+    <!-- https://swaroopg92.github.io/penpa-edit/#m=edit&p=7VRdb5swFH3Pr5j8tEnWBCYlhLeu6/aSZuuSqaoQihxCE1SCMwNr5Sj/vdcXt4mBPUyaqj5MiKvD8eXe44/jhGdSLHZpUfG1KHhOGTxeQB3qwsM8/2Pgjsae4wcj3x15Z33U0HfwfX7mWZWn4Tt6XlcbIQFQ+m1K73hepoMoHuzVOFTXVH0NI+ISii8jMVXX4V5dhWpK1QyGCGXATZokDS8BsgbevIxfNOOuA3gK2AcM8BZgkskkTxdXTeL3MFJzSnSfT/i3hmQrfqfE6NDfidguM03kWZE+GrKsV+K+NmlufKDqvFE6e1aqWxqlnlFqYKNUo7ZSM6sTpZOm0L9SOo4PB1jsH6B1EUZa9s8jDI5wFu4hTsM9gb3V/76Hrf8AWiisJhRlAUOWWeyQOSaXnbJ+UwFO0QsLxV1scYvxC0aGcQ4KqPIwfsboYDzDOMGcS4w3GC8wDjH6mDPSc/irWb6CnAgWkg7BSCPqeQa4DIxiUTGagZQiX5S1vOMJ7C+aBPYRuKLeLlNpUbkQO73dFpmtCyHT3iFNpqt1X/5SyFWr+gPPc4sof9Vc2j83J9WiKgnH8OSbSykeLGbLq41FLHkFN0S5yXZ2JbiFbAEVtyXye97qtj3O+TAgjwTfyINbaPz/pnnVm0YvvPPWnPjW5OCZFbLX8ED3eB7YXm8bvmNv4DtG1g27Xga2x87Ath0NVNfUQHZ8DdwfrK2rtt2tVbUNrlt1PK5bndo8igdP -->
+    <object type="image/svg+xml" data="svgs/cairo-pentagonal-grid.svg"></object>
+
+    <p>Just like with the snub square, each item is encoded as <code>46(w*y + x) + type</code>, and again
+        <code>w = size + 2</code>, where <code>size</code> is the value specified in the Penpa UI when creating the
+        grid, or equivalently the number of labeled cells in each row. In the above example, <code>size = 2</code>, so
+        <code>w = 4</code>.
+
+    <p>Also like with the snub square, we apply the transformation <code>(x, y) -> (14*(x+y), 14*(y-x))</code> to obtain
+        our coordinates, which is again a small counterclockwise rotation from the Penpa grid.</p>
+
+    <p>Here's the diagram of the converted grid and the types for the various possible objects. So the cell labeled
+        <code>(2, 1)</code> would be encoded as <code>46(4*1 + 2) + 6 = 282</code>. The pentagon immediately to its left
+        has type 10 and its base cell is <code>(1, 1)</code>, so it would be encoded as
+        <code>46(4*1 + 1) + 10 = 240</code>.
+    </p>
+
+    <!-- https://swaroopg92.github.io/penpa-edit/#m=edit&p=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 -->
+    <object type="image/svg+xml" data="svgs/cairo-pentagonal-types.svg"></object>
+
+</body>
+
+</html>

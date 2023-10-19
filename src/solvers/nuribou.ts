@@ -1,5 +1,4 @@
-import { range } from "lodash";
-import { Constraints, Context, Puzzle, Solution, ValueMap, Vector } from "../lib";
+import { Constraints, Context, Point, Puzzle, Solution, ValueMap } from "../lib";
 
 const solve = async ({ And, Or }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Shade some cells on the board to form regions of unshaded cells
@@ -24,9 +23,12 @@ const solve = async ({ And, Or }: Context, puzzle: Puzzle, cs: Constraints, solu
 
     // Shaded cells must form rectangular blocks with a width of 1
     const maxLength = Math.max(puzzle.height, puzzle.width);
-    const strips: Vector[][] = [];
-    for (let len = 1; len <= maxLength; len++) {
-        strips.push(range(len).map(i => puzzle.lattice.edgeSharingDirections()[0].scale(i)));
+    const strips: Point[][] = [];
+    for (const p of puzzle.lattice.representativeCells()) {
+        const bearing = puzzle.lattice.bearings()[0];
+        for (let len = 1; len <= maxLength; len++) {
+            strips.push(bearing.line(p, len));
+        }
     }
     const placements = puzzle.points.placements(strips);
     const sizeGrid = new ValueMap(puzzle.points, _ => cs.int());

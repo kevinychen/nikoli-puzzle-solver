@@ -1,52 +1,49 @@
-import { ValueSet } from "./collections";
 import { Lattice } from "./geometry/lattice";
+import { Point } from "./geometry/point";
 import { Vector } from "./geometry/vector";
 
 /**
- * A network is a particular way that we can connect cells in a given lattice such that each cell
- * is connected to some subset of its edge sharing neighbors, called it's "direction set". For
- * example, a loop requires that each cell is either empty or has exactly two neighbors.
+ * A network represents a possible set of directions (to neighboring cells) for each cell in a
+ * lattice. For example, a loop requires that each cell is either empty or has exactly two
+ * neighbors.
  */
-export class Network {
-    constructor(readonly directionSets: Vector[][]) {}
+export interface Network {
+    directionSets(p: Point): Vector[][];
+}
 
-    /** A network where each cell can be any subset of directions */
-    static all(lattice: Lattice): Network {
-        const directions = lattice.edgeSharingDirections();
+abstract class AbstractNetwork implements Network {
+    constructor(private readonly lattice: Lattice) {}
+
+    directionSets(p: Point) {
+        const directions = this.lattice.edgeSharingDirections(p);
         const directionSets = [];
         for (let i = 0; i < 1 << directions.length; i++) {
             const bitmap = [...i.toString(2).padStart(directions.length, "0")].map(c => parseInt(c));
-            directionSets.push(directions.filter((_, i) => bitmap[i]).sort());
-        }
-        return new Network(directionSets);
-    }
-
-    /** A network where each cell is either empty or has two outgoing directions */
-    static loop(lattice: Lattice): Network {
-        const directions = lattice.edgeSharingDirections();
-        const directionSets = new ValueSet([[]]);
-        for (const v1 of directions) {
-            for (const v2 of directions) {
-                if (!v1.eq(v2)) {
-                    directionSets.add([v1, v2].sort());
-                }
+            const directionSet = directions.filter((_, i) => bitmap[i]).sort();
+            if (this.isValid(directionSet)) {
+                directionSets.push(directionSet);
             }
         }
-        return new Network([...directionSets]);
+        return directionSets;
     }
 
-    /** A network where each cell is either empty or has one or two outgoing directions */
-    static path(lattice: Lattice): Network {
-        const directions = lattice.edgeSharingDirections();
-        const directionSets = new ValueSet([[]]);
-        for (const v1 of directions) {
-            directionSets.add([v1]);
-            for (const v2 of directions) {
-                if (!v1.eq(v2)) {
-                    directionSets.add([v1, v2].sort());
-                }
-            }
-        }
-        return new Network([...directionSets]);
+    abstract isValid(vs: Vector[]): boolean;
+}
+
+export class FullNetwork extends AbstractNetwork {
+    isValid() {
+        return true;
+    }
+}
+
+export class LoopNetwork extends AbstractNetwork {
+    isValid(vs: Vector[]) {
+        return vs.length === 0 || vs.length === 2;
+    }
+}
+
+export class PathNetwork extends AbstractNetwork {
+    isValid(vs: Vector[]) {
+        return vs.length <= 2;
     }
 }

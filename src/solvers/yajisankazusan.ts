@@ -13,8 +13,12 @@ const solve = async ({ Or, Sum }: Context, puzzle: Puzzle, cs: Constraints, solu
     // If a clue is shaded, the number becomes meaningless (it may be true or false)
     for (const [p, text] of puzzle.texts) {
         const [v] = puzzle.symbols.get(p).getArrows();
+        const number = parseInt(text);
         cs.add(
-            Or(grid.get(p).eq(1), Sum(...puzzle.points.sightLine(p, v).map(p => grid.get(p).eq(1))).eq(parseInt(text)))
+            Or(
+                grid.get(p).eq(1),
+                Sum(...puzzle.points.lineFrom(p, puzzle.lattice.bearing(p, v)).map(p => grid.get(p).eq(1))).eq(number)
+            )
         );
     }
 

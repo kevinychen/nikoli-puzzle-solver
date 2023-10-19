@@ -4,8 +4,8 @@ const solve = async ({ And, Or, Sum }: Context, puzzle: Puzzle, cs: Constraints,
     // Bridges must be horizontal or vertical lines between two islands, and cannot make a turn
     const edges: [Point, ValueSet<Point>, Point][] = [];
     for (const [p] of puzzle.texts) {
-        for (const [q, v] of puzzle.points.edgeSharingNeighbors(p)) {
-            const sightLine = puzzle.points.sightLine(q, v);
+        for (const bearing of puzzle.lattice.bearings()) {
+            const sightLine = puzzle.points.lineFrom(p, bearing).slice(1);
             const i = sightLine.findIndex(p => puzzle.texts.has(p));
             if (i !== -1) {
                 edges.push([p, new ValueSet(sightLine.slice(0, i)), sightLine[i]]);

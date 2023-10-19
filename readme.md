@@ -4,14 +4,14 @@ Solver for over 100 types of Nikoli-style logic puzzles, including Sudoku, Slith
 
 The app hooks up to the [Penpa UI](https://github.com/swaroopg92/penpa-edit) to make it easy to input and view puzzles.
 
-![Solving](solving.gif)
+![Solving](docs/solving.gif)
 
 ## Features
 
 - Supports [over 100 puzzle types](src/solvers)
 - Supports unique solution checking
 - Supports irregularly shaped grids and grids with holes (when appropriate for the puzzle type)
-- Supports hexagonal and triangular grids (when appropriate for the puzzle type)
+- Supports different tilings, such as hexagonal and triangular grids (when appropriate for the puzzle type)
 - Easy for someone with programming experience to modify solvers for puzzle variants, or add new solvers
 
 ## Instructions

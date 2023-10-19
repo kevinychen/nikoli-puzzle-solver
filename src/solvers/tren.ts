@@ -3,7 +3,7 @@ import { Constraints, Context, Point, Puzzle, Solution, ValueMap } from "../lib"
 
 const solve = async ({ And, Or, Sum }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Place several 1x2 and 1x3 blocks on the board, which don't overlap each other
-    const grid = new ValueMap(puzzle.points, _ => cs.int(-1, 8));
+    const grid = new ValueMap(puzzle.points, _ => cs.int());
 
     // Each number is contained in a block
     // Blocks must contain exactly one number
@@ -13,9 +13,9 @@ const solve = async ({ And, Or, Sum }: Context, puzzle: Puzzle, cs: Constraints,
     for (const [instance, p] of trains.entries()) {
         let type = 0;
         const choices = [];
-        for (const [v, w] of puzzle.lattice.oppositeDirections()) {
-            const line1 = puzzle.points.sightLine(p.translate(v), v);
-            const line2 = puzzle.points.sightLine(p.translate(w), w);
+        for (const bearing of puzzle.lattice.bearings()) {
+            const line1 = puzzle.points.lineFrom(p, bearing).slice(1);
+            const line2 = puzzle.points.lineFrom(p, bearing.negate()).slice(1);
             for (let index1 = 0; index1 <= line1.length; index1++) {
                 for (let index2 = 0; index2 <= line2.length; index2++) {
                     if ([2, 3].includes(index1 + index2 + 1)) {
@@ -74,7 +74,7 @@ solverRegistry.push({
     samples: [
         {
             puzzle: "m=edit&p=7ZTPb5swFMfv+Ssqn33AkJ/cuq7ZJcvWJVNVIRQ5CW1QIe4MrJOj/O9970EFBnbYYV0Pk+Wnx8fP+Gvw19mPQuqIT6F5U+5wAc0butRdZ0bdqdo6zpPIv+CXRX5QGhLOv8zn/F4mWTQIqqpwcDIz39xw88kPmGCcudAFC7m58U/ms2+W3KxgiHEBbFEWuZBe1+ktjWN2VULhQL6sckjvIN3FepdEm0VJvvqBWXOG63yg2ZiyVP2MWKUDn3cq3cYItjKHzWSH+KkayYq9eiyqWhGeubks5a565Hq1XExLuZj1yMVd/GW5s/B8hs/+DQRv/AC1f6/TaZ2u/BPEpX9i7uR1p+W/YZ5AAL/qFQzdVsV4iGDYAKPWlAmBxpSp06oQDhGvQYQ9CfQJUnlHcU7RpbiGTXDjUfxI0aE4origmmuKtxSvKA4pjqlmgp/hjz7UG8gJ3DG5rm6jt30OBwFbFuk20hdLpVOZMPAwy1SyyQp9L3dwIsnicOiAHanSQolST0l8tOvih6PSUe8Qwmj/0Fe/VXrfevuzTBILlFeWhUpvWSjXYJzGs9RaPVsklfnBAg2TWW+KjrktIJe2RPkoW6ul9Z7PA/aLUQ88uCC9/xfkP7og8Rc47839700OnV6le60PuMf9QHtdXvGO0YF3LI0Ldl0NtMfYQNveBtS1N8COw4H9xuT41rbPUVXb6rhUx+24VNPwQTh4AQ==",
-            answer: "m=edit&p=7ZVNb9swDIbv+RWFzjpYH/68dV27S5etS4eiMILCSd3WqBN3jrMODvLfR8p0ZDveYYd1OwyGiSevSYpSRGnzbZuUKQ/gUQF3uIBHaWle6YTmdei5zqo8jU746bZ6KkoAzj9dXPCHJN+kk5i85pNdHUb1Fa8/RDETjDMJr2BzXl9Fu/pjVE95PYNPjAvQLhsnCXhu8cZ8RzprROEAT4kBbwGXWbnM07vLRvkcxfU1ZzjOOxONyFbF95RRHfh7WawWGQqLpILJbJ6yF/qy2d4Xz1vWDrHn9WlT7mykXGXLVYdy1Xi58s+XG873e1j2L1DwXRRj7V8tBhZn0W6Pde2Y9NuZNv8NUwIFaQUtBx6eRkF3BHcQ4ruDkMAZeAjHKKqjiH4Q1CdMlbfGXhgrjb2GSfBaGfveWMdY19hL43Nu7I2xZ8ZqYz3j4+MywEJ1c3j9aCbcgAsfylRQjxsCi4Z9Cawa9pA16cqyh+ySDs0USGJoq0DZPAH5B6rDGriNRfZIdy37yD7pXochZ9jJGVKeUFvG/CHlCSE2bGKl40KTtzpyq3sHRn/pBKT7B4YceEA0unC4FIJYAEti8BGdWNH6B5YdYOkQw6EjKY90LGN+STklHE5SkY6sSVeWFdSgyF+BjyJ/pYFd66NJ1xCr21hk8tHaMsZqjxjWStNaaVgfl+aoYY4uzqtptcOGbjbrrLO5mw2Nm3U/iaVnzl77uG/7ez6J2XS7WqTlybQoV0nO4CRnmyK/22zLh2QJ55I56LnR1sazJ+VF8ZJn675f9rguynT0E4rp/eOY/6Io7wfZX5M87wkbc3H1pOaE7UlVmfV+J2VZvPaUVVI99YTOUdvLlK6rfgFV0i8xeU4Go63snPcT9oOZN1ZwTar/1+RfuibxL3B+67J8kyvp3yrH7N6iHG19kEe6H9TRLif9qNFBP2ppHPC4q0EdaWxQh70N0nF7g3jU4aD9oskx67DPsaphq+NQR92OQ3UbPp5PfgI=",
+            answer: "m=edit&p=7ZVNc5swEIbv/hUZnXVAH2DBLU2TXlK3qdPJZBhPBjsk8QSbFNtNB4//e1+JtfkwPfTQtIcOw/LwslqthFZafdskRcoNLmW4xwUupaW7pRe626Prer7O0uiEn27WT3kB4PzTxQV/SLJVOojJazLYlmFUXvHyQxQzwTiTuAWb8PIq2pYfo3LEyzE+MS6gXVZOEnhe4437bumsEoUHHhEDb4GzeTHL0rvLSvkcxeU1Z7afd661RbbIv6eM8rDvs3wxnVthmqwxmNXT/IW+rDb3+fOG7bvY8fK0Snfck66q01WHdFV/uvLPpxtOdjtM+xckfBfFNvevNZoax9F2Z/PaMjncj7T6N0wJK8ha0LLjEWgr6Ibgd5oM/U4T43U8hOcU1VBEuxHyEy7LW2cvnJXOXmMQvFTOvnfWc9Z39tL5nDt74+yZs9rZwPkM7TRgopoxgnZrJnzDxRBpKuTjh2BR8VCCFbEC64oD2WCr++SDYjKSGGVlqK2Bj9F1zD0bDaa2xgcH5KNrNgF4SLpfs0GckOKE8A/9uq8DW53ihIgTVm2l56PIA+IATDFD/8B4gs2hbc1WDysf4XEpBLEAS2L4CENswGEd88DQZTXneIIpjt2A9mzjS4opsTlJRazAmnxkzQo5KPJX0BX5Kw32ax9NukYcTW01fPTeRzXY6jRXCvOjaX405sSnMWqMy7fjqkrtsKCrxTpuLO5qQdvFuhvEMnB7b335b/s+GcRstFlM0+JklBeLJGPYydkqz+5Wm+IhmWFfchs9d9rSebakLM9fsvmy7Td/XOZF2vvJiun9Y5//NC/uO9FfkyxrCSt3cLWkaodtSeti3npPiiJ/bSmLZP3UEhpbbStSuly3E1gn7RST56TT26Ie827AfjB3xwrHpPp/TP6lY9L+Au+3Dss3OZL+rXTc6s2L3tKH3FP9UHurnPSjQod+VNK2w+OqhtpT2FC7tQ3puLwhHlU4tF8UuY3arXObVbfUbVdH1W67ahZ8PBn8BA==",
         },
     ],
 });

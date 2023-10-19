@@ -6,7 +6,7 @@ const solve = async ({ And, Implies, Or, Sum }: Context, puzzle: Puzzle, cs: Con
 
     const trees = new ValueMap(puzzle.points.vertexSet(), _ => cs.int());
     for (const [junction, text] of puzzle.junctionTexts) {
-        const [p1, p2, p3, p4] = junction;
+        const [p1, p2, p3, p4] = [...junction].sort(Point.compare);
         const pointingAts = new ValueMap([
             [Vector.NW, grid.get(p1)?.eq(0) || false],
             [Vector.NE, grid.get(p2)?.eq(1) || false],

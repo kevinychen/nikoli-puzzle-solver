@@ -28,8 +28,8 @@ const solve = async ({ And, Distinct, Implies }: Context, puzzle: Puzzle, cs: Co
                     arith.eq(i),
                     And(
                         ...puzzle.lattice
-                            .edgeSharingDirections()
-                            .flatMap(v => puzzle.points.sightLine(p.translate(v), v).slice(0, i))
+                            .bearings()
+                            .flatMap(bearing => puzzle.points.lineFrom(bearing.next(p), bearing).slice(0, i))
                             .map(p => grid.get(p).neq(i))
                     )
                 )

@@ -1,4 +1,3 @@
-import { range } from "lodash";
 import { Constraints, Context, Puzzle, Solution, Symbol, ValueMap, Vector } from "../lib";
 
 const solve = async ({ Or, Sum }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
@@ -8,8 +7,13 @@ const solve = async ({ Or, Sum }: Context, puzzle: Puzzle, cs: Constraints, solu
 
     // There cannot be a run of 3 or more parallel lines
     for (const [p] of grid) {
-        cs.add(Or(...range(3).map(i => grid.get(p.translate(Vector.E.scale(i)))?.neq(1) || true)));
-        cs.add(Or(...range(3).map(i => grid.get(p.translate(Vector.S.scale(i)))?.neq(2) || true)));
+        for (const [v, num] of new Map([
+            [Vector.E, 1],
+            [Vector.S, 2],
+        ])) {
+            const bearing = puzzle.lattice.bearing(p, v);
+            cs.add(Or(...bearing.line(p, 3).map(p => grid.get(p)?.neq(num) || true)));
+        }
     }
 
     // Numbers indicate either the amount of cells with a horizontal line, the amount of cells with

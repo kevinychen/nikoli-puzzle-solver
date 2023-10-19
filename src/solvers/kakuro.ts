@@ -1,4 +1,4 @@
-import { Constraints, Context, Point, Puzzle, Solution, ValueMap, Vector } from "../lib";
+import { Bearing, Constraints, Context, Point, Puzzle, Solution, ValueMap, Vector } from "../lib";
 
 const solve = async ({ Distinct, Sum }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Place a number between 1 and 9 into every empty cell
@@ -11,13 +11,13 @@ const solve = async ({ Distinct, Sum }: Context, puzzle: Puzzle, cs: Constraints
     const lineTotals: [string, Point[]][] = [];
     for (const [p] of puzzle.symbols) {
         //  The number for a horizontal row going east is actually written on the northeast of the square
-        for (const [textDir, v] of [
-            [Vector.NE, Vector.E],
-            [Vector.SW, Vector.S],
-        ]) {
+        for (const [v, bearing] of [
+            [Vector.NE, puzzle.lattice.bearings().find(bearing => bearing.from(p).eq(Vector.E))],
+            [Vector.SW, puzzle.lattice.bearings().find(bearing => bearing.from(p).eq(Vector.S))],
+        ] as [Vector, Bearing][]) {
             lineTotals.push([
-                puzzle.edgeTexts.get([p, textDir]),
-                puzzle.points.sightLine(p.translate(v), v, p => !puzzle.symbols.has(p)),
+                puzzle.edgeTexts.get([p, v]),
+                puzzle.points.lineFrom(bearing.next(p), bearing, p => !puzzle.symbols.has(p)),
             ]);
         }
     }
@@ -55,7 +55,7 @@ solverRegistry.push({
         },
         // {
         //     puzzle: "m=edit&p=7Vffb9u2E3/PX0EIGNACSqzftvSWJc33YV2/3dKhKIygkGXGFiKLGUXFi4L87707io5Ns8UeVmwYBts078P78eGJR5/vyrteCj8M8Z2kfuDDzE+TgD5hGNEnGF8fatXwgv1ERuyVd8Xe81aJTd0K3nmv/fNerYUs2GX5UC/ZeaPqoRb+Wqn7rphMttvt2Wpz3w9Dw7uzSmwmi0asJlEQRZMgnmgqp4vH0yWan5ba/DSa+NeqbJelXJrIsgcPBXvTKi5Zybq6XTWcLetVrditFBsWMiVYzmogx3hZrdl2XSvOKt40rBNMrUsFA2ddv2HiVlt2oK6Vzyspuo7B1uQj47/3ZdOR9kPZ9Jyt6gfeon+EGn6r0APOSf+H6IIB2W94vxRbmH3Ld7kQD/zF5Rl7J8bNbcpHtuBM8nteKr5k21qtwe8uBdrtq/qMnyGRlRT9PVLAjXesEm3LK7SDp1QPolVl0zwyIdkDl6quSEKXolewCQjVlNXdaLzgast5+xocX8L7CqzKHp59CYaQ06ZXtWhZtebVHXDB6LiBtt8suOzYpu8UMgeCXAIBIL2S4A71FrBz/AaPsHTm///qyr+FvPCT+Xjwbk6ehrwYzv3hf8XcCz3fi+ATejf+8EvxNPxcDJ/84RqWPD8E7K1WimH6Rk8jmH6kdQQvtGYA03cwjT0/geknmOozqPXfF/Ph0vcwyI9kgFNvA4/GG0mgDMd4USOwKBUUR7eu78eVrl+Ku37UDW+e/eGcuJqFbzPG6VcZjztCxlUtq4Z/fvvC+cNfxTm/eX6GxP8KrD8Xc9zAby/T6+IJxnc0hsWTFwZJRHYZZRPkNEEZUCPPaH1q5Iz0Z0bMpyjGu+Wc1CNjHkYZmRv9MI1JzncyhYuAt5az/IBOmAcH61FA62Y5gkAgGm9RpK1TI8faereehPvkozGYIR/NUpJ3wWaafGJkvTmjHgfkLQyMrKNDzFHWqTJk4kx7M97jMVVGPdHuYkM2STQ7Ez3JNDvjL9H+Xuyn9CjM5lKdKeMthRTuR0915nbe01g/Z11VIOtU7Zb1MTGx0yk9xminnZNsMpPBecBlsoaT9glOWowOIn+/Vr0YrWwMD4SN4c5DC8Pd23oY1sZwX7YtpsbCEjwqNoY5sPxRImzMETfBuDbmiJviPmzM4Y8Ok41h/izbDG0tbIq2NubQmzlyMHPkYObwR7VjYblDL3fsN3fkJQwcZMLAwRouERfoiAMXxPFm4FZwabp80vmyQTo4tk86OUearkCpI0dh6opON7EdKHWlLnOljg6GbZ45qiOk4j4CXeZ0EI5AR1WHM9fec8fZCunQHIBwg1zRL1ZE4wf4KfOHmMZLGgMaUxrfks4bGj/SeEFjQmNGOlMaZ+Zn8es/lzuVo19Ofat9F2bPJ/MYGnjHK/33ojcnc++a2hhom+WmbKC1GeULIVsu92Rsl7kH3aUHDeznrpe3ZQWdEjWf0AwBpvtXr1CyH5FGiPumbg/V6lUrJHcuIciXK5f+QsglOt9b2EIPfgB08BcBOO5DuuU7gJSEfm5PLqUU2wME+vT1AbDX+x14gpwcElDlIcXyrrSiwf8/Q+f5xPvDow9UXpT54fS/3v1v693xMQR/toP/jvfQP/mG1KUvpLP6ATYXwCHqrPQRPyp2wI/KGgMeVzagjuIG1K5vgI5LHMCjKgfsK4WOXu1aR1Z2uWOoo4rHUPtFP785odkX",
-        //     answer: "m=edit&p=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",
+        //     answer: "",
         // },
     ],
 });

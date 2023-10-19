@@ -20,13 +20,13 @@ const solve = async ({ Or, Sum }: Context, puzzle: Puzzle, cs: Constraints, solu
     // The numbers around the grid indicate the number of positive/negative poles in that row/column
     const plusSign = [...puzzle.symbols.keys()].find(p => puzzle.symbols.get(p).eq(Symbol.PLUS_SIGN));
     const isPlusSign = (p: Point) =>
-        puzzle.lattice.edgeSharingDirections().some(v => v.crossProduct(p.directionTo(plusSign)) === 0);
-    for (const [p, v] of puzzle.points.entrances()) {
-        for (const q of [p, p.translate(v.negate())]) {
+        puzzle.lattice.edgeSharingDirections(p).some(v => v.crossProduct(p.directionTo(plusSign)) === 0);
+    for (const [line, p, bearing] of puzzle.points.lines()) {
+        for (const q of [p, bearing.negate().next(p)]) {
             if (puzzle.texts.has(q)) {
                 const value = isPlusSign(q) ? 1 : -1;
                 const number = parseInt(puzzle.texts.get(q));
-                cs.add(Sum(...puzzle.points.sightLine(p.translate(v), v).map(p => grid.get(p).eq(value))).eq(number));
+                cs.add(Sum(...line.map(p => grid.get(p).eq(value))).eq(number));
             }
         }
     }

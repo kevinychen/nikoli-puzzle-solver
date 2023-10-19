@@ -1,5 +1,5 @@
 import { zip } from "lodash";
-import { Constraints, Context, Point, Puzzle, Solution, ValueMap, Vector } from "../lib";
+import { Constraints, Context, Point, Puzzle, Solution, ValueMap } from "../lib";
 
 const solve = async ({ And, Or }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Fill in all the blank cells with letters from the given words
@@ -11,9 +11,10 @@ const solve = async ({ And, Or }: Context, puzzle: Puzzle, cs: Constraints, solu
     // Find all lines in the grid for words
     const lines = [];
     for (const [p] of grid) {
-        for (const v of [Vector.E, Vector.S]) {
-            if (good(p.translate(v)) && !good(p.translate(v.negate()))) {
-                lines.push(puzzle.points.sightLine(p, v, good));
+        for (const bearing of puzzle.lattice.bearings()) {
+            const v = bearing.from(p);
+            if (v.dy >= 0 && v.dx >= 0 && good(bearing.next(p)) && !good(bearing.negate().next(p))) {
+                lines.push(puzzle.points.lineFrom(p, bearing, good));
             }
         }
     }

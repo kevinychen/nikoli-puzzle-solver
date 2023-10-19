@@ -1,3 +1,4 @@
+import { zip } from "lodash";
 import { Constraints, Context, Puzzle, Solution, ValueMap } from "../lib";
 
 const solve = async ({ Or, Sum }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
@@ -18,10 +19,10 @@ const solve = async ({ Or, Sum }: Context, puzzle: Puzzle, cs: Constraints, solu
 
     // There cannot be a horizontal or vertical line of unshaded cells that goes through 2 or more region borders
     for (const [p] of grid) {
-        for (const v of puzzle.lattice.edgeSharingDirections()) {
-            for (let q = p, word = []; grid.has(q); q = q.translate(v)) {
-                word.push(q);
-                if (new Set(word.map(regions.get)).size > 2) {
+        for (const bearing of puzzle.lattice.bearings()) {
+            const line = puzzle.points.lineFrom(p, bearing);
+            for (const word = []; line.length > 0; word.push(line.shift())) {
+                if (zip(word, word.slice(1)).filter(edge => puzzle.borders.has(edge)).length >= 2) {
                     cs.add(Or(...word.map(p => grid.get(p).eq(1))));
                     break;
                 }
