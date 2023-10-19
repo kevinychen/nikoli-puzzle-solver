@@ -1,4 +1,5 @@
 import Choices from "choices.js";
+import { isEqual } from "lodash";
 import { init } from "z3-solver";
 import { fromPenpaUrl, newSolution, toPenpaUrl, toPuzzle } from "./internal/penpa";
 import { ConstraintsImpl, PuzzleSolver, ValueMap } from "./lib";
@@ -130,12 +131,15 @@ global.initSolverUI = async function () {
     });
 
     solveButton.addEventListener("click", () => {
+        if (solveButton.classList.contains("disabled")) {
+            return;
+        }
         if (!typeSelect.value) {
             alert("Choose a puzzle type to solve as.");
             return;
         }
-        solveButton.textContent = "Solving...";
-        solveButton.disabled = true;
+        solveButton.textContent = "Solving…";
+        solveButton.classList.add("disabled");
 
         const url = exp();
         if (url !== prevFoundUrl) {
@@ -156,7 +160,7 @@ global.initSolverUI = async function () {
                 })
                 .finally(() => {
                     solveButton.textContent = exp() === prevFoundUrl ? "Find another solution" : "Solve";
-                    solveButton.disabled = false;
+                    solveButton.classList.remove("disabled");
                 });
         }, 0);
     });
@@ -164,7 +168,13 @@ global.initSolverUI = async function () {
     penpaEditWindow.document.addEventListener("click", () => penpaEditWindow.focus());
 
     setInterval(() => {
-        if (solveButton.textContent !== "Solving..." && exp() !== prevFoundUrl) {
+        if (
+            prevFoundUrl !== undefined &&
+            prevFoundUrl !== exp() &&
+            !solveButton.classList.contains("disabled") &&
+            !isEqual(toPuzzle(fromPenpaUrl(prevFoundUrl, "")), toPuzzle(fromPenpaUrl(exp(), "")))
+        ) {
+            imp(toPenpaUrl(fromPenpaUrl(exp(), ""), newSolution()));
             prevFoundValues = undefined;
             prevFoundUrl = undefined;
             solveButton.textContent = "Solve";
