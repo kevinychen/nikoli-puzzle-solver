@@ -1,6 +1,6 @@
 import { Constraints, Context, FullNetwork, Point, Puzzle, Solution, ValueMap } from "../lib";
 
-const solve = async ({ And, Implies, Not, Or, Sum }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
+const solve = async ({ Not, Or }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Draw lines over the dotted lines to connect the circles into one network
     const lattice = puzzle.lattice.dual();
     const points = puzzle.points.vertexSet();

@@ -93,11 +93,18 @@ select {
 
 .choices__list--dropdown > .choices__list {
     display: grid;
-    grid-template-rows: repeat(25, auto);
     grid-auto-flow: column;
     max-width: calc(95vw - 100px);
     max-height: calc(95vh - 150px);
     overflow: scroll;
+}
+
+.left .choices__list--dropdown > .choices__list {
+    grid-template-rows: repeat(26, auto);
+}
+
+.right .choices__list--dropdown > .choices__list {
+    grid-template-rows: repeat(24, auto);
 }
 
 .choices__list--dropdown .choices__placeholder {
