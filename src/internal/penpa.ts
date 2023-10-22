@@ -224,6 +224,11 @@ export function toPuzzle(penpa: Penpa): Puzzle {
         }
     }
 
+    for (const [index] of Object.entries(q.line || {})) {
+        let [{ p }, { p: q }] = index.split(",").map(s => fromIndex(parseInt(s)));
+        puzzle.lines.add([p, q]).add([q, p]);
+    }
+
     for (const [index] of Object.entries(q.lineE || {})) {
         let [{ p }, { p: q }] = index.split(",").map(s => fromIndex(parseInt(s)));
         [p, q] = lattice.cellsWithEdge(Point.center(p, q));

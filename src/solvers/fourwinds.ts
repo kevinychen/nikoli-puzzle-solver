@@ -34,7 +34,7 @@ const solve = async ({ Or }: Context, puzzle: Puzzle, cs: Constraints, solution:
 
 solverRegistry.push({
     name: "Four Winds",
-    keywords: ["Line Game"],
+    keywords: ["Line Game", "Wall Logic"],
     solve,
     samples: [
         {

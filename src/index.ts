@@ -86,15 +86,17 @@ global.initSolverUI = async function () {
 
     const sampleOptions = [];
     const typeOptions = [];
-    for (const { name, samples } of solverRegistry) {
+    for (const { name, keywords, samples } of solverRegistry) {
         typeOptions.push({
             label: name,
             value: name,
+            customProperties: { keywords },
         });
         for (const { name: sampleName } of samples) {
             sampleOptions.push({
                 label: sampleName || name,
                 value: sampleName || name,
+                customProperties: { keywords },
             });
         }
     }
@@ -102,11 +104,13 @@ global.initSolverUI = async function () {
         allowHTML: false,
         choices: sampleOptions,
         placeholder: true,
+        searchFields: ["label", "customProperties.keywords"],
     });
     const typeChoices = new Choices(typeSelect, {
         allowHTML: false,
         choices: typeOptions,
         placeholder: true,
+        searchFields: ["label", "customProperties.keywords"],
     });
 
     sampleSelect.addEventListener("change", () => {

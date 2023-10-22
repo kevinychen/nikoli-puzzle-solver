@@ -86,6 +86,7 @@ const solve = async ({ And, Or }: Context, puzzle: Puzzle, cs: Constraints, solu
 
 solverRegistry.push({
     name: "Sashigane",
+    keywords: ["L Route"],
     solve,
     samples: [
         {
