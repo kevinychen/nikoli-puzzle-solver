@@ -47,6 +47,10 @@ export class Symbol {
         return this.shape.startsWith("square_");
     }
 
+    isWhite(): boolean {
+        return this.style === 1;
+    }
+
     toGreen(): Symbol {
         return new Symbol(this.shape.replace("_B", "_E"), this.style);
     }
