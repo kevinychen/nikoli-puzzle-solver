@@ -1,20 +1,23 @@
 import { zip } from "lodash";
-import { Constraints, Context, Point, Puzzle, Solution, ValueMap } from "../lib";
+import { Constraints, Context, PointSet, Puzzle, Solution, ValueMap } from "../lib";
 
 const solve = async ({ And, Or }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Fill in all the blank cells with letters from the given words
     const words = [...puzzle.texts].filter(([p]) => !puzzle.points.has(p)).map(([_, text]) => text);
     const allLetters = [...new Set(words.flatMap(word => [...word]))];
-    const good = (p: Point) => puzzle.points.has(p) && !puzzle.shaded.has(p);
-    const grid = new ValueMap([...puzzle.points].filter(good), _ => cs.choice(allLetters));
+    const points = new PointSet(
+        puzzle.lattice,
+        [...puzzle.points].filter(p => !puzzle.shaded.has(p))
+    );
+    const grid = new ValueMap(points, _ => cs.choice(allLetters));
 
     // Find all lines in the grid for words
     const lines = [];
     for (const [p] of grid) {
         for (const bearing of puzzle.lattice.bearings()) {
             const v = bearing.from(p);
-            if (v.dy >= 0 && v.dx >= 0 && good(bearing.next(p)) && !good(bearing.negate().next(p))) {
-                lines.push(puzzle.points.lineFrom(p, bearing, good));
+            if (v.dy >= 0 && v.dx >= 0 && points.has(bearing.next(p)) && !points.has(bearing.negate().next(p))) {
+                lines.push(points.lineFrom(p, bearing));
             }
         }
     }
@@ -33,7 +36,7 @@ const solve = async ({ And, Or }: Context, puzzle: Puzzle, cs: Constraints, solu
 
     const model = await cs.solve(grid);
 
-    // Fill in solved numbers
+    // Fill in solved letters
     for (const [p, arith] of grid) {
         const value = model.get(arith);
         if (value !== -1) {

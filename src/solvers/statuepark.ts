@@ -28,14 +28,7 @@ const solve = async ({ And, Or }: Context, puzzle: Puzzle, cs: Constraints, solu
 
     // All shapes must be used exactly once
     for (let i = 0; i < polyominoes.length; i++) {
-        cs.add(
-            Or(
-                ...[...puzzle.points]
-                    .flatMap(p => placements.get(p))
-                    .filter(([_, instance]) => instance === i)
-                    .map(([placement, instance]) => And(...placement.map(p => grid.get(p).eq(instance))))
-            )
-        );
+        cs.add(Or(...[...grid.values()].map(arith => arith.eq(i))));
     }
 
     // Two shapes cannot be orthogonally adjacent
