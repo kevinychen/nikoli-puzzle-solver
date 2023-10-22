@@ -1,6 +1,6 @@
 import { Constraints, Context, Puzzle, Solution, ValueMap } from "../lib";
 
-const solve = async ({}: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
+const solve = async ({ Or }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Shade some cells on the board
     const grid = new ValueMap(puzzle.points, _ => cs.int(0, 1));
 
@@ -11,7 +11,7 @@ const solve = async ({}: Context, puzzle: Puzzle, cs: Constraints, solution: Sol
 
     // Numbers indicate the sum of the size of all blocks that share at least one border with the circle
     for (const [p, text] of puzzle.texts) {
-        cs.addContiguousArea(puzzle.lattice, puzzle.points, p, p => grid.get(p).eq(1), parseInt(text) + 1);
+        cs.addContiguousArea(puzzle.lattice, puzzle.points, p, q => Or(p.eq(q), grid.get(q).eq(1)), parseInt(text) + 1);
     }
 
     const model = await cs.solve(grid);

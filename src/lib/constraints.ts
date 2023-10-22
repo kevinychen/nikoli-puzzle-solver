@@ -1,13 +1,13 @@
 import { isEqual, range } from "lodash";
 import { Arith, Bool, Solver } from "z3-solver";
 import { ValueMap, ValueSet } from "./collections";
+import { Bearing } from "./geometry/bearing";
 import { Lattice } from "./geometry/lattice";
 import { Point } from "./geometry/point";
 import { PointSet } from "./geometry/pointset";
 import { Vector } from "./geometry/vector";
 import { LoopNetwork, Network, PathNetwork } from "./network";
 import { Context } from "./solver";
-import { Bearing } from "./geometry/bearing";
 
 export type ChoiceArith<T> = Arith & {
     is(val: T): Bool;
@@ -135,7 +135,8 @@ export class ConstraintsImpl implements Constraints {
                 isStraight() {
                     return Or(
                         ...getIndices(vs =>
-                            points.lattice.edgeSharingDirections(p)
+                            points.lattice
+                                .edgeSharingDirections(p)
                                 .every(v => vs.some(w => w.eq(v)) === vs.some(w => w.eq(v.negate())))
                         ).map(i => this.eq(i))
                     );
@@ -231,7 +232,7 @@ export class ConstraintsImpl implements Constraints {
         const { And, Bool, Or, Sum } = this.context;
         let floodfill = new ValueMap(points, _ => Bool.fresh());
         for (const [p, arith] of floodfill) {
-            this.add(arith.eq(p.eq(start)));
+            this.add(arith.eq(p.eq(start) && good(p)));
         }
         for (let i = 0; i < area; i++) {
             const newFloodfill = new ValueMap(points, _ => Bool.fresh());
