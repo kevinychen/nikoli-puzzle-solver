@@ -1,4 +1,4 @@
-import { Constraints, Context, Puzzle, Solution, Symbol, ValueMap, Vector } from "../lib";
+import { Constraints, Context, Point, Puzzle, Solution, Symbol, ValueMap, Vector } from "../lib";
 
 const solve = async ({ And, Implies, Not, Or, Sum }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Shade a right triangle in some empty cells, each of which occupies exactly half the cell it's in
@@ -10,14 +10,15 @@ const solve = async ({ And, Implies, Not, Or, Sum }: Context, puzzle: Puzzle, cs
     }
 
     // Each unshaded area must be rectangular in shape. The rectangle can be upright, or rotated at a 45º angle
+    const boxValues = ["NW", "NE", "SW", "SE"];
     for (const vertex of puzzle.points.vertices()) {
         // In every 2x2 box, if there are 3 empty cells, the 4th is either empty or contains a
         // triangle in the corresponding direction as its position in the box
-        for (const [i, p] of vertex.entries()) {
+        for (const [i, p] of vertex.sort(Point.compare).entries()) {
             cs.add(
                 Implies(
                     And(...vertex.filter(q => !q.eq(p)).map(q => grid.get(q).eq(-1))),
-                    Or(grid.get(p).eq(-1), grid.get(p).eq((i + 2) % 4))
+                    Or(grid.get(p).eq(-1), grid.get(p).is(boxValues[i]))
                 )
             );
         }

@@ -48,6 +48,7 @@ const solve = async ({ Distinct, Or, Product, Sum }: Context, puzzle: Puzzle, cs
 
 solverRegistry.push({
     name: "Calcudoku (KenKen)",
+    keywords: ["TomTom"],
     solve,
     samples: [
         {
