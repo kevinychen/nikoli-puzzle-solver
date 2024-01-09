@@ -101,7 +101,7 @@ select {
     background-color: #f8f8f8;
     padding: 5px;
     text-align: initial;
-    font-size: 20px;
+    font-size: 18px;
 }
 
 .right .choices__list--dropdown {
@@ -117,11 +117,11 @@ select {
 }
 
 .left .choices__list--dropdown > .choices__list {
-    grid-template-rows: repeat(26, auto);
+    grid-template-rows: repeat(27, auto);
 }
 
 .right .choices__list--dropdown > .choices__list {
-    grid-template-rows: repeat(24, auto);
+    grid-template-rows: repeat(25, auto);
 }
 
 .choices__list--dropdown .choices__placeholder {
