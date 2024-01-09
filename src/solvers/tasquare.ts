@@ -43,13 +43,13 @@ const solve = async ({ And, Or, Sum }: Context, puzzle: Puzzle, cs: Constraints,
 
     // Numbers indicate the sum of the size of all blocks that share a border with the clue
     for (const [p, text] of puzzle.texts) {
-        cs.add(Sum(...puzzle.points.edgeSharingPoints(p).map(p => sizeGrid.get(p))).eq(parseInt(text)));
+        cs.add(Sum(...puzzle.points.edgeSharingPoints(p).map(q => sizeGrid.get(q))).eq(parseInt(text)));
     }
 
     // Clues without numbers must be adjacent to at least one block
     for (const [p] of puzzle.symbols) {
         if (!puzzle.texts.has(p)) {
-            cs.add(Or(...puzzle.points.edgeSharingPoints(p).map(p => grid.get(p).eq(1))));
+            cs.add(Or(...puzzle.points.edgeSharingPoints(p).map(q => grid.get(q).eq(1))));
         }
     }
 
