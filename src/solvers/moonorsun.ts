@@ -39,6 +39,7 @@ const solve = async ({ Implies, Sum }: Context, puzzle: Puzzle, cs: Constraints,
         });
     })
 
+    // The loop may not pass through the same type of clue in two consecutively used regions
     for (const [p, q] of puzzle.points.edges()) {
         if (puzzle.borders.has([p, q])) {
             cs.add(
