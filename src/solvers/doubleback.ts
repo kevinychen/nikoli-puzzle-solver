@@ -9,8 +9,9 @@ const solve = async ({ Sum }: Context, puzzle: Puzzle, cs: Constraints, solution
         cs.add(arith.eq(0).eq(puzzle.shaded.has(p)));
     }
 
-    // The loop visits each outlined region exactly twice
+    // The loop visits each outlined region the given number of times
     const regions = puzzle.regions();
+    const numVisits = parseInt(puzzle.parameters["visits"]);
     for (const region of regions) {
         cs.add(
             Sum(
@@ -20,7 +21,7 @@ const solve = async ({ Sum }: Context, puzzle: Puzzle, cs: Constraints, solution
                         .filter(([q]) => puzzle.borders.has([p, q]))
                         .map(([_, v]) => grid.get(p).hasDirection(v))
                 )
-            ).eq(4)
+            ).eq(2 * numVisits)
         );
     }
 
@@ -35,7 +36,8 @@ const solve = async ({ Sum }: Context, puzzle: Puzzle, cs: Constraints, solution
 };
 
 solverRegistry.push({
-    name: "Double Back",
+    name: "Double Back (EntryExit)",
+    parameters: "visits: 2",
     solve,
     samples: [
         {

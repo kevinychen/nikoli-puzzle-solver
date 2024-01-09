@@ -73,11 +73,11 @@ export class Symbol {
             return [Vector.E, Vector.S, Vector.W, Vector.N, Vector.W, Vector.N, Vector.E, Vector.S];
         } else if (shape === "arrow_cross") {
             return [Vector.W, Vector.N, Vector.E, Vector.S];
-        } else if (shape == "arrow_S" || shape.startsWith("arrow_B_") || shape.startsWith("arrow_N_")) {
+        } else if (shape === "arrow_S" || shape.startsWith("arrow_B_") || shape.startsWith("arrow_N_")) {
             return [unused, Vector.W, Vector.NW, Vector.N, Vector.NE, Vector.E, Vector.SE, Vector.S, Vector.SW];
-        } else if (shape == "firefly" || shape == "pencils") {
+        } else if (shape === "firefly" || shape === "pencils") {
             return [unused, Vector.E, Vector.S, Vector.W, Vector.N];
-        } else if (shape == "inequality") {
+        } else if (shape === "inequality") {
             return [unused, Vector.W, Vector.N, Vector.E, Vector.S, Vector.W, Vector.N, Vector.E, Vector.S];
         } else {
             return [];

@@ -47,7 +47,7 @@ const solve = async ({ And, Not, Or }: Context, puzzle: Puzzle, cs: Constraints,
                             return true;
                         }
                         const bits = [...bitmap, ...bitmap];
-                        if (range(bits.length - 1).some(i => bits[i] === 1 && bits[i + 1] == 0)) {
+                        if (range(bits.length - 1).some(i => bits[i] === 1 && bits[i + 1] === 0)) {
                             return false;
                         }
                         const loopLens = range(bitmap.length)

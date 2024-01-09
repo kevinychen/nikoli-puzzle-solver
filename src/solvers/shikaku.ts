@@ -11,7 +11,7 @@ const solve = async ({ And, Or }: Context, puzzle: Puzzle, cs: Constraints, solu
         const area = parseInt(text);
         const choices = [];
         for (let h = 1; h <= area; h++) {
-            if (area % h == 0) {
+            if (area % h === 0) {
                 const w = area / h;
                 for (let row = p.y - h + 1; row <= p.y; row++) {
                     for (let col = p.x - w + 1; col <= p.x; col++) {
