@@ -32,9 +32,7 @@ const solve = async ({ Distinct, Not, Or }: Context, puzzle: Puzzle, cs: Constra
 
     // Fill in solved numbers
     for (const [p, arith] of grid) {
-        if (!puzzle.texts.has(p)) {
-            solution.texts.set(p, model.get(arith).toString());
-        }
+        solution.texts.set(p, model.get(arith).toString());
     }
 };
 

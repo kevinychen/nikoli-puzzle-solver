@@ -57,7 +57,7 @@ const solve = async ({ And, Implies, Not, Or, Sum }: Context, puzzle: Puzzle, cs
     // Fill in solved triangles
     for (const [p, arith] of grid) {
         const value = model.get(arith);
-        if (puzzle.points.has(p) && !puzzle.symbols.has(p) && value >= 0) {
+        if (puzzle.points.has(p) && value >= 0) {
             solution.symbols.set(p, new Symbol("tri", value + 1));
         }
     }

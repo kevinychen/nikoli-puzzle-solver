@@ -15,7 +15,7 @@ const solve = async ({ And, Iff, Implies, Or, Sum }: Context, puzzle: Puzzle, cs
 
     // Cells with numbers or question marks cannot be shaded, and are not part of the loop
     for (const [p, arith] of grid) {
-        cs.add(Iff(puzzle.shaded.has(p) || puzzle.texts.has(p), And(shadedGrid.get(p).eq(0), arith.eq(0))));
+        cs.add(Iff(puzzle.texts.has(p), And(shadedGrid.get(p).eq(0), arith.eq(0))));
     }
 
     // A number indicates the amount of shaded cells in the (up to) four orthogonally adjacent cells

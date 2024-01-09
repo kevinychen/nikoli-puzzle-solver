@@ -78,11 +78,24 @@ global.initSolverUI = async function () {
 
     const sampleSelect = document.getElementById("sample") as HTMLSelectElement;
     const typeSelect = document.getElementById("type") as HTMLSelectElement;
+    const warningDiv = document.getElementById("warning") as HTMLDivElement;
     const parametersTextarea = document.getElementById("parameters") as HTMLTextAreaElement;
     const solveButton = document.getElementById("solve") as HTMLButtonElement;
 
     let prevFoundUrl: string = undefined;
     let prevFoundValues: ValueMap<any, number> = undefined;
+
+    function setWarnings(warnings: string[]) {
+        if (warnings.length === 0) {
+            warningDiv.style.display = "none";
+        } else {
+            warningDiv.style.display = "block";
+            warningDiv.innerHTML =
+                `<h1>${warnings.length === 1 ? "Warning" : "Warnings"}</h1>` +
+                `${warnings.join("<br><br>")}<br><br>` +
+                "Check out the sample puzzle for an example of the expected input format.";
+        }
+    }
 
     const sampleOptions = [];
     const typeOptions = [];
@@ -128,6 +141,8 @@ global.initSolverUI = async function () {
         parametersTextarea.style.display = parameters ? "block" : "none";
     });
 
+    warningDiv.addEventListener("click", () => setWarnings([]));
+
     typeSelect.addEventListener("change", () => {
         const { parameters } = solverRegistry.find(({ name }) => name === typeSelect.value);
         parametersTextarea.value = parameters;
@@ -138,10 +153,13 @@ global.initSolverUI = async function () {
         if (solveButton.classList.contains("disabled")) {
             return;
         }
-        if (!typeSelect.value) {
+
+        const puzzleName = typeSelect.value;
+        if (!puzzleName) {
             alert("Choose a puzzle type to solve as.");
             return;
         }
+
         solveButton.textContent = "Solving…";
         solveButton.classList.add("disabled");
 
@@ -150,8 +168,48 @@ global.initSolverUI = async function () {
             prevFoundValues = undefined;
         }
 
+        const { parameters, samples } = solverRegistry.find(({ name }) => name === puzzleName);
+        if (samples.length > 0) {
+            const actualPuzzle = toPuzzle(fromPenpaUrl(url, parametersTextarea.value));
+            const samplePuzzles = samples.map(sample => {
+                const { puzzle, parameters: sampleParameters } = sample;
+                return toPuzzle(fromPenpaUrl(puzzle, sampleParameters || parameters));
+            });
+
+            const warnings = [];
+            if (actualPuzzle.shaded.size() > 0 && samplePuzzles.every(puzzle => puzzle.shaded.size() === 0)) {
+                warnings.push(
+                    "This puzzle type's solver ignores shaded cells.<br>" +
+                        'If you wish to remove a cell, use "Box" instead.'
+                );
+            }
+            if (actualPuzzle.texts.size() > 0 && samplePuzzles.every(puzzle => puzzle.texts.size() === 0)) {
+                warnings.push(`This puzzle type's solver ignores letters/numbers in the middle of cells.
+                ${
+                    samplePuzzles.some(puzzle => puzzle.edgeTexts.size() > 0)
+                        ? "<br>Perhaps you meant to add them to the cell corners instead?"
+                        : ""
+                }`);
+            }
+            const sampleShapes = new Set(
+                samplePuzzles.flatMap(puzzle => [...puzzle.symbols.values()]).map(symbol => symbol.shape)
+            );
+            if ([...actualPuzzle.symbols.values()].some(symbol => !sampleShapes.has(symbol.shape))) {
+                warnings.push("This puzzle type's solver ignores some of the shapes/symbols you provided.");
+            }
+            if (actualPuzzle.edgeTexts.size() > 0 && samplePuzzles.every(puzzle => puzzle.edgeTexts.size() === 0)) {
+                warnings.push(`This puzzle type's solver ignores letters/numbers on the edges/corners of cells.
+                ${
+                    samplePuzzles.some(puzzle => puzzle.texts.size() > 0)
+                        ? "<br>Perhaps you meant to add them to the middle of the cells instead?"
+                        : ""
+                }`);
+            }
+            setWarnings(warnings);
+        }
+
         setTimeout(() => {
-            solve(typeSelect.value, url, parametersTextarea.value, prevFoundValues)
+            solve(puzzleName, url, parametersTextarea.value, prevFoundValues)
                 .then(([url, values]) => {
                     console.log("Solved:", url);
                     penpaEditWindow.load(url);
@@ -181,6 +239,7 @@ global.initSolverUI = async function () {
             imp(toPenpaUrl(fromPenpaUrl(exp(), ""), newSolution()));
             prevFoundValues = undefined;
             prevFoundUrl = undefined;
+            setWarnings([]);
             solveButton.textContent = "Solve";
         }
     }, 1000);

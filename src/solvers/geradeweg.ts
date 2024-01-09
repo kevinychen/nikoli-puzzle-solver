@@ -7,8 +7,8 @@ const solve = async ({ And, Not, Or }: Context, puzzle: Puzzle, cs: Constraints,
     // Optimization: start the loop at a specific circle
     cs.add(root.is([...puzzle.texts.keys(), ...puzzle.points][0]));
 
-    // The loop goes through every circle
-    for (const [p] of puzzle.symbols) {
+    // The loop goes through every number
+    for (const [p] of puzzle.texts) {
         cs.add(grid.get(p).neq(0));
     }
 
