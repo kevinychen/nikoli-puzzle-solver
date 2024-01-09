@@ -31,8 +31,14 @@ const solve = async ({ Implies, Sum }: Context, puzzle: Puzzle, cs: Constraints,
                 .eq(whichSymbol.get(regions.get(p)).eq(symbols.findIndex(s => s.eq(symbol))))
         );
     }
+    regions.forEach(region => {
+        symbols.forEach((symbol, index) => {
+            if (region.filter(p => puzzle.symbols.get(p)?.eq(symbol)).length == 0) {
+                cs.add(whichSymbol.get(region).neq(index))
+            }
+        });
+    })
 
-    // The loop may not pass through the same type of clue in two consecutively used regions
     for (const [p, q] of puzzle.points.edges()) {
         if (puzzle.borders.has([p, q])) {
             cs.add(
@@ -59,8 +65,8 @@ solverRegistry.push({
     solve,
     samples: [
         {
-            puzzle: "m=edit&p=7VVdT9swFH3vr0B+9kOdr0LeGIO9MDZWJoSiqnJLoBVJzZxkTKn63zn3JtCm8TQJaRoPU5Tb0+Mb33PtHKf4UWmbygiXfyiHUuHyoohvFQR8D9vrallmaXwgj6tyYSyAlF/OzuSdzop0kLRZk8G6PorrS1l/ihOhhBQebiUmsr6M1/XnuL6R9RhDQipw502SB3i6hdc8TuikIdUQ+KLFgDeARbWa5sasGuZrnNRXUlCdD/w0QZGbn6loddD/uclnSyJmukQzxWL52I4U1a15qNpcNdnI+riRO3bI9bdyCTZyCTnkUhckd7608yydnv8FuUeTzQbL/g2Cp3FC2r9v4eEWjuM14gVHxfEmXgvPxzQeTbmznsKLXKwfgFU9duRiA2duELrY0HOyTmWhc97QPa+zi9CpN3JWi6han6VqfZaq9eYdOZWNHBqwIWe8LR7HK+yarH2OHzkOOYYczznnFBuoFHzqQScE4Vcq2iXCgQf/oivGcHaAVSbs+1ue8Eu+T89CLeMQOS0OgGl9CYfIecV4lnaDcwi/1KJnsRaM6RxBr5wPnlaOcARMK/MyD60+88Ajwmjumls84RhwjLj1Eb3Ob37h37bKf5STeFjt1wvdvRVPBok4vb1PDy6MzXUGw48X+jEVOFlFYbJpUdk7Pcc5wQcv3iBwqyqfpbZDZcY8ZstVN295vzI2dQ4RmaKsI39m7O3e7E86yzpE8yHpUM2J16FKi+Ns57+21jx1mFyXiw6xc/R1ZkpXZVdAqbsS9YPeq5Zve94MxC/Bd+Ljs+X//2z9o88WbcHwvXn5vcnht9dYp/VBO9wP1unylu8ZHXzP0lSw72qwDmOD3fc2qL69QfYcDu43JqdZ931OqvatTqV6bqdSu4ZPJoNn",
-            answer: "m=edit&p=7VVdT9swFH3vr0B+vg+NPyFvjMFeGBsr04SiqkpLoBVpw5J2TKny37nXdkjTetKENG0PUxT39Phe+/jGx66+b9IyA42POIYhRPhwre0bSWnfoX9uFus8i4/gdLOeFyUCgE8XF3Cf5lU2SHzUeLCtT+L6GuoPccIiBozjG7Ex1Nfxtv4Y17dQj7CLQYTcpQviCM87+M32EzpzZDREfOUxwluE1WY1WRbFyjGf46S+AUbzvLPZBNmy+JExr4P+z4rldEHENF3jYqr54sn3VJu74nHD2ikaqE+d3FFArujkile5IiyXe7mzRTnLs8nlH5B7Mm4aLPsXFDyJE9L+tYPHHRzF24Z0URvZ9jbeMi5wGA79ejKuQ6yQyEYHrAmxMhgrVYhVPMgGlanguCo8bnAVKqhXB2fTMsiqIKtD45qgMhPQgB/kwn4Wbtsb/GpQC9u+t+3Qtsq2lzbmHD9gFKFPOepEQfgLkfBYcvSv8BidLbnDQnQ84TZeUK7yWGGMxxKx8ljJHYy5qp2LsOjipfaYzhHj45HXPlcjNjvjaJ+rERvCDfmKlnhmW2lbbZduaDvjht8tjW6LwjgH2tICCAnukADhOQW0tR2ixRLCw89xgoN0GVgX6TKwEtLFCQ3SxWFllYvDddNGJyRBeaRAuQxcPS2ekAHlkOKgXS7W0scpA9r1ag7G9WoJWrXIuJGxatopwPPZeGTAuFyDuU6zEW2G0a7X7ZU9+7v9NGqPgtc9R4VvBgnWL3p91NvxeJCw87uH7OiqKJdpjkfYaJ4+ZQzvClYV+aTalPfpDE8+e5WA5Vab5TQre1ReFE/5YtWPWzysijILdhGZ4bSB+GlR3u2N/pzmeY+o7NXYo9wZ3qPW5aL3Py3L4rnHLNP1vEfsHOa9kbLVui9gnfYlpo/p3mzLbs3NgP1k9k0EXsTi/0X8ly5i+gTDN1/Hb7sDfuOw/Lfk2N1blEHrIx1wP7JBl3v+wOjIH1iaJjx0NbIBYyO7722kDu2N5IHDkfuFyWnUfZ+Tqn2r01QHbqepdg2fjAcv",
-        },
+            puzzle: "m=edit&p=7VXPb9pMEL3zV0R73oN3DfnAN5omvaTpD/IpiiyEFuIEFJtN13ZTGfG/583YCIy3ahWpag6V8fB4Hr+ZHfst+bfSuEQOcIRDGUiFQ+shn/2APrvjelWkSXQix2WxtA5Ayk8XF/LepHnSi5usaW9TjaJqLKsPUSyUkELjVGIqqy/RpvoYVbeymuCSkArcZZ2kAc/38IavEzqrSRUAXzUY8BYwL9ezzNp1zXyO4upaCqrzju8mKDL7PRFNH/R7YbP5ioi5KbCYfLl6aq7k5Z19LJtcNd3Kaly3O/G0G+7bJVi3S8jTLq2C2l2s3CJNZpd/oN3RdLvF2L+i4VkUU+//7+FwDyfRBvGKo+J4G22EVpDRJHkwT6FDsKrD9r3syKcQBl6WqnUUQq9C36vQH/oUBpTbZb1rG5x2WQzjgkeiOV5jYrIKOb7nGHAccLzknHMMbxTiYWsRQU0FsM4hVmiJ8WiPFQym0BRjyqnzR33ciolzOiQbGt/ADa+Ix/x3t+pGUkOSngBjlKK5Ew7B07QZIz9sNDXh3b2ks6sFfcZY2g0v8Ixjn+MpL/w/epFe/aq9bsa/bCemCTTH4PfQtBeL87uH5OTKusykMNVkaZ4Sgd1L5Dad5aW7Nwt4kTc3vCng1mU2T1yLSq19Slfrdt7qYW1d4r1EZIKynvy5dXdH6s8mTVtEvVW3qHpXaVGFw5Zx8Ns4Z59bTGaKZYs42F5aSsm6aDdQmHaL5tEcVcv2a972xA/BZxziryH899fwl/4a6BEEb821b60dfnut81oftMf9YL0ub/iO0cF3LE0Fu64G6zE22GNvg+raG2TH4eB+YnJSPfY5dXVsdSrVcTuVOjR8PO29AA==",
+            answer: "m=edit&p=7VXfb9owEH7nr6j87IfYTgrJW9e1e+m6dXSqqgihQNOCmuAuP9YpiP+939lhEOJpVaVpe5gC5uPz+Xw+33cpv9VJkfIAjxpxjws8Uo7M1/fos32ul1WWRkf8pK4WugDg/NP5Ob9PsjIdxK3VZLBuwqi54s2HKGaCcSbxFWzCm6to3XyMmlvejDHFuAB3YY0k4NkO3ph5QqeWFB7wZYsBbwHLejXNtV5Z5nMUN9ec0T7vzGqCLNffU9bGQf/nOp8tiZglFQ5TLpZP7UxZ3+nHurUVkw1vTmy4Y0e4ahcuQRsuIUe4dAoKd74s5lk6vfgD4YaTzQZp/4KAp1FMsX/dwdEOjqM1xkszCjPeRmsmBdxIcrmXTyYVWNFjfScbujwoz8nSbj0PyunBd3rwRy4PAdn2WefZguM+i2Scm5RIM14jY7xRZnxvRs+MgRkvjM0ZkhcqXLZkEbwJD9LZxwIhGRzusIDABIIymGysfehjKTJuzOGypfEL3PKCeOR/u1S2LiVc0g0YjK0o74QVeMq2wbBXrU9JeLuW/Gz3gn+DcbQbc8BTM/pmPDYHH1IhodT2E2NnkBKGSKiYFCoCCCERom5ikeQUDiHFqZAsorAI+VzhoIRCNCKDEDWVACHJfbtWKe7bFehW/tAgalN21pecrpzQkFOhEBrxwNoFgh9bf8GQB3Y2wKyNNAjtrL3ZA6HY27cCgmh+VohNlK2K3+hvM4jpqtoneB2aDGJ2dveQHl3qIk8yqH+8SJ5ShjbLSp1Ny7q4T+ZoGqYLo6TBrep8lhYdKtP6KVuuunbLh5UuUucUkSm2ddjPdHF34P05ybIOYd8pHcq2vw5VFehte/+TotDPHSZPqkWH2OuDHU/pquoGUCXdEJPH5GC3fHfmzYD9YOYbK7zD1P932F96h9EVeG9+k72thb+i2/1b4Zjq1YVT+qAd6gfrVHnL94QOvidp2rCvarAOYYM91DaovrxB9hQO7hciJ6+HOqeoDqVOW/XUTlvtCz6eDF4A"
+        }
     ],
 });
