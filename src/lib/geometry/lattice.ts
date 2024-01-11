@@ -108,7 +108,7 @@ class LatticeImpl implements Lattice {
             for (const base_v of _bearings) {
                 for (const v of [base_v, base_v.negate()]) {
                     for (const [[p, q], neighbor] of zip(rep.edges, rep.edgeSharingPoints)) {
-                        if (this.intersect(rep.center, rep.center.translate(v.scale(fundamentalDomain.x1)), p, q)) {
+                        if (Point.intersect(rep.center, rep.center.translate(v.scale(fundamentalDomain.x1)), p, q)) {
                             rep.bearingNeighbors.set(v, neighbor);
                         }
                     }
@@ -297,15 +297,6 @@ class LatticeImpl implements Lattice {
             }
         }
         throw new Error("Point not in lattice: " + p);
-    }
-
-    // Whether the line segment p1-p2 intersects the line segment q1-q2
-    private intersect(p1: Point, p2: Point, q1: Point, q2: Point) {
-        const [dp, dq] = [p1.directionTo(p2), q1.directionTo(q2)];
-        return (
-            p1.directionTo(q1).crossProduct(dp) * p1.directionTo(q2).crossProduct(dp) < 0 &&
-            q1.directionTo(p1).crossProduct(dq) * q1.directionTo(p2).crossProduct(dq) < 0
-        );
     }
 }
 

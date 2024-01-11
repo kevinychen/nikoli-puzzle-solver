@@ -117,11 +117,11 @@ select {
 }
 
 .left .choices__list--dropdown > .choices__list {
-    grid-template-rows: repeat(28, auto);
+    grid-template-rows: repeat(29, auto);
 }
 
 .right .choices__list--dropdown > .choices__list {
-    grid-template-rows: repeat(26, auto);
+    grid-template-rows: repeat(27, auto);
 }
 
 .choices__list--dropdown .choices__placeholder {
