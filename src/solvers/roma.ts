@@ -29,7 +29,7 @@ const solve = async ({ Distinct }: Context, puzzle: Puzzle, cs: Constraints, sol
 
     const model = await cs.solve(grid);
 
-    // Fill in solved shaded cells
+    // Fill in solved arrows
     for (const [p, arith] of grid) {
         if (!puzzle.symbols.has(p)) {
             solution.symbols.set(
