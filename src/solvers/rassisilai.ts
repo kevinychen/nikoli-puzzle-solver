@@ -1,6 +1,6 @@
 import { Constraints, Context, Puzzle, Solution, Symbol, ValueSet } from "../lib";
 
-const solve = async ({ And, Implies, Not, Or }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
+const solve = async ({ And, Not, Or }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Draw multiple lines through orthogonally adjacent cells
     const [network, grid] = cs.PathsGrid(puzzle.points);
 

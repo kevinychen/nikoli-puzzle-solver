@@ -20,7 +20,7 @@ const solve = async ({ And, Or, Sum }: Context, puzzle: Puzzle, cs: Constraints,
                 And(grid.get(p).eq(0), sizeGrid.get(p).eq(0), typeGrid.get(p).eq(-1)),
                 ...placements
                     .get(p)
-                    .map(([placement, instance, type]) =>
+                    .map(([placement, _, type]) =>
                         And(
                             ...placement.map(p => grid.get(p).eq(1)),
                             ...placement.map(p => sizeGrid.get(p).eq(placement.length)),
