@@ -116,12 +116,12 @@ select {
 }
 
 .left .choices__list--dropdown > .choices__list {
-    grid-template-rows: repeat(29, auto);
+    grid-template-rows: repeat(25, auto);
     max-height: calc(95vh - 100px);
 }
 
 .right .choices__list--dropdown > .choices__list {
-    grid-template-rows: repeat(27, auto);
+    grid-template-rows: repeat(23, auto);
     max-height: calc(95vh - 150px);
 }
 
@@ -132,7 +132,7 @@ select {
 .choices__item--choice {
     cursor: pointer;
     padding: 2px;
-    width: 250px;
+    width: 225px;
 }
 
 .is-active {
