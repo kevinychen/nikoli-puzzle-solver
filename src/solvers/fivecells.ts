@@ -33,7 +33,7 @@ const solve = async ({ And, Or, Sum }: Context, puzzle: Puzzle, cs: Constraints,
 };
 
 solverRegistry.push({
-    name: "Five Cells",
+    name: "Five Cells (Palisade)",
     solve,
     samples: [
         {
