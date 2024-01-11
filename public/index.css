@@ -112,16 +112,17 @@ select {
     display: grid;
     grid-auto-flow: column;
     max-width: calc(95vw - 100px);
-    max-height: calc(95vh - 150px);
     overflow: scroll;
 }
 
 .left .choices__list--dropdown > .choices__list {
     grid-template-rows: repeat(29, auto);
+    max-height: calc(95vh - 100px);
 }
 
 .right .choices__list--dropdown > .choices__list {
     grid-template-rows: repeat(27, auto);
+    max-height: calc(95vh - 150px);
 }
 
 .choices__list--dropdown .choices__placeholder {
