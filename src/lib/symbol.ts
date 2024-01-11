@@ -69,10 +69,10 @@ export class Symbol {
     private static getDirections(shape: string): Vector[] {
         const unused = new Vector(0, 0);
 
-        if (shape.startsWith("arrow_fouredge_")) {
+        if (shape.startsWith("arrow_fouredge_") || shape === "cross") {
             return [Vector.E, Vector.S, Vector.W, Vector.N, Vector.W, Vector.N, Vector.E, Vector.S];
         } else if (shape === "arrow_cross") {
-            return [Vector.W, Vector.N, Vector.E, Vector.S];
+            return [Vector.W, Vector.N, Vector.E, Vector.S, Vector.W, Vector.N, Vector.E, Vector.S];
         } else if (shape === "arrow_S" || shape.startsWith("arrow_B_") || shape.startsWith("arrow_N_")) {
             return [unused, Vector.W, Vector.NW, Vector.N, Vector.NE, Vector.E, Vector.SE, Vector.S, Vector.SW];
         } else if (shape === "firefly" || shape === "pencils") {

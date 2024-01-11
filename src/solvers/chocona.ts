@@ -28,6 +28,7 @@ const solve = async ({ Sum }: Context, puzzle: Puzzle, cs: Constraints, solution
 
 solverRegistry.push({
     name: "Chocona",
+    keywords: ["Chokona"],
     solve,
     samples: [
         {

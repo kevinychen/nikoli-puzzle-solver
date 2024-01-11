@@ -33,8 +33,8 @@ const solve = async ({ Or }: Context, puzzle: Puzzle, cs: Constraints, solution:
     const model = await cs.solve(grid);
 
     // Fill in solved shaded cells
-    for (const p of puzzle.points) {
-        if (model.get(grid.get(p))) {
+    for (const [p, arith] of grid) {
+        if (model.get(arith)) {
             solution.shaded.add(p);
         }
     }

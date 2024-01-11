@@ -27,7 +27,8 @@ const solve = async ({ Implies }: Context, puzzle: Puzzle, cs: Constraints, solu
 };
 
 solverRegistry.push({
-    name: "Numberlink",
+    name: "Numberlink (Arukone)",
+    keywords: ["Nanbarinku"],
     solve,
     samples: [
         {

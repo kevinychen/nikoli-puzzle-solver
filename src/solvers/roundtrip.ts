@@ -1,7 +1,7 @@
 import { range } from "lodash";
 import { Constraints, Context, FullNetwork, Puzzle, Solution, ValueMap } from "../lib";
 
-const solve = async ({ And, If, Not, Or, Xor }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
+const solve = async ({ And, Not, Or }: Context, puzzle: Puzzle, cs: Constraints, solution: Solution) => {
     // Draw a path. When the path visits a cell twice, it must travel in a straight line each time
     const network = new FullNetwork(puzzle.lattice);
     const grid = cs.NetworkGrid(puzzle.points, network);
@@ -9,31 +9,25 @@ const solve = async ({ And, If, Not, Or, Xor }: Context, puzzle: Puzzle, cs: Con
         cs.add(Or(arith.isLoopSegment(), arith.isStraight()));
     }
 
-    // Find the order of the path
+    // Crossing loop is connected
     const edges = puzzle.points.edges().map(([p, _, v]) => [p, v] as [typeof p, typeof v]);
-    const root = cs.int();
-    const order = new ValueMap(edges, _ => cs.int());
-    for (const [p, v] of edges) {
-        cs.add(
-            If(
-                grid.get(p).hasDirection(v),
-                Xor(order.get([p, v]).eq(-1), order.get([p.translate(v), v.negate()]).eq(-1)),
-                order.get([p, v]).eq(-1)
-            )
-        );
+    const root = cs.choice(edges);
+    const tree = new ValueMap(edges, _ => cs.int());
+    for (const [p, q, v] of puzzle.points.edges()) {
         cs.add(
             Or(
-                order.get([p, v]).eq(-1),
-                root.eq(edges.findIndex(([q, w]) => q.eq(p) && w.eq(v))),
+                Not(grid.get(p).hasDirection(v)),
+                root.is([p, v]),
                 ...puzzle.points
-                    .edgeSharingNeighbors(p)
-                    .map(([q, w]) =>
+                    .edgeSharingNeighbors(q)
+                    .map(([_, w]) =>
                         And(
-                            w.eq(v.negate()) || Not(grid.get(p).isStraight()),
-                            order.get([q, w.negate()]).neq(-1),
-                            order.get([q, w.negate()]).eq(order.get([p, v]).sub(1))
+                            grid.get(q).isLoopSegment(),
+                            grid.get(q).hasDirection(w),
+                            tree.get([p, v]).lt(tree.get([q, w]))
                         )
-                    )
+                    ),
+                And(grid.get(q).isStraight(), grid.get(q).hasDirection(v), tree.get([p, v]).lt(tree.get([q, v]) || 0))
             )
         );
     }
