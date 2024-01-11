@@ -3,6 +3,7 @@ import { Vector } from "./geometry/vector";
 
 export class Symbol {
     static WATER = new Symbol("battleship_B", 7);
+    static WHITE_CIRCLE = new Symbol("circle_M", 1);
     static VERY_SMALL_WHITE_CIRCLE = new Symbol("circle_SS", 8);
     static PLUS_SIGN = new Symbol("math", 2);
     static MINUS_SIGN = new Symbol("math", 3);

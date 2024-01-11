@@ -57,6 +57,7 @@ Start the development server with `npx webpack serve --mode development`, then g
 - Using the existing solvers as examples, define a solve function that takes a Z3 `Context` (to construct constraints) and a `Puzzle` (that contains the contents from the Penpa UI) as input.
 - At the bottom of the file, add it to the solver registry with `solverRegistry.push({...})`.
     - You can construct the sample puzzle in Penpa, and click "Share" -> "Editing URL" to get the encoded puzzle.
+- To fill in the sample answer, solve the sample puzzle in the UI and copy the puzzle answer string from the developer console logs.
 - Run the tests to verify the new solver implementation and sample puzzle are correct.
 
 ### Credits
